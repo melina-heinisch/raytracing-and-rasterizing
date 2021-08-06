@@ -1,0 +1,239 @@
+import Vector from '../math_library/vector';
+import Shader from '../shading/shader';
+
+/**
+ * A class creating buffers for an axis aligned box to render it with WebGL
+ */
+export default class RasterPyramid {
+    /**
+     * The buffer containing the box's vertices
+     */
+    vertexBuffer: WebGLBuffer;
+    /**
+     * The indices describing which vertices form a triangle
+     */
+    indexBuffer: WebGLBuffer;
+    /**
+     * The buffer containing colors for each vertex
+     */
+    colorBuffer: WebGLBuffer;
+    /**
+     * The normals on the surface at each vertex location
+     */
+    normalBuffer: WebGLBuffer;
+    /**
+    /**
+     * The amount of indices
+     */
+    elements: number;
+
+    /**
+     * Creates all WebGL buffers for the box
+     *          top
+     *        /  \ \
+     *      / /   \  \
+     *    / b4 ----\---b3
+     *  / /         \ /
+     * b1 ----------- b2
+     *
+     *  looking in negative z axis direction
+     * @param gl The canvas' context
+     * @param minPoint The minimal x,y,z of the box
+     * @param maxPoint The maximal x,y,z of the box
+     */
+    constructor(private gl: WebGL2RenderingContext, topPoint: Vector, baseColor : Vector, extraColors : Array<Vector> = undefined) {
+        this.gl = gl;
+        const top = topPoint;
+        const b1 = new Vector(top.x-0.5,top.y-1,top.z+0.5, 1);
+        const b2 = new Vector(top.x+0.5,top.y-1,top.z+0.5, 1);
+        const b3 = new Vector(top.x+0.5,top.y-1,top.z-0.5, 1);
+        const b4 = new Vector(top.x-0.5,top.y-1,top.z-0.5, 1);
+
+        var vertices = [
+            //Front
+            top.x,top.y,top.z,
+            b1.x, b1.y, b1.z,
+            b2.x, b2.y, b2.z,
+            //Right
+            top.x,top.y,top.z,
+            b2.x, b2.y, b2.z,
+            b3.x, b3.y, b3.z,
+            //Back
+            top.x,top.y,top.z,
+            b3.x, b3.y, b3.z,
+            b4.x, b4.y, b4.z,
+            //Left
+            top.x,top.y,top.z,
+            b4.x, b4.y, b4.z,
+            b1.x, b1.y, b1.z,
+            //Bottom right
+            b2.x, b2.y, b2.z,
+            b1.x, b1.y, b1.z,
+            b3.x, b3.y, b3.z,
+            //Bottom left
+            b4.x, b4.y, b4.z,
+            b3.x, b3.y, b3.z,
+            b1.x, b1.y, b1.z,
+        ]
+        let normals =  this.calcNormal([top,b1,b2,b3,b4]);
+
+        let indices = [
+            // Front
+            0, 1, 2,
+            // Right
+            3, 4, 5,
+            // Back
+            6, 7, 8,
+            // Left
+            9, 10, 11,
+            // Bottom right
+            12, 13, 14,
+            // Bottom left
+            15, 16, 17
+        ];
+
+        const vertexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
+        this.vertexBuffer = vertexBuffer;
+
+        const indexBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
+        this.indexBuffer = indexBuffer;
+        this.elements = indices.length;
+
+        // For each of the vertices, I add a RGB color
+        let colorArray = this.setColors(baseColor || undefined, extraColors[0] ||undefined, extraColors[1] || undefined, extraColors[2] || undefined, extraColors[3] || undefined);
+
+        // Creates a new buffer, binds it so we reference the right buffer and then saves the color array to the buffer
+        const colorBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER,colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(colorArray),gl.STATIC_DRAW);
+        this.colorBuffer = colorBuffer;
+
+        const normalBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(normals), this.gl.STATIC_DRAW);
+        this.normalBuffer = normalBuffer;
+    }
+
+//https://stackoverflow.com/questions/13205226/most-efficient-algorithm-to-calculate-vertex-normals-from-set-of-triangles-for-g
+    calcNormal(vertices : Array<Vector>){
+        let top = vertices[0];
+        let b1 = vertices[1];
+        let b2 = vertices[2];
+        let b3 = vertices[3];
+        let b4 = vertices[4];
+
+        //Normals for faces
+        let frontNormal = b1.sub(top).cross(b2.sub(top));
+        let rightNormal = b2.sub(top).cross(b3.sub(top));
+        let backNormal = b3.sub(top).cross(b4.sub(top));
+        let  leftNormal = b4.sub(top).cross(b1.sub(top));
+        let bottomLeftNormal = b3.sub(b4).cross(b1.sub(b4));
+        let bottomRightNormal = b1.sub(b2).cross(b3.sub(b2));
+
+     /*   //Normals for Vertices
+        let topNormal = frontNormal.add(rightNormal).add(backNormal).add(leftNormal).normalize();
+        let b1Normal = frontNormal.add(leftNormal).add(bottomLeftNormal).add(bottomRightNormal).normalize();
+        let b2Normal = frontNormal.add(rightNormal).add(bottomRightNormal).normalize();
+        let b3Normal = rightNormal.add(backNormal).add(bottomLeftNormal).add(bottomRightNormal).normalize();
+        let b4Normal = backNormal.add(leftNormal).add(bottomLeftNormal).normalize();
+ */
+        let normalVectors = [frontNormal,rightNormal, backNormal, leftNormal, bottomRightNormal, bottomLeftNormal];
+        let normals : Array<number> = [];
+
+
+
+        normalVectors.forEach(normal =>{
+            normals.push(normal.x);
+            normals.push(normal.y);
+            normals.push(normal.z);
+            normals.push(normal.x);
+            normals.push(normal.y);
+            normals.push(normal.z);
+            normals.push(normal.x);
+            normals.push(normal.y);
+            normals.push(normal.z);
+        })
+
+        return normals;
+    }
+
+    randomColor = new Vector(Math.random(),Math.random(),Math.random(),1);
+    setColors(c0 : Vector = this.randomColor, c1 : Vector, c2 : Vector, c3 : Vector, c4: Vector) : Array<number> {
+
+        let colors : Array<number> = [];
+        if(c1 && c2 && c3 && c4){
+            for (let i = 0; i < 18; i++) {
+                if(i === 0 || i === 3 || i === 6 || i === 9){
+                    colors.push(c0.x);
+                    colors.push(c0.y);
+                    colors.push(c0.z);
+                } else if(i === 1 || i === 11 || i ===13 || i === 17){
+                    colors.push(c1.x);
+                    colors.push(c1.y);
+                    colors.push(c1.z);
+                } else if(i === 2 || i === 4 || i === 12){
+                    colors.push(c2.x);
+                    colors.push(c2.y);
+                    colors.push(c2.z);
+                } else if(i === 5 || i === 7 || i === 14 || i === 16){
+                    colors.push(c3.x);
+                    colors.push(c3.y);
+                    colors.push(c3.z);
+                } else if(i === 8 || i === 10 || i === 15){
+                    colors.push(c4.x);
+                    colors.push(c4.y);
+                    colors.push(c4.z);
+                }
+            }
+        } else {
+            for (let i = 0; i < 18; i++) {
+                colors.push(c0.x);
+                colors.push(c0.y);
+                colors.push(c0.z);
+            }
+        }
+
+        return colors;
+    }
+
+    /**
+     * Renders the box
+     * @param shader The shader used to render
+     */
+    render(shader: Shader) {
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexBuffer);
+        const positionLocation = shader.getAttributeLocation("a_position");
+        this.gl.enableVertexAttribArray(positionLocation);
+        this.gl.vertexAttribPointer(positionLocation, 3, this.gl.FLOAT, false, 0, 0);
+
+        //https://developer.mozilla.org/de/docs/Web/API/WebGL_API/Tutorial/Using_shaders_to_apply_color_in_WebGL
+        //Bind buffer so it knows we are referencing the color buffer
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.colorBuffer);
+
+        //Get color attribute from vertex shader
+        const colorAttribute = shader.getAttributeLocation("a_color");
+
+        //Attribute needs to be enabled in order to use it
+        this.gl.enableVertexAttribArray(colorAttribute);
+
+        //Use the bound color array buffer and save read values in color attribute
+        //Reference buffer, user 3 values at a time, read as float values, do not normalize, how many to skip, where to start
+        this.gl.vertexAttribPointer(colorAttribute, 3, this.gl.FLOAT, false, 0, 0);
+
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.normalBuffer);
+        const normalAttribute = shader.getAttributeLocation("a_normal");
+        this.gl.enableVertexAttribArray(normalAttribute);
+        this.gl.vertexAttribPointer(normalAttribute,3,this.gl.FLOAT,false,0,0);
+
+        this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
+        this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
+
+        this.gl.disableVertexAttribArray(positionLocation);
+        this.gl.disableVertexAttribArray(colorAttribute);
+        this.gl.disableVertexAttribArray(normalAttribute);
+    }
+}
