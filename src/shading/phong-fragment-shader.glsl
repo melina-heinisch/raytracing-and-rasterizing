@@ -3,10 +3,10 @@ precision mediump float;
 // Receive color and position values
 
 
-const float shininess = 16.0;
-const float kA = 0.3;
-const float kD = 0.6;
-const float kS = 0.7;
+uniform float shininess;
+uniform float kA;
+uniform float kD;
+uniform float kS;
 
 varying vec3 v_color;
 varying vec4 v_position;

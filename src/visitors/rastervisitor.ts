@@ -58,6 +58,13 @@ export class RasterVisitor implements Visitor {
     }
 
     this.shader.getUniformVec3("light").set(lightPositions[0]);
+
+    //Set Parameters for Phong shading
+    this.shader.getUniformFloat("kA").set(0.3);
+    this.shader.getUniformFloat("kD").set(0.6);
+    this.shader.getUniformFloat("kS").set(0.7);
+    this.shader.getUniformFloat("shininess").set(16);
+
     // traverse and render
     rootNode.accept(this);
   }
