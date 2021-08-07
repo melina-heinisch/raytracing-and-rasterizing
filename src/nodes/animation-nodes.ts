@@ -207,11 +207,12 @@ export class DriverNode extends AnimationNode {
     if(this.active){
       if (this._xPosActive){
         this.xOffset += deltaT/500;
-      } else if (this._zPosActive){
-        this.zOffset += deltaT/500;
       } else if (this._xNegActive){
         this.xOffset -= deltaT/500;
-      } else if (this._zNegActive){
+      }
+      if (this._zPosActive){
+        this.zOffset += deltaT/500;
+      }  else if (this._zNegActive){
         this.zOffset -= deltaT/500;
       }
       this.groupNode.transform = new Translation(new Vector(this.xOffset,0,this.zOffset,1));

@@ -144,3 +144,24 @@ export class TextureBoxNode extends Node {
     visitor.visitTextureBoxNode(this);
   }
 }
+
+/**
+ * Class representing a light sourche in the Scenegraph
+ * @extends Node
+ */
+export class LightNode extends Node {
+  /**
+   * Creates an light source
+   *
+  constructor() {
+    super();
+  }
+
+  /**
+   * Accepts a visitor according to the visitor pattern
+   * @param visitor The visitor
+   */
+  accept(visitor: Visitor) {
+    visitor.visitLightNode(this);
+  }
+}

@@ -3,13 +3,13 @@ import 'bootstrap/scss/bootstrap.scss';
 import Vector from './math_library/vector';
 import {
     AABoxNode,
-    GroupNode, PyramidNode,
+    GroupNode, LightNode, PyramidNode,
     SphereNode,
     TextureBoxNode
 } from './nodes/nodes';
 import {
     RasterVisitor,
-    RasterSetupVisitor
+    RasterSetupVisitor, RasterLightVisitor
 } from './visitors/rastervisitor';
 import Shader from './shading/shader';
 import {
@@ -23,7 +23,7 @@ import textureVertexShader from './shading/texture-vertex-perspective-shader.gls
 import textureFragmentShader from './shading/texture-fragment-shader.glsl';
 import {Rotation, Scaling, Translation} from './math_library/transformation';
 import RasterBox from "./raster_geometry/raster-box";
-import RayVisitor from "./visitors/rayvisitor";
+import RayVisitor, {RayLightVisitor} from "./visitors/rayvisitor";
 
 window.addEventListener('load', () => {
 
@@ -36,18 +36,22 @@ window.addEventListener('load', () => {
     const gn2 = new GroupNode(new Translation(new Vector(-0.8, 0.6, 0, 0)));
     gn.add(gn2);
     const gn3 = new GroupNode(new Scaling(new Vector(1, 1, 1, 0)));
-    const gn4 = new GroupNode(new Translation(new Vector(1,0,0,1)));
+    const gn4 = new GroupNode(new Translation(new Vector(1,0,3,1)));
     gn2.add(gn3);
     gn2.add(gn4);
     gn3.add(new PyramidNode(new Vector(0,0,1,1),[new Vector(0,1,1,1), new Vector(1,1,0,1), new Vector(1,0,1,1), new Vector(0.5,0.5,0.5,1)]));
     gn4.add(new AABoxNode(new Vector(1,0,0.5,1),[new Vector(1,0,0,1), new Vector(0,1,0,1), new Vector(0,0,1,1), new Vector(1,1,0,1), new Vector(0,1,1,1)]));
-
+    const gnLight = new GroupNode(new Translation(new Vector(0,0,5,0)));
+    const gnLightRotation = new GroupNode(new Rotation(new Vector(0,1,0,1),0));
+    gnLight.add(gnLightRotation);
+    gnLightRotation.add(new LightNode());
+    sg.add(gnLight)
     let isRasterizer = true;
 
     let animationNodes = [
-      new RotationNode(gn, new Vector(0,1,0,1)),
-         //new DriverNode(gn3)
-        //new JumperNode(gn1, new Vector(0,1,0,1),2)
+      //new RotationNode(gn1, new Vector(0,0,1,1)),
+       //  new DriverNode(gn3)
+        new JumperNode(gnLightRotation, new Vector(0,1,0,1),2)
     ];
    // document.getElementById("yDirection").style.color = "limegreen";
 
@@ -239,7 +243,9 @@ window.addEventListener('load', () => {
         function animate(timestamp: number) {
             if(isRasterizer){
                 simulate(timestamp - lastTimestamp);
-                visitor.render(scenegraph, camera, []);
+                const lighVisitor = new RasterLightVisitor();
+                lighVisitor.setup(scenegraph);
+                visitor.render(scenegraph, camera, lighVisitor.lightPositions);
                 lastTimestamp = timestamp;
                 animationHandle = window.requestAnimationFrame(animate);
             }
@@ -269,9 +275,6 @@ window.addEventListener('load', () => {
         const canvas = document.getElementById("rayCanvas") as HTMLCanvasElement;
         const ctx = canvas.getContext("2d");
 
-        const lightPositions = [
-            new Vector(1, 1, 1, 1)
-        ];
         const camera = {
             origin: new Vector(0, 0, 1, 1),
             width: canvas.width,
@@ -296,8 +299,10 @@ window.addEventListener('load', () => {
                 animationTime += deltaT;
                 lastTimestamp = timestamp;
                 simulate(deltaT);
+                const lighVisitor = new RayLightVisitor();
+                lighVisitor.setup(scenegraph);
 
-                visitor.render(sg, camera, lightPositions);
+                visitor.render(sg, camera, lighVisitor.lightPositions);
                 animationHandle = window.requestAnimationFrame(animate);
             }
         }

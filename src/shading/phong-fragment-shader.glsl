@@ -3,7 +3,6 @@ precision mediump float;
 // Receive color and position values
 
 
-const vec3 lightPos = vec3(1.0, 1.0, 1.0);
 const float shininess = 16.0;
 const float kA = 0.3;
 const float kD = 0.6;
@@ -12,11 +11,12 @@ const float kS = 0.7;
 varying vec3 v_color;
 varying vec4 v_position;
 varying vec3 v_normal;
+varying vec3 v_light;
 
 void main(void) {
   vec3 cameraVector = vec3(0.0,0.0,0.0);
   vec3 vectorToCamera = normalize(cameraVector-v_position.xyz);
-  vec3 light = normalize(lightPos-v_position.xyz);
+  vec3 light = normalize(v_light-v_position.xyz);
 
 
   //ambient
