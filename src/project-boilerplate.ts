@@ -24,6 +24,7 @@ import textureFragmentShader from './shading/texture-fragment-shader.glsl';
 import {Rotation, Scaling, Translation} from './math_library/transformation';
 import RasterBox from "./raster_geometry/raster-box";
 import RayVisitor, {RayLightVisitor} from "./visitors/rayvisitor";
+import {XMLParser} from "./xmlParser";
 
 window.addEventListener('load', () => {
 
@@ -47,7 +48,7 @@ window.addEventListener('load', () => {
     gn4.add(gnRotor);
     gnRotor.add(gnJumper);
     gnJumper.add(gnDriver);
-   // gnDriver.add(new AABoxNode(new Vector(0.2,1,0.5,1),[new Vector(1,0.3,0,1), new Vector(0.3,1,0,1), new Vector(0.6,0,1,1), new Vector(1,0,0.5,1), new Vector(0,0.7,1,1)]))
+    gnDriver.add(new AABoxNode(new Vector(0.2,1,0.5,1),[new Vector(1,0.3,0,1), new Vector(0.3,1,0,1), new Vector(0.6,0,1,1), new Vector(1,0,0.5,1), new Vector(0,0.7,1,1)]))
 
     const gnLightRotation = new GroupNode(new Rotation(new Vector(0,0,0,1),0));
     const gnLight = new GroupNode(new Translation(new Vector(0,0,0,0)));
@@ -85,6 +86,21 @@ window.addEventListener('load', () => {
         }
     }
 
+    //https://www.w3schools.com/xml/met_element_getattribute.asp
+    let parser : XMLParser= new XMLParser();
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            parser.traverse(this);
+            if(isRasterizer){
+                renderRasterizer(parser.head);
+            } else{
+                renderRaytracer(parser.head);
+            }
+        }
+    };
+    xhttp.open("GET", "scenegraph.xml", true);
+    xhttp.send();
 
     window.addEventListener('keydown', function (event) {
         switch (event.key) {
@@ -247,12 +263,6 @@ window.addEventListener('load', () => {
         }
     });
 
-    if(isRasterizer){
-        renderRasterizer(sg);
-    } else{
-        renderRaytracer(sg);
-    }
-
     function renderRasterizer(scenegraph : GroupNode){
         const rayCanvas = document.getElementById("rayCanvas") || null;
         if(rayCanvas){
@@ -298,7 +308,6 @@ window.addEventListener('load', () => {
                 simulate(timestamp - lastTimestamp);
                 const lighVisitor = new RasterLightVisitor();
                 lighVisitor.setup(scenegraph);
-                debugger;
                 visitor.render(scenegraph, camera, lighVisitor.lightPositions);
                 lastTimestamp = timestamp;
                 animationHandle = window.requestAnimationFrame(animate);
