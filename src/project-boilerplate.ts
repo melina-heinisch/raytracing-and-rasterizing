@@ -30,28 +30,50 @@ window.addEventListener('load', () => {
     const sg = new GroupNode(new Translation(new Vector(0, 0, -5, 0)));
     const gn = new GroupNode(new Rotation(new Vector(1, 0, 0, 0), 0));
     sg.add(gn);
-    const gn1 = new GroupNode(new Translation(new Vector(1.2, .5, 0, 0)));
+    const gn1 = new GroupNode(new Translation(new Vector(1.2, .5, 2.5, 0)));
     gn.add(gn1);
-    gn1.add(new SphereNode(new Vector(0.8,0, 0.9, 1), new Vector(0.8,0.9,0,1)));
+    gn1.add(new SphereNode(new Vector(0,0, 1, 1),undefined));
     const gn2 = new GroupNode(new Translation(new Vector(-0.8, 0.6, 0, 0)));
     gn.add(gn2);
     const gn3 = new GroupNode(new Scaling(new Vector(1, 1, 1, 0)));
     const gn4 = new GroupNode(new Translation(new Vector(1,0,3,1)));
     gn2.add(gn3);
     gn2.add(gn4);
-    gn3.add(new PyramidNode(new Vector(0,0,1,1),[new Vector(0,1,1,1), new Vector(1,1,0,1), new Vector(1,0,1,1), new Vector(0.5,0.5,0.5,1)]));
-    gn4.add(new AABoxNode(new Vector(1,0,0.5,1),[new Vector(1,0,0,1), new Vector(0,1,0,1), new Vector(0,0,1,1), new Vector(1,1,0,1), new Vector(0,1,1,1)]));
-    const gnLight = new GroupNode(new Translation(new Vector(0,0,5,0)));
-    const gnLightRotation = new GroupNode(new Rotation(new Vector(0,1,0,1),0));
-    gnLight.add(gnLightRotation);
-    gnLightRotation.add(new LightNode());
-    sg.add(gnLight)
+    //new Vector(0.3,1,0.6,1), new Vector(0.8,0.5,0.2,1), new Vector(0.7,0.3,1,1), new Vector(0.6,0.2,0.8,1)
+    gn3.add(new PyramidNode(new Vector(1,0,0,1),[]));
+    const gnRotor = new GroupNode(new Rotation(new Vector(0,1,0,1),0));
+    const gnJumper = new GroupNode(new Translation(new Vector(0,0,0,1)));
+    const gnDriver = new GroupNode(new Translation(new Vector(0,0,0,1)));
+    gn4.add(gnRotor);
+    gnRotor.add(gnJumper);
+    gnJumper.add(gnDriver);
+   // gnDriver.add(new AABoxNode(new Vector(0.2,1,0.5,1),[new Vector(1,0.3,0,1), new Vector(0.3,1,0,1), new Vector(0.6,0,1,1), new Vector(1,0,0.5,1), new Vector(0,0.7,1,1)]))
+
+    const gnLightRotation = new GroupNode(new Rotation(new Vector(0,0,0,1),0));
+    const gnLight = new GroupNode(new Translation(new Vector(0,0,0,0)));
+    const gnLight1 = new GroupNode(new Translation(new Vector(-2,2,2,1)));
+    const gnLight2 = new GroupNode(new Translation(new Vector(-2,-2,2,1)));
+    const gnLight3 = new GroupNode(new Translation(new Vector(2,2,2,1)));
+    const gnLight4 = new GroupNode(new Translation(new Vector(2,-2,2,1)));
+    gnLightRotation.add(gnLight);
+    gnLight.add(gnLight1);
+    gnLight.add(gnLight2);
+    gnLight.add(gnLight3);
+    gnLight.add(gnLight4);
+   gnLight1.add(new LightNode());
+   gnLight2.add(new LightNode());
+    gnLight3.add(new LightNode());
+    gnLight4.add(new LightNode());
+
+    sg.add(gnLightRotation);
     let isRasterizer = true;
 
     let animationNodes = [
-      //new RotationNode(gn1, new Vector(0,0,1,1)),
-       //  new DriverNode(gn3)
-        new JumperNode(gnLightRotation, new Vector(0,1,0,1),2)
+        //new RotationNode(gnRotor, new Vector(0,0,1,1)),
+        //   new DriverNode(gnLight),
+        new JumperNode(gnLight,new Vector(0,1,0,1),2),
+       // new RotationNode(gnLightRotation, new Vector(0,1,0,1)),
+        new RotationNode(gn,new Vector(0,0,1,1))
     ];
    // document.getElementById("yDirection").style.color = "limegreen";
 
@@ -66,16 +88,47 @@ window.addEventListener('load', () => {
 
     window.addEventListener('keydown', function (event) {
         switch (event.key) {
-            case "a":
+            case "4":
                 animationNodes.forEach(node =>{
+                    if(node instanceof JumperNode) {
+                        node.toggleActive();
+                        if (node.active) {
+                            document.getElementById("toggleJumper").style.color = "limegreen";
+                            document.getElementById("toggleJumper").innerText = "Jumper ausschalten = 4";
+                        } else {
+                            document.getElementById("toggleJumper").style.color = "black";
+                            document.getElementById("toggleJumper").innerText = "Jumper einschalten = 4";
+                        }
+                    }
+                })
+                break;
+            case "5":
+                animationNodes.forEach(node =>{
+                    if(node instanceof DriverNode){
                         node.toggleActive();
                         if(node.active){
-                            document.getElementById("toggleAnimation").style.color = "limegreen";
-                            document.getElementById("toggleAnimation").innerText = "Animation ausschalten = a";
+                            document.getElementById("toggleDriver").style.color = "limegreen";
+                            document.getElementById("toggleDriver").innerText = "Driver ausschalten = 5";
                         }else{
-                            document.getElementById("toggleAnimation").style.color = "black";
-                            document.getElementById("toggleAnimation").innerText = "Animation einschalten = a";
+                            document.getElementById("toggleDriver").style.color = "black";
+                            document.getElementById("toggleDriver").innerText = "Driver einschalten = 5";
                         }
+                    }
+
+                })
+                break;
+            case "6":
+                animationNodes.forEach(node =>{
+                    if(node instanceof RotationNode){
+                        node.toggleActive();
+                        if(node.active){
+                            document.getElementById("toggleRotor").style.color = "limegreen";
+                            document.getElementById("toggleRotor").innerText = "Rotor ausschalten = 6";
+                        }else{
+                            document.getElementById("toggleRotor").style.color = "black";
+                            document.getElementById("toggleRotor").innerText = "Rotor einschalten = 6";
+                        }
+                    }
                 })
                 break;
             case "r":
@@ -127,23 +180,23 @@ window.addEventListener('load', () => {
                 document.getElementById("zDirection").style.color = "limegreen";
                 break;
 
-            case "ArrowUp":
+            case "w":
                 animationNodes.forEach(node =>{
-                    if(node instanceof DriverNode){
-                        node.zNegActive = true;
+                    if(node instanceof DriverNode) {
+                        node.yPosActive = true;
                     }
                 })
                 break;
 
-            case "ArrowDown":
+            case "s":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
-                        node.zPosActive = true;
+                        node.yNegActive = true;
                     }
                 })
                 break;
 
-            case "ArrowRight":
+            case "d":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
                         node.xPosActive = true;
@@ -151,7 +204,7 @@ window.addEventListener('load', () => {
                 })
                 break;
 
-            case "ArrowLeft":
+            case "a":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
                         node.xNegActive = true;
@@ -163,28 +216,28 @@ window.addEventListener('load', () => {
 
     window.addEventListener('keyup', function (event) {
         switch (event.key) {
-            case "ArrowUp":
+            case "w":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
-                        node.zNegActive = false;
+                        node.yPosActive = false;
                     }
                 })
                 break;
-            case "ArrowDown":
+            case "s":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
-                        node.zPosActive = false;
+                        node.yNegActive = false;
                     }
                 })
                 break;
-            case "ArrowRight":
+            case "d":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
                         node.xPosActive = false;
                     }
                 })
                 break;
-            case  "ArrowLeft":
+            case  "a":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
                         node.xNegActive = false;
@@ -245,6 +298,7 @@ window.addEventListener('load', () => {
                 simulate(timestamp - lastTimestamp);
                 const lighVisitor = new RasterLightVisitor();
                 lighVisitor.setup(scenegraph);
+                debugger;
                 visitor.render(scenegraph, camera, lighVisitor.lightPositions);
                 lastTimestamp = timestamp;
                 animationHandle = window.requestAnimationFrame(animate);

@@ -178,14 +178,14 @@ export class DriverNode extends AnimationNode {
 
   xOffset: number;
 
-  zOffset: number;
+  yOffset: number;
 
   groupNode: GroupNode;
 
   private _xNegActive : boolean;
   private _xPosActive : boolean;
-  private _zNegActive : boolean;
-  private _zPosActive : boolean;
+  private _yNegActive : boolean;
+  private _yPosActive : boolean;
 
   /**
    * Creates a new RotationNode
@@ -195,12 +195,12 @@ export class DriverNode extends AnimationNode {
   constructor(groupNode: GroupNode) {
     super(groupNode);
     this.xOffset = 0;
-    this.zOffset = 0
+    this.yOffset = 0
     this.groupNode = groupNode;
     this._xNegActive = false;
     this._xPosActive = false;
-    this._zNegActive = false;
-    this._zPosActive = false;
+    this._yNegActive = false;
+    this._yPosActive = false;
   }
 
   simulate(deltaT : number){
@@ -210,12 +210,12 @@ export class DriverNode extends AnimationNode {
       } else if (this._xNegActive){
         this.xOffset -= deltaT/500;
       }
-      if (this._zPosActive){
-        this.zOffset += deltaT/500;
-      }  else if (this._zNegActive){
-        this.zOffset -= deltaT/500;
+      if (this._yPosActive){
+        this.yOffset += deltaT/500;
+      }  else if (this._yNegActive){
+        this.yOffset -= deltaT/500;
       }
-      this.groupNode.transform = new Translation(new Vector(this.xOffset,0,this.zOffset,1));
+      this.groupNode.transform = new Translation(new Vector(this.xOffset,this.yOffset,0,1));
     }
   }
 
@@ -227,12 +227,12 @@ export class DriverNode extends AnimationNode {
     this._xPosActive = value;
   }
 
-  set zNegActive(value: boolean) {
-    this._zNegActive = value;
+  set yNegActive(value: boolean) {
+    this._yNegActive = value;
   }
 
-  set zPosActive(value: boolean) {
-    this._zPosActive = value;
+  set yPosActive(value: boolean) {
+    this._yPosActive = value;
   }
 }
 

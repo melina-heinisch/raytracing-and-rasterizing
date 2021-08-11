@@ -7,6 +7,7 @@ import Visitor from './visitor';
 import {Node, GroupNode, SphereNode, AABoxNode, TextureBoxNode, PyramidNode, LightNode} from '../nodes/nodes';
 import Shader from '../shading/shader';
 import RasterPyramid from "../raster_geometry/raster-pyramid";
+import phongFragmentShader from '../shading/phong-fragment-shader.glsl';
 
 interface Camera {
   eye: Vector,
@@ -41,6 +42,7 @@ export class RasterVisitor implements Visitor {
   ) {
     this.matrixStack.push(Matrix.identity());
     this.inverseMatrixStack.push(Matrix.identity());
+
   }
 
   /**
@@ -57,7 +59,9 @@ export class RasterVisitor implements Visitor {
       this.setupCamera(camera);
     }
 
-    this.shader.getUniformVec3("light").set(lightPositions[0]);
+    for (let i = 0; i < lightPositions.length; i++){
+      this.shader.getUniformVec3("lightSources[" + i + "]").set(lightPositions[i]);
+    }
 
     //Set Parameters for Phong shading
     this.shader.getUniformFloat("kA").set(0.3);
@@ -390,6 +394,7 @@ export class RasterLightVisitor{
    * @param rootNode The root node of the Scenegraph
    */
   setup(rootNode: Node) {
+    this.lightPositions = [];
     rootNode.accept(this);
   }
 

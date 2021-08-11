@@ -118,7 +118,7 @@ export default class RasterPyramid {
         this.normalBuffer = normalBuffer;
     }
 
-//https://stackoverflow.com/questions/13205226/most-efficient-algorithm-to-calculate-vertex-normals-from-set-of-triangles-for-g
+    //https://stackoverflow.com/questions/13205226/most-efficient-algorithm-to-calculate-vertex-normals-from-set-of-triangles-for-g
     calcNormal(vertices : Array<Vector>){
         let top = vertices[0];
         let b1 = vertices[1];

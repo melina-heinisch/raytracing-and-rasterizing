@@ -152,7 +152,7 @@ export class TextureBoxNode extends Node {
 export class LightNode extends Node {
   /**
    * Creates an light source
-   *
+   */
   constructor() {
     super();
   }

@@ -12,12 +12,11 @@ uniform mat4 M;
 uniform mat4 V;
 uniform mat4 P;
 uniform mat4 N; // normal matrix
-uniform vec3 light;
+
 
 varying vec3 v_color;
 varying vec4 v_position;
 varying vec3 v_normal;
-varying vec3 v_light;
 
 // Pass the vertex position in view space
 // to the fragment shader
@@ -31,5 +30,4 @@ void main() {
 
   v_color = a_color;
   v_normal = normalize((V * N * vec4(a_normal, 0)).xyz);
-  v_light = light;
 }

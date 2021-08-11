@@ -66,7 +66,7 @@ export default class RayVisitor implements Visitor {
 
         if (this.intersection) {
           if(this.intersectionColor2){
-            if(x % 20 >= 10){
+            if(y % 20 >= 10){
               let color = phong(this.intersectionColor1, this.intersection, lightPositions, 10, camera.origin);
               data[4 * (width * y + x) + 0] = color.r * 255;
               data[4 * (width * y + x) + 1] = color.g * 255;

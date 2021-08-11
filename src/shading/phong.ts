@@ -20,7 +20,7 @@ export default function phong(color: Vector, intersection: Intersection, lightPo
     const intersectionPoint = intersection.point;
     const surfaceNormal = intersection.normal;
 
-    let lightSourceEnergy = 1.0;
+    let lightSourceEnergy = 0.8;
 
     // Vectors from Intersection to viewer (in this case camera)
     const vectorToCamera = cameraPosition.sub(intersectionPoint).normalize();
