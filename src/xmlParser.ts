@@ -9,25 +9,23 @@ import {
 } from './nodes/nodes';
 
 import {Rotation, Scaling, Translation} from './math_library/transformation';
+import {DriverNode, JumperNode, RotationNode} from './nodes/animation-nodes';
 
 export class XMLParser {
 
     private _head : GroupNode;
     currentGroupNode : GroupNode;
     oldGroupNodes : Array<GroupNode>;
+    animationNodes: (DriverNode | JumperNode | RotationNode)[];
+    animatedGroupNodes: Map<String,GroupNode>;
 
     constructor() {
         this._head = new GroupNode(new Translation(new Vector(0,0,0,1)));
         this.currentGroupNode = this._head;
         this.oldGroupNodes= [];
+        this.animationNodes = [];
+        this.animatedGroupNodes = new Map<String, GroupNode>();
     }
-    traverse(xml : XMLHttpRequest) {
-        var xmlDoc = xml.responseXML;
-        let children = xmlDoc.childNodes;
-        this.createAndVisitChildren(children);
-
-    }
-
 
     createAndVisitChildren(children : NodeListOf<ChildNode>){
         for (let i = 0; i < children.length; i++) {
@@ -45,37 +43,46 @@ export class XMLParser {
                 this.createTextureBoxNode(children[i]);
             } else if(children[i].nodeName === "LightNode"){
                 this.currentGroupNode.add(new LightNode());
+            } else if(children[i].nodeName === "JumperNode"){
+                this.createJumperNode(children[i]);
+            } else if(children[i].nodeName === "RotationNode"){
+                this.createRotationNode(children[i]);
+            } else if(children[i].nodeName === "DriverNode"){
+                this.createDriverNode(children[i]);
             }
+
 
         }
     }
-
-    createGroupNode(childNode : ChildNode){
-        // @ts-ignore
+    // @ts-ignore
+    createGroupNode(childNode){
         if (childNode.attributes.translation) {
-            // @ts-ignore
             let values = this.getOneValue(childNode.attributes.translation.value);
             let node = new GroupNode(new Translation(new Vector(values[0], values[1], values[2], values[3])));
             this.currentGroupNode.add(node);
             this.oldGroupNodes.push(this.currentGroupNode);
             this.currentGroupNode=node;
-            // @ts-ignore
+            if(childNode.attributes.id){
+                this.animatedGroupNodes.set(childNode.attributes.id.value,node);
+            }
         } else if (childNode.attributes.rotation) {
-            // @ts-ignore
             let values = this.getOneValue(childNode.attributes.rotation.value);
-            // @ts-ignore
             let node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), parseFloat(childNode.attributes.rotation.value) || 0));
             this.currentGroupNode.add(node);
             this.oldGroupNodes.push(this.currentGroupNode);
             this.currentGroupNode=node;
-            // @ts-ignore
+            if(childNode.attributes.id){
+                this.animatedGroupNodes.set(childNode.attributes.id.value,node);
+            }
         } else if (childNode.attributes.scaling) {
-            // @ts-ignore
             let values = this.getOneValue(childNode.attributes.scaling.value);
             let node = new GroupNode(new Scaling(new Vector(values[0], values[1], values[2], values[3])));
             this.currentGroupNode.add(node);
             this.oldGroupNodes.push(this.currentGroupNode);
             this.currentGroupNode=node;
+            if(childNode.attributes.id){
+                this.animatedGroupNodes.set(childNode.attributes.id.value,node);
+            }
         }
         if(childNode.childNodes){
             this.createAndVisitChildren(childNode.childNodes);
@@ -143,6 +150,39 @@ export class XMLParser {
         let texturePath = childNode.attributes.path.value || 'img.png';
         let node = new TextureBoxNode(texturePath);
         this.currentGroupNode.add(node);
+    }
+
+    // @ts-ignore
+    createJumperNode(childNode){
+        if(childNode.attributes.id){
+            let id = childNode.attributes.id.value;
+            let gn : GroupNode = this.animatedGroupNodes.get(id);
+            let axisArray = this.getOneValue(childNode.attributes.axis.value);
+            let axisVec : Vector = new Vector(axisArray[0],axisArray[1],axisArray[2],axisArray[3]);
+            let magnitude = parseFloat(childNode.attributes.magnitude.value);
+            this.animationNodes.push(new JumperNode(gn,axisVec,magnitude));
+        }
+    }
+
+    // @ts-ignore
+    createRotationNode(childNode){
+        if(childNode.attributes.id){
+            let id = childNode.attributes.id.value;
+            let gn : GroupNode = this.animatedGroupNodes.get(id);
+            let axisArray = this.getOneValue(childNode.attributes.axis.value);
+            let axisVec : Vector = new Vector(axisArray[0],axisArray[1],axisArray[2],axisArray[3]);
+
+            this.animationNodes.push(new RotationNode(gn,axisVec));
+        }
+    }
+
+    // @ts-ignore
+    createDriverNode(childNode){
+        if(childNode.attributes.id){
+            let id = childNode.attributes.id.value;
+            let gn : GroupNode = this.animatedGroupNodes.get(id);
+            this.animationNodes.push(new DriverNode(gn));
+        }
     }
 
 

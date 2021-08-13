@@ -28,57 +28,12 @@ import {XMLParser} from "./xmlParser";
 
 window.addEventListener('load', () => {
 
-    const sg = new GroupNode(new Translation(new Vector(0, 0, -5, 0)));
-    const gn = new GroupNode(new Rotation(new Vector(1, 0, 0, 0), 0));
-    sg.add(gn);
-    const gn1 = new GroupNode(new Translation(new Vector(1.2, .5, 2.5, 0)));
-    gn.add(gn1);
-    gn1.add(new SphereNode(new Vector(0,0, 1, 1),undefined));
-    const gn2 = new GroupNode(new Translation(new Vector(-0.8, 0.6, 0, 0)));
-    gn.add(gn2);
-    const gn3 = new GroupNode(new Scaling(new Vector(1, 1, 1, 0)));
-    const gn4 = new GroupNode(new Translation(new Vector(1,0,3,1)));
-    gn2.add(gn3);
-    gn2.add(gn4);
-    //new Vector(0.3,1,0.6,1), new Vector(0.8,0.5,0.2,1), new Vector(0.7,0.3,1,1), new Vector(0.6,0.2,0.8,1)
-    gn3.add(new PyramidNode(new Vector(1,0,0,1),[]));
-    const gnRotor = new GroupNode(new Rotation(new Vector(0,1,0,1),0));
-    const gnJumper = new GroupNode(new Translation(new Vector(0,0,0,1)));
-    const gnDriver = new GroupNode(new Translation(new Vector(0,0,0,1)));
-    gn4.add(gnRotor);
-    gnRotor.add(gnJumper);
-    gnJumper.add(gnDriver);
-    gnDriver.add(new AABoxNode(new Vector(0.2,1,0.5,1),[new Vector(1,0.3,0,1), new Vector(0.3,1,0,1), new Vector(0.6,0,1,1), new Vector(1,0,0.5,1), new Vector(0,0.7,1,1)]))
-
-    const gnLightRotation = new GroupNode(new Rotation(new Vector(0,0,0,1),0));
-    const gnLight = new GroupNode(new Translation(new Vector(0,0,0,0)));
-    const gnLight1 = new GroupNode(new Translation(new Vector(-2,2,2,1)));
-    const gnLight2 = new GroupNode(new Translation(new Vector(-2,-2,2,1)));
-    const gnLight3 = new GroupNode(new Translation(new Vector(2,2,2,1)));
-    const gnLight4 = new GroupNode(new Translation(new Vector(2,-2,2,1)));
-    gnLightRotation.add(gnLight);
-    gnLight.add(gnLight1);
-    gnLight.add(gnLight2);
-    gnLight.add(gnLight3);
-    gnLight.add(gnLight4);
-   gnLight1.add(new LightNode());
-   gnLight2.add(new LightNode());
-    gnLight3.add(new LightNode());
-    gnLight4.add(new LightNode());
-
-    sg.add(gnLightRotation);
+    let scenegraph : GroupNode;
     let isRasterizer = true;
-
-    let animationNodes = [
-        //new RotationNode(gnRotor, new Vector(0,0,1,1)),
-        //   new DriverNode(gnLight),
-        new JumperNode(gnLight,new Vector(0,1,0,1),2),
-       // new RotationNode(gnLightRotation, new Vector(0,1,0,1)),
-        new RotationNode(gn,new Vector(0,0,1,1))
-    ];
-   // document.getElementById("yDirection").style.color = "limegreen";
-
     let animationHandle: number;
+    let parser : XMLParser= new XMLParser();
+    let animationNodes : (DriverNode | JumperNode | RotationNode)[] = [];
+   // document.getElementById("yDirection").style.color = "limegreen";
 
     function simulate(deltaT: number) {
         for (let animationNode of animationNodes) {
@@ -86,21 +41,63 @@ window.addEventListener('load', () => {
         }
     }
 
+    loadXMLScenegraph();
+
     //https://www.w3schools.com/xml/met_element_getattribute.asp
-    let parser : XMLParser= new XMLParser();
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            parser.traverse(this);
-            if(isRasterizer){
-                renderRasterizer(parser.head);
-            } else{
-                renderRaytracer(parser.head);
-            }
+    //Only works when rendering is started in this function
+    // as otherwise the scenegraph is not loaded yet
+
+
+    document.getElementById('upload').addEventListener('click',function (){
+        let event = new MouseEvent('click', {bubbles: false});
+        document.getElementById('uploadInput').dispatchEvent(event);
+    });
+
+    // Picked together from https://stackoverflow.com/questions/3103962/converting-html-string-into-dom-elements and https://stackoverflow.com/questions/14155310/upload-file-as-string-to-javascript-variable
+    document.getElementById('uploadInput').addEventListener('change',function (){
+        //@ts-ignore
+        let files = this.files;
+        if (files.length === 0) {
+            alert('Es wurde keine Datei ausgewählt.');
         }
-    };
-    xhttp.open("GET", "scenegraph.xml", true);
-    xhttp.send();
+
+        let reader = new FileReader();
+        reader.onload = function(event) {
+            let result = event.target.result.toString();
+            let doc = new DOMParser().parseFromString(result, "text/xml");
+            let children = doc.childNodes;
+            parser = new XMLParser();
+            parser.createAndVisitChildren(children);
+            animationNodes = parser.animationNodes;
+            scenegraph = parser.head;
+            render()
+        };
+        reader.readAsText(files[0]);
+    })
+
+    function loadXMLScenegraph(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                var xmlDoc = this.responseXML;
+                let children = xmlDoc.childNodes;
+                parser.createAndVisitChildren(children);
+                animationNodes = parser.animationNodes;
+                scenegraph = parser.head;
+                render()
+            }
+        };
+        xhttp.open("GET", 'scenegraph.xml', true);
+        xhttp.send();
+    }
+
+    function render(){
+        if(isRasterizer){
+            renderRasterizer(scenegraph);
+        } else{
+            renderRaytracer(scenegraph);
+        }
+    }
 
     window.addEventListener('keydown', function (event) {
         switch (event.key) {
@@ -150,7 +147,7 @@ window.addEventListener('load', () => {
             case "r":
                 isRasterizer = true;
                 window.cancelAnimationFrame(animationHandle);
-                renderRasterizer(sg);
+                renderRasterizer(scenegraph);
                 document.getElementById("rasterCaption").style.color = "limegreen";
                 document.getElementById("rayCaption").style.color = "black";
                 break;
@@ -158,7 +155,7 @@ window.addEventListener('load', () => {
             case "t":
                 isRasterizer = false;
                 window.cancelAnimationFrame(animationHandle);
-                renderRaytracer(sg)
+                renderRaytracer(scenegraph)
                 document.getElementById("rayCaption").style.color = "limegreen";
                 document.getElementById("rasterCaption").style.color = "black";
                 break;
@@ -365,7 +362,7 @@ window.addEventListener('load', () => {
                 const lighVisitor = new RayLightVisitor();
                 lighVisitor.setup(scenegraph);
 
-                visitor.render(sg, camera, lighVisitor.lightPositions);
+                visitor.render(scenegraph, camera, lighVisitor.lightPositions);
                 animationHandle = window.requestAnimationFrame(animate);
             }
         }
