@@ -28,6 +28,35 @@ import {XMLParser} from "./xmlParser";
 
 window.addEventListener('load', () => {
 
+    //Setup constants for Raytracer
+    const rayCanvas = document.getElementById("rayCanvas") as HTMLCanvasElement;
+    const ctx = rayCanvas.getContext("2d");
+    const rayVisitor = new RayVisitor(ctx, rayCanvas.width, rayCanvas.height);
+    const rayCamera = {
+        origin: new Vector(0, 0, 1, 1),
+        width: rayCanvas.width,
+        height: rayCanvas.height,
+        alpha: Math.PI / 3
+    }
+
+    //Setup constants for Rasterizer
+    const rasterCanvas = document.getElementById("rasterCanvas") as HTMLCanvasElement;
+    const gl = rasterCanvas.getContext("webgl2");
+    const setupVisitor = new RasterSetupVisitor(gl);
+    const phongShader = new Shader(gl, phongVertexShader, phongFragmentShader);
+    const textureShader = new Shader(gl, textureVertexShader, textureFragmentShader);
+    const rasterVisitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
+    let rasterCamera = {
+        eye: new Vector(0, 0, 1, 1),
+        center: new Vector(0, 0, 0, 1),
+        up: new Vector(0, 1, 0, 0),
+        fovy: 60,
+        aspect: rasterCanvas.width / rasterCanvas.height,
+        near: 0.1,
+        far: 100
+    };
+
+    //Variables that are used by both render engines
     let scenegraph : GroupNode;
     let isRasterizer = true;
     let animationHandle: number;
@@ -43,16 +72,12 @@ window.addEventListener('load', () => {
 
     loadXMLScenegraph();
 
-    //https://www.w3schools.com/xml/met_element_getattribute.asp
-    //Only works when rendering is started in this function
-    // as otherwise the scenegraph is not loaded yet
-
-
     document.getElementById('upload').addEventListener('click',function (){
         let event = new MouseEvent('click', {bubbles: false});
         document.getElementById('uploadInput').dispatchEvent(event);
     });
 
+    // Loads a custom XML Scenegraph
     // Picked together from https://stackoverflow.com/questions/3103962/converting-html-string-into-dom-elements and https://stackoverflow.com/questions/14155310/upload-file-as-string-to-javascript-variable
     document.getElementById('uploadInput').addEventListener('change',function (){
         //@ts-ignore
@@ -75,6 +100,9 @@ window.addEventListener('load', () => {
         reader.readAsText(files[0]);
     })
 
+    //https://www.w3schools.com/xml/met_element_getattribute.asp
+    // Only works when rendering is started in the onreadystatechange function
+    // as otherwise the scenegraph is not loaded yet
     function loadXMLScenegraph(){
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function() {
@@ -261,42 +289,12 @@ window.addEventListener('load', () => {
     });
 
     function renderRasterizer(scenegraph : GroupNode){
-        const rayCanvas = document.getElementById("rayCanvas") || null;
-        if(rayCanvas){
-            rayCanvas.remove();
+        if(animationHandle){
+            window.cancelAnimationFrame(animationHandle);
         }
-        const frame = document.getElementById("canvasFrame");
-        const canvasElement = document.createElement("canvas");
-        canvasElement.classList.add("figure-img", "mx-auto", "d-block", "rounded");
-        canvasElement.width = 600;
-        canvasElement.height = 600;
-        canvasElement.id = "rasterCanvas";
-        frame.appendChild(canvasElement);
-
-        const canvas = document.getElementById("rasterCanvas") as HTMLCanvasElement;
-        const gl = canvas.getContext("webgl2");
-        const setupVisitor = new RasterSetupVisitor(gl);
+        rayCanvas.classList.add("hidden");
+        rasterCanvas.classList.remove("hidden");
         setupVisitor.setup(scenegraph);
-
-        let camera = {
-            eye: new Vector(0, 0, 1, 1),
-            center: new Vector(0, 0, 0, 1),
-            up: new Vector(0, 1, 0, 0),
-            fovy: 60,
-            aspect: canvas.width / canvas.height,
-            near: 0.1,
-            far: 100
-        };
-
-        const phongShader = new Shader(gl,
-            phongVertexShader,
-            phongFragmentShader
-        );
-        const textureShader = new Shader(gl,
-            textureVertexShader,
-            textureFragmentShader
-        );
-        const visitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
         let lastTimestamp = performance.now();
 
@@ -305,7 +303,7 @@ window.addEventListener('load', () => {
                 simulate(timestamp - lastTimestamp);
                 const lighVisitor = new RasterLightVisitor();
                 lighVisitor.setup(scenegraph);
-                visitor.render(scenegraph, camera, lighVisitor.lightPositions);
+                rasterVisitor.render(scenegraph, rasterCamera, lighVisitor.lightPositions);
                 lastTimestamp = timestamp;
                 animationHandle = window.requestAnimationFrame(animate);
             }
@@ -319,31 +317,11 @@ window.addEventListener('load', () => {
     }
 
     function renderRaytracer(scenegraph : GroupNode){
-        const rasterCanvas = document.getElementById("rasterCanvas") || null;
-
-        if(rasterCanvas){
-            rasterCanvas.remove();
+        if(animationHandle){
+            window.cancelAnimationFrame(animationHandle);
         }
-
-        const frame = document.getElementById("canvasFrame");
-        const canvasElement = document.createElement("canvas");
-        canvasElement.classList.add("figure-img", "mx-auto", "d-block", "rounded");
-        canvasElement.width = 600;
-        canvasElement.height = 600;
-        canvasElement.id = "rayCanvas";
-        frame.appendChild(canvasElement);
-        const canvas = document.getElementById("rayCanvas") as HTMLCanvasElement;
-        const ctx = canvas.getContext("2d");
-
-        const camera = {
-            origin: new Vector(0, 0, 1, 1),
-            width: canvas.width,
-            height: canvas.height,
-            alpha: Math.PI / 3
-        }
-
-        const visitor = new RayVisitor(ctx, canvas.width, canvas.height);
-
+        rasterCanvas.classList.add("hidden");
+        rayCanvas.classList.remove("hidden");
 
         let lastTimestamp = 0;
         let animationTime = 0;
@@ -362,7 +340,7 @@ window.addEventListener('load', () => {
                 const lighVisitor = new RayLightVisitor();
                 lighVisitor.setup(scenegraph);
 
-                visitor.render(scenegraph, camera, lighVisitor.lightPositions);
+                rayVisitor.render(scenegraph, rayCamera, lighVisitor.lightPositions);
                 animationHandle = window.requestAnimationFrame(animate);
             }
         }

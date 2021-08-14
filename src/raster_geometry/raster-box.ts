@@ -183,7 +183,7 @@ export default class RasterBox {
         let rightRightNormal = v[14].sub(v[13]).cross(v[12].sub(v[13]));
         let rightLeftNormal = v[17].sub(v[16]).cross(v[15].sub(v[16]));
         let topRightNormal = v[20].sub(v[19]).cross(v[18].sub(v[19]));
-        let topLeftNormal = v[26].sub(v[25]).cross(v[24].sub(v[25]));
+        let topLeftNormal = v[23].sub(v[22]).cross(v[21].sub(v[22]));
         let leftRightNormal = v[26].sub(v[25]).cross(v[24].sub(v[25]));
         let leftLeftNormal = v[29].sub(v[28]).cross(v[27].sub(v[28]));
         let bottomRightNormal = v[32].sub(v[31]).cross(v[30].sub(v[31]));

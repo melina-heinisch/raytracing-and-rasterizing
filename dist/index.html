@@ -6,6 +6,16 @@
     <meta charset="UTF-8">
     <title>ICG - Gruppe 1 - Projekt</title>
     <script type="text/javascript" src="project.bundle.js"></script>
+    <style>
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .hidden{
+            opacity: 0;
+        }
+    </style>
     <link rel="icon" type="image/png" href="hci-logo.png">
 </head>
 
@@ -38,7 +48,10 @@
             </div>
 
             <div class="col-sm-9">
-                <div id="canvasFrame" style="float: right"></div>
+                <div id="canvasFrame" style="float: right">
+                    <canvas class="figure-img mx-auto d-block rounded" width=600 height=600 id="rasterCanvas"></canvas>
+                    <canvas class="figure-img mx-auto d-block rounded hidden" width=600 height=600 id="rayCanvas"></canvas>
+                </div>
             </div>
         </div>
     </div>
