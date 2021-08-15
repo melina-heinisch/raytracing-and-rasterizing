@@ -165,7 +165,7 @@ export default class RasterBox {
         this.normalBuffer = normalBuffer;
     }
 
-    /**  6 ------- 7
+    /**     6 ------- 7
      *    / |       / |
      *   3 ------- 2  |
      *   |  |      |  |

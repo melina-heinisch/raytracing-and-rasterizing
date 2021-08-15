@@ -2,7 +2,7 @@ import 'bootstrap';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './math_library/vector';
 import {
-    AABoxNode,
+    AABoxNode, CameraNode,
     GroupNode, LightNode, Node, PyramidNode,
     SphereNode,
     TextureBoxNode
@@ -43,6 +43,8 @@ export class XMLParser {
                 this.createTextureBoxNode(children[i]);
             } else if(children[i].nodeName === "LightNode"){
                 this.currentGroupNode.add(new LightNode());
+            } else if(children[i].nodeName === "CameraNode"){
+                this.currentGroupNode.add(new CameraNode());
             } else if(children[i].nodeName === "JumperNode"){
                 this.createJumperNode(children[i]);
             } else if(children[i].nodeName === "RotationNode"){

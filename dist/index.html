@@ -22,7 +22,7 @@
 <body style="background-color: rgb(217,222,248)">
     <div class="container" width="1000" height="800">
         <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-4">
                 <div id="caption">
                     <h3>Renderer</h3>
                     <p id="rasterCaption" style="color: limegreen">Rasterizer = <b>r</b> </p>
@@ -43,11 +43,12 @@
                     <h5>Scenengraph</h5>
                     <button id="upload">Scenengraph als XML hochladen</button>
                     <input id="uploadInput" type="file" style="display:none" accept="text/xml" />
+                    <button id="download">Scenengraph als XML herunterladen</button>
 
                 </div>
             </div>
 
-            <div class="col-sm-9">
+            <div class="col-sm-8">
                 <div id="canvasFrame" style="float: right">
                     <canvas class="figure-img mx-auto d-block rounded" width=600 height=600 id="rasterCanvas"></canvas>
                     <canvas class="figure-img mx-auto d-block rounded hidden" width=600 height=600 id="rayCanvas"></canvas>

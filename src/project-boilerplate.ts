@@ -9,7 +9,7 @@ import {
 } from './nodes/nodes';
 import {
     RasterVisitor,
-    RasterSetupVisitor, RasterLightVisitor
+    RasterSetupVisitor
 } from './visitors/rastervisitor';
 import Shader from './shading/shader';
 import {
@@ -23,8 +23,9 @@ import textureVertexShader from './shading/texture-vertex-perspective-shader.gls
 import textureFragmentShader from './shading/texture-fragment-shader.glsl';
 import {Rotation, Scaling, Translation} from './math_library/transformation';
 import RasterBox from "./raster_geometry/raster-box";
-import RayVisitor, {RayLightVisitor} from "./visitors/rayvisitor";
+import RayVisitor from "./visitors/rayvisitor";
 import {XMLParser} from "./xmlParser";
+import {LightAndCameraVisitor} from "./visitors/LightAndCameraVisitor";
 
 window.addEventListener('load', () => {
 
@@ -57,10 +58,12 @@ window.addEventListener('load', () => {
     };
 
     //Variables that are used by both render engines
+    const lightAndCameraVisitor = new LightAndCameraVisitor();
     let scenegraph : GroupNode;
     let isRasterizer = true;
     let animationHandle: number;
     let parser : XMLParser= new XMLParser();
+    let scenegraphString = "";
     let animationNodes : (DriverNode | JumperNode | RotationNode)[] = [];
    // document.getElementById("yDirection").style.color = "limegreen";
 
@@ -71,6 +74,17 @@ window.addEventListener('load', () => {
     }
 
     loadXMLScenegraph();
+
+    //Download via https://gist.github.com/liabru/11263260
+    document.getElementById('download').addEventListener('click',function (){
+        let  blob = new Blob([scenegraphString], { type: 'text/plain' });
+        let  anchor = document.createElement('a');
+
+        anchor.download = "scenegraph.xml";
+        anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
+        anchor.dataset.downloadurl = ['text/xml', anchor.download, anchor.href].join(':');
+        anchor.click();
+    })
 
     document.getElementById('upload').addEventListener('click',function (){
         let event = new MouseEvent('click', {bubbles: false});
@@ -89,6 +103,7 @@ window.addEventListener('load', () => {
         let reader = new FileReader();
         reader.onload = function(event) {
             let result = event.target.result.toString();
+            scenegraphString = result;
             let doc = new DOMParser().parseFromString(result, "text/xml");
             let children = doc.childNodes;
             parser = new XMLParser();
@@ -108,6 +123,7 @@ window.addEventListener('load', () => {
         xhttp.onreadystatechange = function() {
             if (this.readyState == 4 && this.status == 200) {
                 var xmlDoc = this.responseXML;
+                scenegraphString = new XMLSerializer().serializeToString(xmlDoc.documentElement);
                 let children = xmlDoc.childNodes;
                 parser.createAndVisitChildren(children);
                 animationNodes = parser.animationNodes;
@@ -301,9 +317,9 @@ window.addEventListener('load', () => {
         function animate(timestamp: number) {
             if(isRasterizer){
                 simulate(timestamp - lastTimestamp);
-                const lighVisitor = new RasterLightVisitor();
-                lighVisitor.setup(scenegraph);
-                rasterVisitor.render(scenegraph, rasterCamera, lighVisitor.lightPositions);
+                lightAndCameraVisitor.clear();
+                lightAndCameraVisitor.setup(scenegraph);
+                rasterVisitor.render(scenegraph, lightAndCameraVisitor.rasterCamera, lightAndCameraVisitor.lightPositions);
                 lastTimestamp = timestamp;
                 animationHandle = window.requestAnimationFrame(animate);
             }
@@ -337,10 +353,9 @@ window.addEventListener('load', () => {
                 animationTime += deltaT;
                 lastTimestamp = timestamp;
                 simulate(deltaT);
-                const lighVisitor = new RayLightVisitor();
-                lighVisitor.setup(scenegraph);
-
-                rayVisitor.render(scenegraph, rayCamera, lighVisitor.lightPositions);
+                lightAndCameraVisitor.clear();
+                lightAndCameraVisitor.setup(scenegraph);
+                rayVisitor.render(scenegraph, lightAndCameraVisitor.rayCamera, lightAndCameraVisitor.lightPositions);
                 animationHandle = window.requestAnimationFrame(animate);
             }
         }

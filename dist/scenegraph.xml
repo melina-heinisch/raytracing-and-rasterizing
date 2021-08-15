@@ -34,8 +34,13 @@
             </GroupNode>
         </GroupNode>
     </GroupNode>
+    <GroupNode translation="0,0,5,1">
+        <GroupNode translation="0,0,0,1" id="d1">
+            <CameraNode></CameraNode>
+        </GroupNode>
+    </GroupNode>
     <JumperNode id="j1" axis="0,1,0,1" magnitude="2"></JumperNode>
     <RotationNode id="r1" axis="0,0,1,1"></RotationNode>
-    <DriverNode></DriverNode>
+    <DriverNode id="d1"></DriverNode>
 </GroupNode>
 
