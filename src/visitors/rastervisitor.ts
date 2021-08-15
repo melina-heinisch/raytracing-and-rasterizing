@@ -4,7 +4,16 @@ import RasterTextureBox from '../raster_geometry/raster-texture-box';
 import Vector from '../math_library/vector';
 import Matrix from '../math_library/matrix';
 import Visitor from './visitor';
-import {Node, GroupNode, SphereNode, AABoxNode, TextureBoxNode, PyramidNode, LightNode} from '../nodes/nodes';
+import {
+  Node,
+  GroupNode,
+  SphereNode,
+  AABoxNode,
+  TextureBoxNode,
+  PyramidNode,
+  LightNode,
+  CameraNode
+} from '../nodes/nodes';
 import Shader from '../shading/shader';
 import RasterPyramid from "../raster_geometry/raster-pyramid";
 import phongFragmentShader from '../shading/phong-fragment-shader.glsl';
@@ -234,7 +243,9 @@ export class RasterVisitor implements Visitor {
   }
 
   visitLightNode(node: LightNode) {
+  }
 
+  visitCameraNode(node: CameraNode) {
   }
 
   /**
@@ -365,100 +376,7 @@ export class RasterSetupVisitor {
 
   visitLightNode(node: LightNode){
   }
-}
+  visitCameraNode(node: CameraNode){
 
-export class RasterLightVisitor{
-  /**
-   * The transformation matrix stack
-   */
-  matrixStack : Array<Matrix> = [];
-  /**
-   * The inverse transformation matrix stack
-   */
-  inverseMatrixStack : Array<Matrix> = [];
-  /**
-   * The vector positions of the light
-   */
-  lightPositions : Array<Vector> = [];
-
-  /**
-   * Creates a new RasterLightVisitor
-   */
-  constructor() {
-    this.matrixStack.push(Matrix.identity());
-    this.inverseMatrixStack.push(Matrix.identity());
-  }
-
-  /**
-   * Sets up all needed light sources
-   * @param rootNode The root node of the Scenegraph
-   */
-  setup(rootNode: Node) {
-    this.lightPositions = [];
-    rootNode.accept(this);
-  }
-
-  /**
-   * Visits a group node
-   * @param node The node to visit
-   */
-  visitGroupNode(node: GroupNode) {
-    let newMatrix : Matrix = this.matrixStack[this.matrixStack.length-1].mul(node.transform.getMatrix());
-    let newInverseMatrix : Matrix = node.transform.getInverseMatrix().mul(this.inverseMatrixStack[this.inverseMatrixStack.length-1]);
-
-    this.matrixStack.push(newMatrix);
-    this.inverseMatrixStack.push(newInverseMatrix);
-
-    node.childNodes.forEach(childNode =>{
-      childNode.accept(this);
-    });
-
-    this.matrixStack.pop();
-    this.inverseMatrixStack.pop();
-  }
-
-  /**
-   * Visits a sphere node
-   * @param node - The node to visit
-   */
-  visitSphereNode(node: SphereNode) {
-
-  }
-
-  /**
-   * Visits an axis aligned box node
-   * @param  {AABoxNode} node - The node to visit
-   */
-  visitAABoxNode(node: AABoxNode) {
-
-  }
-
-  /**
-   * Visits an pyramid node
-   * @param  {PyramidNode} node - The node to visit
-   */
-  visitPyramidNode(node: PyramidNode) {
-
-  }
-
-
-
-  /**
-   * Visits a textured box node. Loads the texture
-   * and creates a uv coordinate buffer
-   * @param  {TextureBoxNode} node - The node to visit
-   */
-  visitTextureBoxNode(node: TextureBoxNode) {
-
-  }
-
-  /**
-   * Visits a Light node and applies the transformation on it,
-   * so that we have it in the world coordinates
-   * Adds the lightposition to the array
-   * @param node The node to visit
-   */
-  visitLightNode(node: LightNode){
-    this.lightPositions.push(this.matrixStack[this.matrixStack.length-1].mulVec(new Vector(1,1,1,1)));
   }
 }

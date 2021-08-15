@@ -6,7 +6,7 @@ import Quaternion from '../math_library/quaternion';
 /**
  * Class representing an Animation
  */
-class AnimationNode {
+export class AnimationNode {
   /**
    * Describes if the animation is running
    */
