@@ -20,9 +20,9 @@
 </head>
 
 <body style="background-color: rgb(217,222,248)">
-    <div class="container" width="1000" height="800">
+    <div class="container">
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm-3">
                 <div id="caption">
                     <h3>Renderer</h3>
                     <p id="rasterCaption" style="color: limegreen">Rasterizer = <b>r</b> </p>
@@ -36,24 +36,33 @@
                     <p id="yDirection">Jumper an y-Achse: <b>2</b></p>
                     <p id="zDirection">Jumper an z-Achse: <b>3</b></p>
                     <h5>Driver</h5>
-                    <p>Hoch (pos y): <b>W</b></p>
-                    <p>Runter (neg y): <b>S</b></p>
-                    <p>Rechts (pos x): <b>D</b></p>
-                    <p>Links (neg x): <b>A</b></p>
-                    <h5>Scenengraph</h5>
-                    <button id="upload">Scenengraph als XML hochladen</button>
-                    <input id="uploadInput" type="file" style="display:none" accept="text/xml" />
-                    <button id="download">Scenengraph als XML herunterladen</button>
+                    <p>Hoch: <b>Pfeil hoch</b>, Runter: <b>Pfeil runter</b></p>
+                    <p>Rechts: <b>Pfeil rechts</b>, Links: <b>Pfeil links</b></p>
 
                 </div>
             </div>
+            <div class="col-sm-3">
+                <h3>Kamera</h3>
+                <h5>Kamerabewegung</h5>
+                <p>Vor: <b>W</b>, Zurück: <b>S</b> </p>
+                <p>Rechts: <b>D</b>, Links: <b>A</b> </p>
+                <p>Hoch: <b>E</b>, Runter: <b>Q</b> </p>
+                <h5>Kamerarotation</h5>
+                <p>Links: <b>Y</b>, Rechts: <b>X</b></p>
+                <p>Hoch: <b>F</b>, Runter: <b>F</b></p>
+                <h5>Scenengraph</h5>
+                <button id="upload">Scenengraph als XML hochladen</button>
+                <input id="uploadInput" type="file" style="display:none" accept="text/xml" />
+                <button id="download">Scenengraph als XML herunterladen</button>
+            </div>
 
-            <div class="col-sm-8">
+            <div class="col-sm-6">
                 <div id="canvasFrame" style="float: right">
                     <canvas class="figure-img mx-auto d-block rounded" width=600 height=600 id="rasterCanvas"></canvas>
                     <canvas class="figure-img mx-auto d-block rounded hidden" width=600 height=600 id="rayCanvas"></canvas>
                 </div>
             </div>
+
         </div>
     </div>
 

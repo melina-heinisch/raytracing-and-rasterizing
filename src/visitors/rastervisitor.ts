@@ -77,6 +77,7 @@ export class RasterVisitor implements Visitor {
     this.shader.getUniformFloat("kD").set(0.6);
     this.shader.getUniformFloat("kS").set(0.7);
     this.shader.getUniformFloat("shininess").set(16);
+    this.shader.getUniformVec3('cameraVector').set(camera.eye);
 
     // traverse and render
     rootNode.accept(this);

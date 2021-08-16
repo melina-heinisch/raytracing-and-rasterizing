@@ -5,6 +5,7 @@ uniform float kA;
 uniform float kD;
 uniform float kS;
 uniform vec3 lightSources[4];
+uniform vec3 cameraVector;
 
 varying vec3 v_color;
 varying vec4 v_position;
@@ -12,7 +13,6 @@ varying vec3 v_normal;
 
 
 void main(void) {
-  vec3 cameraVector = vec3(0.0,0.0,0.0);
   vec3 vectorToCamera = normalize(cameraVector-v_position.xyz);
   vec3 lightVectors[4];
   float lightSourceEnergy = 0.8;
@@ -34,7 +34,8 @@ void main(void) {
   //specular
   vec3 specular = vec3(0,0,0);
   for(int i = 0; i < 4; i++) {
-    vec3 reflectionVector = normalize((2.0 * dot(v_normal, lightVectors[i]) * v_normal) - lightVectors[i]);
+    float df = max(dot(v_normal, lightVectors[i]), 0.0);
+    vec3 reflectionVector = normalize((2.0 * df * v_normal) - lightVectors[i]);
     float max_specular = pow(max(0.0, dot(vectorToCamera, reflectionVector)), shininess);
     specular += (v_color* (max_specular*lightSourceEnergy));
   }

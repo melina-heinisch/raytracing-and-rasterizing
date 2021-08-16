@@ -9,14 +9,14 @@ import {
 } from './nodes/nodes';
 
 import {Rotation, Scaling, Translation} from './math_library/transformation';
-import {DriverNode, JumperNode, RotationNode} from './nodes/animation-nodes';
+import {DriverNode, JumperNode, MoveCameraNode, RotateCameraNode, RotationNode} from './nodes/animation-nodes';
 
 export class XMLParser {
 
     private _head : GroupNode;
     currentGroupNode : GroupNode;
     oldGroupNodes : Array<GroupNode>;
-    animationNodes: (DriverNode | JumperNode | RotationNode)[];
+    animationNodes: (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[];
     animatedGroupNodes: Map<String,GroupNode>;
 
     constructor() {
@@ -51,6 +51,10 @@ export class XMLParser {
                 this.createRotationNode(children[i]);
             } else if(children[i].nodeName === "DriverNode"){
                 this.createDriverNode(children[i]);
+            } else if(children[i].nodeName === "MoveCameraNode"){
+                this.createMoveCameraNode(children[i]);
+            } else if(children[i].nodeName === "RotateCameraNode"){
+                this.createRotateCameraNode(children[i]);
             }
 
 
@@ -69,13 +73,23 @@ export class XMLParser {
             }
         } else if (childNode.attributes.rotation) {
             let values = this.getOneValue(childNode.attributes.rotation.value);
-            let node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), parseFloat(childNode.attributes.rotation.value) || 0));
+            let node;
+            if(values[0] === 1){
+                node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), parseFloat(childNode.attributes.rotation.value) || 0,0,0));
+            } else if(values[1] === 1){
+                node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), 0,parseFloat(childNode.attributes.rotation.value) || 0,0));
+            } else if(values[2] === 1){
+                node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), 0,0,parseFloat(childNode.attributes.rotation.value) || 0));
+            } else {
+                node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), 0,0, 0));
+            }
             this.currentGroupNode.add(node);
             this.oldGroupNodes.push(this.currentGroupNode);
             this.currentGroupNode=node;
             if(childNode.attributes.id){
                 this.animatedGroupNodes.set(childNode.attributes.id.value,node);
             }
+
         } else if (childNode.attributes.scaling) {
             let values = this.getOneValue(childNode.attributes.scaling.value);
             let node = new GroupNode(new Scaling(new Vector(values[0], values[1], values[2], values[3])));
@@ -184,6 +198,24 @@ export class XMLParser {
             let id = childNode.attributes.id.value;
             let gn : GroupNode = this.animatedGroupNodes.get(id);
             this.animationNodes.push(new DriverNode(gn));
+        }
+    }
+
+    // @ts-ignore
+    createMoveCameraNode(childNode){
+        if(childNode.attributes.id){
+            let id = childNode.attributes.id.value;
+            let gn : GroupNode = this.animatedGroupNodes.get(id);
+            this.animationNodes.push(new MoveCameraNode(gn));
+        }
+    }
+
+    // @ts-ignore
+    createRotateCameraNode(childNode){
+        if(childNode.attributes.id){
+            let id = childNode.attributes.id.value;
+            let gn : GroupNode = this.animatedGroupNodes.get(id);
+            this.animationNodes.push(new RotateCameraNode(gn));
         }
     }
 

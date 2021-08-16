@@ -66,41 +66,46 @@ export default class Matrix {
    * @param angle The angle to rotate
    * @return The resulting rotation matrix
    */
-  static rotation(axis: Vector, angle: number): Matrix {
-      let cos = Math.cos(angle);
-      let sin = Math.sin(angle);
+  static rotation(axis: Vector, angleX: number, angleY : number, angleZ : number): Matrix {
+      let cosX = Math.cos(angleX);
+      let sinX = Math.sin(angleX);
+      let cosY = Math.cos(angleY);
+      let sinY = Math.sin(angleY);
+      let cosZ = Math.cos(angleZ);
+      let sinZ = Math.sin(angleZ);
+      let xMatrix : Matrix = Matrix.identity();
+      let yMatrix : Matrix = Matrix.identity();
+      let zMatrix : Matrix = Matrix.identity();
 
       if(axis.x === 1){
           let values : Array<number> = [
               1,0,0,0,
-              0,cos,-sin,0,
-              0,sin,cos,0,
+              0,cosX,-sinX,0,
+              0,sinX,cosX,0,
               0,0,0,1];
-          let matrix : Matrix = new Matrix(values);
+          xMatrix = new Matrix(values);
 
-          return matrix;
-      }else if(axis.y === 1){
+      }
+      if(axis.y === 1){
           let values : Array<number> = [
-              cos,0,sin,0,
+              cosY,0,sinY,0,
               0,1,0,0,
-              -sin,0,cos,0,
+              -sinY,0,cosY,0,
               0,0,0,1];
-          let matrix : Matrix = new Matrix(values);
+          yMatrix = new Matrix(values);
 
-          return matrix;
-      }else if(axis.z === 1){
+      }
+      if(axis.z === 1){
           let values : Array<number> = [
-              cos,-sin,0,0,
-              sin,cos,0,0,
+              cosZ,-sinZ,0,0,
+              sinZ,cosZ,0,0,
               0,0,1,0,
               0,0,0,1];
-          let matrix : Matrix = new Matrix(values);
-
-          return matrix;
+          zMatrix = new Matrix(values);
 
     }
 
-    return Matrix.identity();
+    return xMatrix.mul(yMatrix).mul(zMatrix);
   }
 
   /**

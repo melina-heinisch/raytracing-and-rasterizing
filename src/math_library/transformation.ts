@@ -33,12 +33,16 @@ export class Translation extends MatrixTransformation {
 
 export class Rotation extends MatrixTransformation {
     private _axis: Vector;
-    private _angle: number;
+    private _angleX: number;
+    private _angleY: number;
+    private _angleZ: number;
 
-    constructor(axis: Vector, angle: number) {
-        super(Matrix.rotation(axis, angle), Matrix.rotation(axis, -angle));
+    constructor(axis: Vector, angleX: number, angleY : number, angleZ : number) {
+        super(Matrix.rotation(axis, angleX,angleY,angleZ), Matrix.rotation(axis, -angleX,-angleY,-angleZ));
         this._axis = axis;
-        this._angle = angle;
+        this._angleX = angleX;
+        this._angleY = angleY;
+        this._angleZ = angleZ
     }
 
     set axis(axis: Vector) {
@@ -46,14 +50,21 @@ export class Rotation extends MatrixTransformation {
         this.recalculate();
     }
 
-    set angle(angle: number) {
-        this._angle = angle;
-        this.recalculate();
+    set angleX(value: number) {
+        this._angleX = value;
+    }
+
+    set angleY(value: number) {
+        this._angleY = value;
+    }
+
+    set angleZ(value: number) {
+        this._angleZ = value;
     }
 
     private recalculate() {
-        this.matrix = Matrix.rotation(this._axis, this._angle);
-        this.inverse = Matrix.rotation(this._axis, -this._angle);
+        this.matrix = Matrix.rotation(this._axis, this._angleX, this._angleY, this._angleZ);
+        this.inverse = Matrix.rotation(this._axis, -this._angleX, -this._angleY, -this._angleZ);
     }
 }
 

@@ -14,7 +14,7 @@ import {
 import Shader from './shading/shader';
 import {
     DriverNode,
-    JumperNode,
+    JumperNode, MoveCameraNode, RotateCameraNode,
     RotationNode
 } from './nodes/animation-nodes';
 import phongVertexShader from './shading/phong-vertex-perspective-shader.glsl';
@@ -64,7 +64,7 @@ window.addEventListener('load', () => {
     let animationHandle: number;
     let parser : XMLParser= new XMLParser();
     let scenegraphString = "";
-    let animationNodes : (DriverNode | JumperNode | RotationNode)[] = [];
+    let animationNodes : (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[] = [];
    // document.getElementById("yDirection").style.color = "limegreen";
 
     function simulate(deltaT: number) {
@@ -237,7 +237,7 @@ window.addEventListener('load', () => {
                 document.getElementById("zDirection").style.color = "limegreen";
                 break;
 
-            case "w":
+            case "ArrowUp":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode) {
                         node.yPosActive = true;
@@ -245,7 +245,7 @@ window.addEventListener('load', () => {
                 })
                 break;
 
-            case "s":
+            case "ArrowDown":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
                         node.yNegActive = true;
@@ -253,7 +253,7 @@ window.addEventListener('load', () => {
                 })
                 break;
 
-            case "d":
+            case "ArrowRight":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
                         node.xPosActive = true;
@@ -261,46 +261,200 @@ window.addEventListener('load', () => {
                 })
                 break;
 
-            case "a":
+            case "ArrowLeft":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
                         node.xNegActive = true;
                     }
                 })
+                break;
+            case "w":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.zNegActive = true;
+                    }
+                })
+                break;
+            case "s":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.zPosActive = true;
+                    }
+                })
+                break;
 
+            case "d":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.xPosActive = true;
+                    }
+                })
+                break;
+            case "a":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.xNegActive = true;
+                    }
+                })
+                break;
+            case "e":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.yPosActive = true;
+                    }
+                })
+                break;
+            case "q":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.yNegActive = true;
+                    }
+                })
+                break;
+            case "y":{
+                animationNodes.forEach(node => {
+                    if(node instanceof RotateCameraNode){
+                        node.yActive = true;
+                        node.directionY = -1;
+                    }
+                })
+                break;
+            }
+            case "x":{
+                animationNodes.forEach(node => {
+                    if(node instanceof RotateCameraNode){
+                        node.yActive = true;
+                        node.directionY = 1;
+                    }
+                })
+                break;
+            }
+            case "c":{
+                animationNodes.forEach(node => {
+                    if(node instanceof RotateCameraNode){
+                        node.xActive = true;
+                        node.directionX = 1;
+                    }
+                })
+                break;
+            }
+            case "f":{
+                animationNodes.forEach(node => {
+                    if(node instanceof RotateCameraNode){
+                        node.xActive = true;
+                        node.directionX = -1;
+                    }
+                })
+                break;
+            }
         }
     });
 
     window.addEventListener('keyup', function (event) {
         switch (event.key) {
-            case "w":
+            case "ArrowUp":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
                         node.yPosActive = false;
                     }
                 })
                 break;
-            case "s":
+            case "ArrowDown":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
                         node.yNegActive = false;
                     }
                 })
                 break;
-            case "d":
+            case "ArrowRight":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
                         node.xPosActive = false;
                     }
                 })
                 break;
-            case  "a":
+            case  "ArrowLeft":
                 animationNodes.forEach(node =>{
                     if(node instanceof DriverNode){
                         node.xNegActive = false;
                     }
                 })
                 break;
+            case "w":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.zNegActive = false;
+                    }
+                })
+                break;
+            case "s":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.zPosActive = false;
+                    }
+                })
+                break;
+
+            case "d":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.xPosActive = false;
+                    }
+                })
+                break;
+            case "a":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.xNegActive = false;
+                    }
+                })
+                break;
+            case "e":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.yPosActive = false;
+                    }
+                })
+                break;
+            case "q":
+                animationNodes.forEach(node=>{
+                    if(node instanceof MoveCameraNode){
+                        node.yNegActive = false;
+                    }
+                })
+                break;
+            case "y":{
+                animationNodes.forEach(node => {
+                    if(node instanceof RotateCameraNode){
+                        node.yActive = false;
+                    }
+                })
+                break;
+            }
+            case "x":{
+                animationNodes.forEach(node => {
+                    if(node instanceof RotateCameraNode){
+                        node.yActive = false;
+                    }
+                })
+                break;
+            }
+            case "c":{
+                animationNodes.forEach(node => {
+                    if(node instanceof RotateCameraNode){
+                        node.xActive = false;
+                    }
+                })
+                break;
+            }
+            case "f":{
+                animationNodes.forEach(node => {
+                    if(node instanceof RotateCameraNode){
+                        node.xActive = false;
+                    }
+                })
+                break;
+            }
         }
     });
 
