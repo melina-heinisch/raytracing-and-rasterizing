@@ -52,7 +52,7 @@ export default class RayVisitor implements Visitor {
    * Renders the Scenegraph
    * @param rootNode The root node of the Scenegraph
    * @param camera The camera used
-   * @param lightPositions The light light positions
+   * @param lightPositions The light positions
    */
   render(rootNode: Node, camera: { origin: Vector, width: number, height: number, alpha: number }, lightPositions: Array<Vector>) {
     // clear

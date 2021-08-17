@@ -4,21 +4,21 @@ uniform float shininess;
 uniform float kA;
 uniform float kD;
 uniform float kS;
-uniform vec3 lightSources[4];
-uniform vec3 cameraVector;
 
 varying vec3 v_color;
 varying vec4 v_position;
 varying vec3 v_normal;
+varying vec3 v_lightPositions[4];
+varying vec3 v_cameraPosition;
 
 
 void main(void) {
-  vec3 vectorToCamera = normalize(cameraVector-v_position.xyz);
+  vec3 vectorToCamera = normalize(v_cameraPosition-v_position.xyz);
   vec3 lightVectors[4];
   float lightSourceEnergy = 0.8;
 
   for(int i = 0; i < 4; i++) {
-    lightVectors[i] = normalize(lightSources[i]-v_position.xyz);
+    lightVectors[i] = normalize(v_lightPositions[i]-v_position.xyz);
   }
 
   //ambient
@@ -41,7 +41,7 @@ void main(void) {
   }
   specular = specular * kS;
   //Whole phong
-  vec3 phong = ambient+diffuse+specular;
+  vec3 phong = ambient + diffuse + specular;
 
   gl_FragColor.x = phong.x;
   gl_FragColor.y = phong.y;
