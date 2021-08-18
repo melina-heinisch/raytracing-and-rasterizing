@@ -37,11 +37,11 @@ export class RotationNode extends AnimationNode {
   /**
    * The absolute angle of the rotation
    */
-  angle: number;
+  _angle: number;
   /**
    * The vector to rotate around
    */
-  axis: Vector;
+  _axis: Vector;
 
   /**
    * Creates a new RotationNode
@@ -50,8 +50,8 @@ export class RotationNode extends AnimationNode {
    */
   constructor(groupNode: GroupNode, axis: Vector) {
     super(groupNode);
-    this.angle = 0;
-    this.axis = axis;
+    this._angle = 0;
+    this._axis = axis;
   }
 
   /**
@@ -63,20 +63,35 @@ export class RotationNode extends AnimationNode {
     // group node to reflect a rotation
 
     if(this.active){
-      this.angle = this.angle+deltaT/1000;
+      this._angle = this._angle+deltaT/1000;
 
-      if(this.axis.x === 1 ){
-        this.groupNode.transform = new Rotation(this.axis,this.angle,0,0);
-      } else if(this.axis.y === 1){
-        this.groupNode.transform = new Rotation(this.axis,0,this.angle,0);
-      } else if(this.axis.z === 1){
-        this.groupNode.transform = new Rotation(this.axis,0,0,this.angle);
+      if(this._axis.x === 1 ){
+        this.groupNode.transform = new Rotation(this._axis,this._angle,0,0);
+      } else if(this._axis.y === 1){
+        this.groupNode.transform = new Rotation(this._axis,0,this._angle,0);
+      } else if(this._axis.z === 1){
+        this.groupNode.transform = new Rotation(this._axis,0,0,this._angle);
       }
-
-
     }
   }
 
+
+  get angle(): number {
+    return this._angle;
+  }
+
+  get axis(): Vector {
+    return this._axis;
+  }
+
+
+  set angle(value: number) {
+    this._angle = value;
+  }
+
+  set axis(value: Vector) {
+    this._axis = value;
+  }
 }
 
 /**
@@ -101,12 +116,12 @@ export class JumperNode extends AnimationNode {
   /**
    * The Magnitude (Height) of the Jump
    */
-  private _magnitude : number;
+   _magnitude : number;
 
   /**
    * The GroupNode that is changes when animating
    */
-  private _groupNode : GroupNode;
+   _groupNode : GroupNode;
 
   /**
    * Creates a new RotationNode
@@ -172,6 +187,14 @@ export class JumperNode extends AnimationNode {
   set groupNode(value: GroupNode) {
     this._groupNode = value;
   }
+
+  get magnitude(): number {
+    return this._magnitude;
+  }
+
+  set magnitude(value: number) {
+    this._magnitude = value;
+  }
 }
 
 /**
@@ -182,7 +205,7 @@ export class DriverNode extends AnimationNode {
   /**
    * The vector to rotate around
    */
-  axis: Vector;
+  private _axis: Vector;
 
   xOffset: number;
 
@@ -241,6 +264,16 @@ export class DriverNode extends AnimationNode {
 
   set yPosActive(value: boolean) {
     this._yPosActive = value;
+  }
+
+
+  get axis(): Vector {
+    return this._axis;
+  }
+
+
+  set axis(value: Vector) {
+    this._axis = value;
   }
 }
 

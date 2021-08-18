@@ -11,7 +11,7 @@ import {
 import {Rotation, Scaling, Translation} from './math_library/transformation';
 import {DriverNode, JumperNode, MoveCameraNode, RotateCameraNode, RotationNode} from './nodes/animation-nodes';
 
-export class XMLParser {
+export class XmlToScrenegraph {
 
     private _head : GroupNode;
     currentGroupNode : GroupNode;
@@ -20,8 +20,8 @@ export class XMLParser {
     animatedGroupNodes: Map<String,GroupNode>;
 
     constructor() {
-        this._head = new GroupNode(new Translation(new Vector(0,0,0,1)));
-        this.currentGroupNode = this._head;
+        this._head = null;
+        this.currentGroupNode = null;
         this.oldGroupNodes= [];
         this.animationNodes = [];
         this.animatedGroupNodes = new Map<String, GroupNode>();
@@ -32,7 +32,11 @@ export class XMLParser {
             if(children[i].nodeName === "#text")
                 continue;
             if (children[i].nodeName === "GroupNode") {
-                this.createGroupNode(children[i]);
+                if(i === 0) {
+                    this.createGroupNode(children[i], true);
+                }else{
+                    this.createGroupNode(children[i]);
+                }
             } else if(children[i].nodeName === "SphereNode"){
                 this.createSphereNode(children[i]);
             } else if(children[i].nodeName === "PyramidNode"){
@@ -61,15 +65,20 @@ export class XMLParser {
         }
     }
     // @ts-ignore
-    createGroupNode(childNode){
+    createGroupNode(childNode, firstNode = false){
         if (childNode.attributes.translation) {
             let values = this.getOneValue(childNode.attributes.translation.value);
             let node = new GroupNode(new Translation(new Vector(values[0], values[1], values[2], values[3])));
-            this.currentGroupNode.add(node);
-            this.oldGroupNodes.push(this.currentGroupNode);
-            this.currentGroupNode=node;
-            if(childNode.attributes.id){
-                this.animatedGroupNodes.set(childNode.attributes.id.value,node);
+            if(firstNode){
+                this._head = node;
+                this.currentGroupNode = this._head;
+            }else {
+                this.currentGroupNode.add(node);
+                this.oldGroupNodes.push(this.currentGroupNode);
+                this.currentGroupNode = node;
+                if (childNode.attributes.id) {
+                    this.animatedGroupNodes.set(childNode.attributes.id.value, node);
+                }
             }
         } else if (childNode.attributes.rotation) {
             let values = this.getOneValue(childNode.attributes.rotation.value);
@@ -83,21 +92,31 @@ export class XMLParser {
             } else {
                 node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), 0,0, 0));
             }
-            this.currentGroupNode.add(node);
-            this.oldGroupNodes.push(this.currentGroupNode);
-            this.currentGroupNode=node;
-            if(childNode.attributes.id){
-                this.animatedGroupNodes.set(childNode.attributes.id.value,node);
+            if(firstNode){
+                this._head = node;
+                this.currentGroupNode = this._head;
+            }else {
+                this.currentGroupNode.add(node);
+                this.oldGroupNodes.push(this.currentGroupNode);
+                this.currentGroupNode = node;
+                if (childNode.attributes.id) {
+                    this.animatedGroupNodes.set(childNode.attributes.id.value, node);
+                }
             }
 
         } else if (childNode.attributes.scaling) {
             let values = this.getOneValue(childNode.attributes.scaling.value);
             let node = new GroupNode(new Scaling(new Vector(values[0], values[1], values[2], values[3])));
-            this.currentGroupNode.add(node);
-            this.oldGroupNodes.push(this.currentGroupNode);
-            this.currentGroupNode=node;
-            if(childNode.attributes.id){
-                this.animatedGroupNodes.set(childNode.attributes.id.value,node);
+            if(firstNode){
+                this._head = node;
+                this.currentGroupNode = this._head;
+            }else {
+                this.currentGroupNode.add(node);
+                this.oldGroupNodes.push(this.currentGroupNode);
+                this.currentGroupNode = node;
+                if (childNode.attributes.id) {
+                    this.animatedGroupNodes.set(childNode.attributes.id.value, node);
+                }
             }
         }
         if(childNode.childNodes){
