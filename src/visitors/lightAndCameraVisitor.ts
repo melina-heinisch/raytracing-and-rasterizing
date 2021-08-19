@@ -47,7 +47,7 @@ export class LightAndCameraVisitor implements Visitor{
     }
 
     /**
-     * Resets all the variables
+     * Resets all the variables to base values
      */
     clear(){
         this.matrixStack = [];
@@ -58,7 +58,7 @@ export class LightAndCameraVisitor implements Visitor{
     }
 
     /**
-     * Sets up all the needed light positions
+     * Sets up all the needed light and camera positions
      * @param rootNode The root node of the Scenegraph
      */
     setup(rootNode: Node) {
@@ -106,8 +106,7 @@ export class LightAndCameraVisitor implements Visitor{
 
 
     /**
-     * Visits a textured box node. Loads the texture
-     * and creates a uv coordinate buffer
+     * Visits a textured box node.
      * @param  {TextureBoxNode} node - The node to visit
      */
     visitTextureBoxNode(node: TextureBoxNode) {
@@ -124,6 +123,11 @@ export class LightAndCameraVisitor implements Visitor{
         this.lightPositions.push(this.matrixStack[this.matrixStack.length - 1].mulVec(new Vector(1, 1, 1, 1)));
     }
 
+    /**
+     * Visits a Camera node and applies the transformation on it,
+     * so that we have it in the world coordinates
+     * @param node The node to visit
+     */
     visitCameraNode(node: CameraNode) {
         this.rayCamera = {
             origin: this.matrixStack[this.matrixStack.length - 1].mulVec( new Vector(0, 0, 1, 1)),
