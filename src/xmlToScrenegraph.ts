@@ -32,11 +32,7 @@ export class XmlToScrenegraph {
             if(children[i].nodeName === "#text")
                 continue;
             if (children[i].nodeName === "GroupNode") {
-                if(i === 0) {
-                    this.createGroupNode(children[i], true);
-                }else{
-                    this.createGroupNode(children[i]);
-                }
+                this.createGroupNode(children[i]);
             } else if(children[i].nodeName === "SphereNode"){
                 this.createSphereNode(children[i]);
             } else if(children[i].nodeName === "PyramidNode"){
@@ -65,11 +61,11 @@ export class XmlToScrenegraph {
         }
     }
     // @ts-ignore
-    createGroupNode(childNode, firstNode = false){
+    createGroupNode(childNode){
         if (childNode.attributes.translation) {
             let values = this.getOneValue(childNode.attributes.translation.value);
             let node = new GroupNode(new Translation(new Vector(values[0], values[1], values[2], values[3])));
-            if(firstNode){
+            if(this._head === null){
                 this._head = node;
                 this.currentGroupNode = this._head;
             }else {
@@ -82,17 +78,12 @@ export class XmlToScrenegraph {
             }
         } else if (childNode.attributes.rotation) {
             let values = this.getOneValue(childNode.attributes.rotation.value);
-            let node;
-            if(values[0] === 1){
-                node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), parseFloat(childNode.attributes.rotation.value) || 0,0,0));
-            } else if(values[1] === 1){
-                node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), 0,parseFloat(childNode.attributes.rotation.value) || 0,0));
-            } else if(values[2] === 1){
-                node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), 0,0,parseFloat(childNode.attributes.rotation.value) || 0));
-            } else {
-                node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), 0,0, 0));
-            }
-            if(firstNode){
+            let angleX = parseFloat(childNode.attributes.angleX.value);
+            let angleY = parseFloat(childNode.attributes.angleY.value);
+            let angleZ = parseFloat(childNode.attributes.angleZ.value);
+            let node = new GroupNode(new Rotation(new Vector(values[0], values[1], values[2], values[3]), angleX,angleY,angleZ));
+
+            if(this._head === null){
                 this._head = node;
                 this.currentGroupNode = this._head;
             }else {
@@ -107,7 +98,7 @@ export class XmlToScrenegraph {
         } else if (childNode.attributes.scaling) {
             let values = this.getOneValue(childNode.attributes.scaling.value);
             let node = new GroupNode(new Scaling(new Vector(values[0], values[1], values[2], values[3])));
-            if(firstNode){
+            if(this._head === null){
                 this._head = node;
                 this.currentGroupNode = this._head;
             }else {
