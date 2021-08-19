@@ -37,11 +37,11 @@ export class RotationNode extends AnimationNode {
   /**
    * The absolute angle of the rotation
    */
-  angle: number;
+  _angle: number;
   /**
    * The vector to rotate around
    */
-  axis: Vector;
+  _axis: Vector;
 
   /**
    * Creates a new RotationNode
@@ -50,8 +50,21 @@ export class RotationNode extends AnimationNode {
    */
   constructor(groupNode: GroupNode, axis: Vector) {
     super(groupNode);
-    this.angle = 0;
-    this.axis = axis;
+    let transformation = groupNode.transform;
+    if(transformation instanceof Rotation){
+      this._axis = transformation.axis;
+      if(axis.x === 1){
+        this._angle = transformation.angleX;
+      } else if(axis.y === 1){
+        this._angle = transformation.angleY;
+      } else if(axis.z === 1){
+        this._angle = transformation.angleZ;
+      }else {
+        this.axis = new Vector(0,0,0,1);
+        this._angle = 0;
+      }
+    }
+
   }
 
   /**
@@ -63,20 +76,35 @@ export class RotationNode extends AnimationNode {
     // group node to reflect a rotation
 
     if(this.active){
-      this.angle = this.angle+deltaT/1000;
+      this._angle = this._angle+deltaT/1000;
 
-      if(this.axis.x === 1 ){
-        this.groupNode.transform = new Rotation(this.axis,this.angle,0,0);
-      } else if(this.axis.y === 1){
-        this.groupNode.transform = new Rotation(this.axis,0,this.angle,0);
-      } else if(this.axis.z === 1){
-        this.groupNode.transform = new Rotation(this.axis,0,0,this.angle);
+      if(this._axis.x === 1 ){
+        this.groupNode.transform = new Rotation(this._axis,this._angle,0,0);
+      } else if(this._axis.y === 1){
+        this.groupNode.transform = new Rotation(this._axis,0,this._angle,0);
+      } else if(this._axis.z === 1){
+        this.groupNode.transform = new Rotation(this._axis,0,0,this._angle);
       }
-
-
     }
   }
 
+
+  get angle(): number {
+    return this._angle;
+  }
+
+  get axis(): Vector {
+    return this._axis;
+  }
+
+
+  set angle(value: number) {
+    this._angle = value;
+  }
+
+  set axis(value: Vector) {
+    this._axis = value;
+  }
 }
 
 /**
@@ -101,12 +129,12 @@ export class JumperNode extends AnimationNode {
   /**
    * The Magnitude (Height) of the Jump
    */
-  private _magnitude : number;
+   _magnitude : number;
 
   /**
    * The GroupNode that is changes when animating
    */
-  private _groupNode : GroupNode;
+   _groupNode : GroupNode;
 
   /**
    * Creates a new RotationNode
@@ -115,11 +143,20 @@ export class JumperNode extends AnimationNode {
    */
   constructor(groupNode: GroupNode, axis: Vector, magnitude: number) {
     super(groupNode);
-    this.translation = 0;
     this._axis = axis;
     this.direction = 1;
     this._magnitude = Math.abs(magnitude);
     this._groupNode = groupNode;
+    let translationVector =  new Vector(groupNode.transform.getMatrix().getVal(0,3), groupNode.transform.getMatrix().getVal(1,3), groupNode.transform.getMatrix().getVal(2,3),groupNode.transform.getMatrix().getVal(3,3));
+    if(axis.x === 1){
+      this.translation = translationVector.x;
+    }else if (axis.y === 1){
+      this.translation = translationVector.y;
+    }else if (axis.z === 1){
+      this.translation = translationVector.z;
+    }else{
+      this.translation = 0;
+    }
   }
 
   /**
@@ -172,6 +209,14 @@ export class JumperNode extends AnimationNode {
   set groupNode(value: GroupNode) {
     this._groupNode = value;
   }
+
+  get magnitude(): number {
+    return this._magnitude;
+  }
+
+  set magnitude(value: number) {
+    this._magnitude = value;
+  }
 }
 
 /**
@@ -182,7 +227,7 @@ export class DriverNode extends AnimationNode {
   /**
    * The vector to rotate around
    */
-  axis: Vector;
+  private _axis: Vector;
 
   xOffset: number;
 
@@ -202,13 +247,14 @@ export class DriverNode extends AnimationNode {
    */
   constructor(groupNode: GroupNode) {
     super(groupNode);
-    this.xOffset = 0;
-    this.yOffset = 0
     this.groupNode = groupNode;
     this._xNegActive = false;
     this._xPosActive = false;
     this._yNegActive = false;
     this._yPosActive = false;
+    let translationVector = new Vector(groupNode.transform.getMatrix().getVal(0,3), groupNode.transform.getMatrix().getVal(1,3), groupNode.transform.getMatrix().getVal(2,3),groupNode.transform.getMatrix().getVal(3,3));
+    this.xOffset = translationVector.x;
+    this.yOffset = translationVector.y;
   }
 
   simulate(deltaT : number){
@@ -241,6 +287,16 @@ export class DriverNode extends AnimationNode {
 
   set yPosActive(value: boolean) {
     this._yPosActive = value;
+  }
+
+
+  get axis(): Vector {
+    return this._axis;
+  }
+
+
+  set axis(value: Vector) {
+    this._axis = value;
   }
 }
 
@@ -276,9 +332,6 @@ export class MoveCameraNode extends AnimationNode {
    */
   constructor(groupNode: GroupNode) {
     super(groupNode);
-    this.xOffset = 0;
-    this.yOffset = 0
-    this.zOffset = 0;
     this.groupNode = groupNode;
     this._xNegActive = false;
     this._xPosActive = false;
@@ -286,6 +339,10 @@ export class MoveCameraNode extends AnimationNode {
     this._yPosActive = false;
     this._zNegActive = false;
     this._zPosActive = false;
+    let translationVector = new Vector(groupNode.transform.getMatrix().getVal(0,3), groupNode.transform.getMatrix().getVal(1,3), groupNode.transform.getMatrix().getVal(2,3),groupNode.transform.getMatrix().getVal(3,3));
+    this.xOffset = translationVector.x;
+    this.yOffset = translationVector.y;
+    this.zOffset = translationVector.z;
   }
 
   simulate(deltaT : number){
@@ -379,13 +436,19 @@ export class RotateCameraNode extends AnimationNode {
    */
   constructor(groupNode: GroupNode) {
     super(groupNode);
-    this.angleX = 0;
-    this.angleY = 0;
     this._axis = new Vector(1,1,0,1);
     this._yActive = false;
     this._xActive = false;
     this._directionX = 1;
     this._directionY = 1;
+    let transformation = this.groupNode.transform;
+    if(transformation instanceof Rotation){
+      this.angleX = transformation.angleX;
+      this.angleY = transformation.angleY;
+    }else {
+      this.angleX = 0;
+      this.angleY = 0;
+    }
   }
 
   /**

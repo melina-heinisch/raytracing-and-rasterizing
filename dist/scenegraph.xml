@@ -1,5 +1,5 @@
 <GroupNode translation="0,0,-5,0">
-    <GroupNode rotation="0,0,0,1" angle="0">
+    <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0">
         <GroupNode translation="1.2,0.5,2.5,0">
             <SphereNode baseColor="0,0,1,1" extraColors=""></SphereNode>
         </GroupNode>
@@ -8,7 +8,7 @@
                 <PyramidNode baseColor="1,0,0,1" extraColors=""></PyramidNode>
             </GroupNode>
             <GroupNode translation="1,0,1,1">
-                <GroupNode rotation="0,1,0,1" angle="0">
+                <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0">
                     <GroupNode translation="0,0,0,1">
                         <GroupNode translation="0,0,0,1">
                             <AABoxNode baseColor="0.2,1,0.5,1" extraColors="1,0.3,0,1;0.3,1,0,1;0.6,0,1,1;1,0,0.5,1;0,0.7,1,1"></AABoxNode>
@@ -18,7 +18,7 @@
             </GroupNode>
         </GroupNode>
     </GroupNode>
-    <GroupNode rotation="0,0,0,1" angle="0">
+    <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0">
         <GroupNode translation="0,0,0,1" id="j1">
             <GroupNode translation="-2,2,2,1">
                 <LightNode></LightNode>
@@ -35,7 +35,7 @@
         </GroupNode>
     </GroupNode>
     <GroupNode translation="0,0,5,1">
-        <GroupNode rotation="0,0,0,1" angle="0" id="c2">
+        <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0" id="c2">
             <GroupNode translation="0,0,0,1" id="c1">
                 <CameraNode></CameraNode>
             </GroupNode>
@@ -45,4 +45,5 @@
     <MoveCameraNode id="c1"></MoveCameraNode>
     <RotateCameraNode id="c2"></RotateCameraNode>
 </GroupNode>
+
 

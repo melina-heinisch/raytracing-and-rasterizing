@@ -24,8 +24,9 @@ import textureFragmentShader from './shading/texture-fragment-shader.glsl';
 import {Rotation, Scaling, Translation} from './math_library/transformation';
 import RasterBox from "./raster_geometry/raster-box";
 import RayVisitor from "./visitors/rayvisitor";
-import {XMLParser} from "./xmlParser";
-import {LightAndCameraVisitor} from "./visitors/LightAndCameraVisitor";
+import {XmlToScrenegraph} from "./xmlToScrenegraph";
+import {LightAndCameraVisitor} from "./visitors/lightAndCameraVisitor";
+import {ScenegraphToXMLVisitor} from "./scenegraphToXMLVisitor";
 
 window.addEventListener('load', () => {
 
@@ -62,7 +63,7 @@ window.addEventListener('load', () => {
     let scenegraph : GroupNode;
     let isRasterizer = true;
     let animationHandle: number;
-    let parser : XMLParser= new XMLParser();
+    let parser : XmlToScrenegraph= new XmlToScrenegraph();
     let scenegraphString = "";
     let animationNodes : (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[] = [];
    // document.getElementById("yDirection").style.color = "limegreen";
@@ -77,7 +78,9 @@ window.addEventListener('load', () => {
 
     //Download via https://gist.github.com/liabru/11263260
     document.getElementById('download').addEventListener('click',function (){
-        let  blob = new Blob([scenegraphString], { type: 'text/plain' });
+        let toXMLParser = new ScenegraphToXMLVisitor();
+        toXMLParser.setup(scenegraph,animationNodes);
+        let  blob = new Blob([toXMLParser.xmlString], { type: 'text/plain' });
         let  anchor = document.createElement('a');
 
         anchor.download = "scenegraph.xml";
@@ -106,7 +109,7 @@ window.addEventListener('load', () => {
             scenegraphString = result;
             let doc = new DOMParser().parseFromString(result, "text/xml");
             let children = doc.childNodes;
-            parser = new XMLParser();
+            parser = new XmlToScrenegraph();
             parser.createAndVisitChildren(children);
             animationNodes = parser.animationNodes;
             scenegraph = parser.head;
@@ -141,6 +144,64 @@ window.addEventListener('load', () => {
         } else{
             renderRaytracer(scenegraph);
         }
+    }
+
+    function renderRasterizer(scenegraph : GroupNode){
+        if(animationHandle){
+            window.cancelAnimationFrame(animationHandle);
+        }
+        rayCanvas.classList.add("hidden");
+        rasterCanvas.classList.remove("hidden");
+        setupVisitor.setup(scenegraph);
+
+        let lastTimestamp = performance.now();
+
+        function animate(timestamp: number) {
+            if(isRasterizer){
+                simulate(timestamp - lastTimestamp);
+                lightAndCameraVisitor.clear();
+                lightAndCameraVisitor.setup(scenegraph);
+                rasterVisitor.render(scenegraph, lightAndCameraVisitor.rasterCamera, lightAndCameraVisitor.lightPositions);
+                lastTimestamp = timestamp;
+                animationHandle = window.requestAnimationFrame(animate);
+            }
+        }
+        Promise.all(
+            [phongShader.load(), textureShader.load()]
+        ).then(x =>
+            animationHandle = window.requestAnimationFrame(animate)
+        );
+
+    }
+
+    function renderRaytracer(scenegraph : GroupNode){
+        if(animationHandle){
+            window.cancelAnimationFrame(animationHandle);
+        }
+        rasterCanvas.classList.add("hidden");
+        rayCanvas.classList.remove("hidden");
+
+        let lastTimestamp = 0;
+        let animationTime = 0;
+        let animationHasStarted = true;
+
+        function animate(timestamp: number) {
+            if(!isRasterizer){
+                let deltaT = timestamp - lastTimestamp;
+                if (animationHasStarted) {
+                    deltaT = 0;
+                    animationHasStarted = false;
+                }
+                animationTime += deltaT;
+                lastTimestamp = timestamp;
+                simulate(deltaT);
+                lightAndCameraVisitor.clear();
+                lightAndCameraVisitor.setup(scenegraph);
+                rayVisitor.render(scenegraph, lightAndCameraVisitor.rayCamera, lightAndCameraVisitor.lightPositions);
+                animationHandle = window.requestAnimationFrame(animate);
+            }
+        }
+        animate(0);
     }
 
     window.addEventListener('keydown', function (event) {
@@ -457,63 +518,5 @@ window.addEventListener('load', () => {
             }
         }
     });
-
-    function renderRasterizer(scenegraph : GroupNode){
-        if(animationHandle){
-            window.cancelAnimationFrame(animationHandle);
-        }
-        rayCanvas.classList.add("hidden");
-        rasterCanvas.classList.remove("hidden");
-        setupVisitor.setup(scenegraph);
-
-        let lastTimestamp = performance.now();
-
-        function animate(timestamp: number) {
-            if(isRasterizer){
-                simulate(timestamp - lastTimestamp);
-                lightAndCameraVisitor.clear();
-                lightAndCameraVisitor.setup(scenegraph);
-                rasterVisitor.render(scenegraph, lightAndCameraVisitor.rasterCamera, lightAndCameraVisitor.lightPositions);
-                lastTimestamp = timestamp;
-                animationHandle = window.requestAnimationFrame(animate);
-            }
-        }
-        Promise.all(
-            [phongShader.load(), textureShader.load()]
-        ).then(x =>
-            animationHandle = window.requestAnimationFrame(animate)
-        );
-
-    }
-
-    function renderRaytracer(scenegraph : GroupNode){
-        if(animationHandle){
-            window.cancelAnimationFrame(animationHandle);
-        }
-        rasterCanvas.classList.add("hidden");
-        rayCanvas.classList.remove("hidden");
-
-        let lastTimestamp = 0;
-        let animationTime = 0;
-        let animationHasStarted = true;
-
-        function animate(timestamp: number) {
-            if(!isRasterizer){
-                let deltaT = timestamp - lastTimestamp;
-                if (animationHasStarted) {
-                    deltaT = 0;
-                    animationHasStarted = false;
-                }
-                animationTime += deltaT;
-                lastTimestamp = timestamp;
-                simulate(deltaT);
-                lightAndCameraVisitor.clear();
-                lightAndCameraVisitor.setup(scenegraph);
-                rayVisitor.render(scenegraph, lightAndCameraVisitor.rayCamera, lightAndCameraVisitor.lightPositions);
-                animationHandle = window.requestAnimationFrame(animate);
-            }
-        }
-        animate(0);
-    }
 
 });

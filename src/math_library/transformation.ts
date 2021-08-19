@@ -62,6 +62,22 @@ export class Rotation extends MatrixTransformation {
         this._angleZ = value;
     }
 
+    get axis(): Vector {
+        return this._axis;
+    }
+
+    get angleX(): number {
+        return this._angleX;
+    }
+
+    get angleY(): number {
+        return this._angleY;
+    }
+
+    get angleZ(): number {
+        return this._angleZ;
+    }
+
     private recalculate() {
         this.matrix = Matrix.rotation(this._axis, this._angleX, this._angleY, this._angleZ);
         this.inverse = Matrix.rotation(this._axis, -this._angleX, -this._angleY, -this._angleZ);
