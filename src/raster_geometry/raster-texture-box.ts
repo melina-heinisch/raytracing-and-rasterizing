@@ -18,6 +18,10 @@ export default class RasterTextureBox {
      */
     texCoords: WebGLBuffer;
     /**
+     * The buffer containing the box's texture
+     */
+    normalBuffer: WebGLBuffer;
+    /**
      * The amount of faces
      */
     elements: number;
@@ -37,12 +41,7 @@ export default class RasterTextureBox {
      * @param maxPoint The maximal x,y,z of the box
      * @param texture The URL to the image to be used as texture
      */
-    constructor(
-        private gl: WebGL2RenderingContext,
-        minPoint: Vector,
-        maxPoint: Vector,
-        texture: string
-    ) {
+    constructor(private gl: WebGL2RenderingContext, minPoint: Vector, maxPoint: Vector, texture: string, normal: string) {
         const mi = minPoint;
         const ma = maxPoint;
         let vertices = [
@@ -84,6 +83,19 @@ export default class RasterTextureBox {
         }
         cubeImage.src = texture;
         this.texBuffer = cubeTexture;
+
+        let cubeNormalTexture = gl.createTexture();
+        let cubeNormalImage = new Image();
+        cubeImage.onload = function () {
+            gl.bindTexture(gl.TEXTURE_2D, cubeNormalTexture);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cubeNormalImage);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+        }
+        cubeNormalImage.src = normal;
+        this.normalBuffer = cubeNormalTexture;
 
         let uv = [
             // front
@@ -130,10 +142,17 @@ export default class RasterTextureBox {
         this.gl.enableVertexAttribArray(textureAttribute);
         this.gl.vertexAttribPointer(textureAttribute,2,this.gl.FLOAT,false,0,0);
 
+
         this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.texBuffer);
-        shader.getUniformInt("sampler").set(0);
+        shader.getUniformInt("colorSampler").set(0);
+
+        this.gl.activeTexture(this.gl.TEXTURE1);
+        this.gl.bindTexture(this.gl.TEXTURE_2D, this.normalBuffer);
+        shader.getUniformInt("normalSampler").set(1);
+
         this.gl.drawArrays(this.gl.TRIANGLES, 0, this.elements);
+
 
         this.gl.disableVertexAttribArray(positionLocation);
         this.gl.disableVertexAttribArray(textureAttribute);

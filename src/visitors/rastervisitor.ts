@@ -68,15 +68,22 @@ export class RasterVisitor implements Visitor {
       this.setupCamera(camera);
     }
 
+    this.shader.use();
+
     for (let i = 0; i < lightPositions.length; i++){
       this.shader.getUniformVec3("lightSources[" + i + "]").set(lightPositions[i]);
     }
-
     //Set Parameters for Phong shading
     this.shader.getUniformFloat("kA").set(0.3);
     this.shader.getUniformFloat("kD").set(0.6);
     this.shader.getUniformFloat("kS").set(0.7);
     this.shader.getUniformFloat("shininess").set(16);
+    this.shader.getUniformVec3('cameraPosition').set(camera.eye);
+
+    this.textureshader.use();
+    for (let i = 0; i < lightPositions.length; i++){
+      this.shader.getUniformVec3("lightSources[" + i + "]").set(lightPositions[i]);
+    }
     this.shader.getUniformVec3('cameraPosition').set(camera.eye);
 
     // traverse and render
@@ -370,7 +377,7 @@ export class RasterSetupVisitor {
             this.gl,
             new Vector(-0.5, -0.5, -0.5, 1),
             new Vector(0.5, 0.5, 0.5, 1),
-            node.texture
+            node.texture, node.normal
         )
     );
   }

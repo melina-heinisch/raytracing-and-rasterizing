@@ -173,8 +173,9 @@ export class XmlToScrenegraph {
 
     // @ts-ignore
     createTextureBoxNode(childNode){
-        let texturePath = childNode.attributes.path.value || 'img.png';
-        let node = new TextureBoxNode(texturePath);
+        let texturePath = childNode.attributes.texPath.value || 'brickwall.jpg';
+        let normalPath = childNode.attributes.normalPath.value || 'brickwall_normal.jpg'
+        let node = new TextureBoxNode(texturePath, normalPath);
         this.currentGroupNode.add(node);
     }
 

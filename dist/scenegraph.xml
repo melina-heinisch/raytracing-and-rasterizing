@@ -11,7 +11,7 @@
                 <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0">
                     <GroupNode translation="0,0,0,1">
                         <GroupNode translation="0,0,0,1">
-                            <AABoxNode baseColor="0.2,1,0.5,1" extraColors="1,0.3,0,1;0.3,1,0,1;0.6,0,1,1;1,0,0.5,1;0,0.7,1,1"></AABoxNode>
+                            <TextureBoxNode texPath="brickwall.jpg" normalPath="brickwall_normal.jpg"></TextureBoxNode>
                         </GroupNode>
                     </GroupNode>
                 </GroupNode>
