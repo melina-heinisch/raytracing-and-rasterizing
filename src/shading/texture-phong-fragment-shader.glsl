@@ -52,6 +52,4 @@ void main(void) {
     gl_FragColor.g = phong.y;
     gl_FragColor.b = phong.z;
     gl_FragColor.a = 1.0;
-
-    gl_FragColor = color;
 }

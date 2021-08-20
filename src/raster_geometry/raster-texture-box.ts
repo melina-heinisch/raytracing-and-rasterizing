@@ -87,7 +87,7 @@ export default class RasterTextureBox {
 
         let cubeNormalTexture = gl.createTexture();
         let cubeNormalImage = new Image();
-        cubeImage.onload = function () {
+        cubeNormalImage.onload = function () {
             gl.bindTexture(gl.TEXTURE_2D, cubeNormalTexture);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, cubeNormalImage);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -152,7 +152,6 @@ export default class RasterTextureBox {
         shader.getUniformInt("normalSampler").set(1);
 
         this.gl.drawArrays(this.gl.TRIANGLES, 0, this.elements);
-
 
         this.gl.disableVertexAttribArray(positionLocation);
         this.gl.disableVertexAttribArray(textureAttribute);
