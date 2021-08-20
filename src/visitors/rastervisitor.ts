@@ -67,6 +67,7 @@ export class RasterVisitor implements Visitor {
     if (camera) {
       this.setupCamera(camera);
     }
+    this.shader.use();
 
     for (let i = 0; i < lightPositions.length; i++){
       this.shader.getUniformVec3("lightSources[" + i + "]").set(lightPositions[i]);
@@ -174,8 +175,8 @@ export class RasterVisitor implements Visitor {
    * @param  {PyramidNode} node - The node to visit
    */
    visitPyramidNode(node: PyramidNode) {
-    this.shader.use();
-    let shader = this.shader;
+    const shader = this.shader;
+    shader.use();
     let toWorld = this.matrixStack[this.matrixStack.length - 1];
     let fromWorld = this.inverseMatrixStack[this.inverseMatrixStack.length-1];
 
@@ -211,8 +212,8 @@ export class RasterVisitor implements Visitor {
    * @param  {AABoxNode} node - The node to visit
    */
   visitAABoxNode(node: AABoxNode) {
-    this.shader.use();
-    let shader = this.shader;
+    const shader = this.shader;
+    shader.use();
     let toWorld = this.matrixStack[this.matrixStack.length-1];
     let fromWorld = this.inverseMatrixStack[this.inverseMatrixStack.length-1];
 
@@ -254,8 +255,8 @@ export class RasterVisitor implements Visitor {
    * @param  {TextureBoxNode} node - The node to visit
    */
   visitTextureBoxNode(node: TextureBoxNode) {
-    this.textureshader.use();
-    let shader = this.textureshader;
+    const shader = this.textureshader;
+    shader.use();
     let toWorld = this.matrixStack[this.matrixStack.length-1];
 
     // Set the transformation Matrix of the vertex shader to be used for every vertex of the sphere
