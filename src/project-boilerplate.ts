@@ -41,7 +41,7 @@ window.addEventListener('load', () => {
     const gl = rasterCanvas.getContext("webgl2");
     const setupVisitor = new RasterSetupVisitor(gl);
     const phongShader = new Shader(gl, phongVertexShader, phongFragmentShader);
-    const textureShader = new Shader(gl, textureVertexShader, textureFragmentShader);
+    const textureShader = new Shader(gl, textureVertexShader, texturePhongShader);
     const rasterVisitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
     //Variables that are used by both render engines
@@ -117,7 +117,6 @@ window.addEventListener('load', () => {
                 parser.createAndVisitChildren(children);
                 animationNodes = parser.animationNodes;
                 scenegraph = parser.head;
-                debugger;
                 render()
             }
         };

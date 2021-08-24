@@ -18,9 +18,17 @@ export default class RasterTextureBox {
      */
     texCoords: WebGLBuffer;
     /**
-     * The buffer containing the box's texture
+     * The buffer containing the box's texture normals
      */
     normalBuffer: WebGLBuffer;
+    /**
+     * The buffer containing the box's texture tangents
+     */
+    tangentBuffer: WebGLBuffer;
+    /**
+     * The buffer containing the box's texture bitangents
+     */
+    bitangentBuffer: WebGLBuffer;
     /**
      * The amount of faces
      */
@@ -122,6 +130,99 @@ export default class RasterTextureBox {
         gl.bindBuffer(gl.ARRAY_BUFFER, uvBuffer);
         gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(uv), gl.STATIC_DRAW);
         this.texCoords = uvBuffer;
+
+        let vectors : Array<Vector> = []
+        for (let i = 0; i < vertices.length; i +=3) {
+            vectors.push(new Vector(vertices[i],vertices[i+1], vertices[i+2],1));
+        }
+
+        let texCoords : Array<Vector> = [];
+        for (let i = 0; i < uv.length; i +=2) {
+            texCoords.push(new Vector(uv[i],uv[i+1], 0,0));
+        }
+
+        let tangentsAndBitangents : Array<Array<number>> = this.calcTangentsAndBitangents(vectors, texCoords);
+        let tangents = tangentsAndBitangents[0];
+        let bitangents = tangentsAndBitangents[1];
+
+        let tangentBuffer = this.gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, tangentBuffer);
+        gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(tangents), gl.STATIC_DRAW);
+        this.tangentBuffer = tangentBuffer;
+
+        let bitangentBuffer = this.gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, bitangentBuffer);
+        gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(bitangents), gl.STATIC_DRAW);
+        this.bitangentBuffer = bitangentBuffer;
+
+
+    }
+
+    calcTangentsAndBitangents(vertices : Array<Vector>, texCoords : Array<Vector>) : Array<Array<number>>{
+        let tangentsVectors : Array<Vector> = [];
+        let bitangetsVectors : Array<Vector> = [];
+
+        for (let i = 0; i < vertices.length; i+=3) {
+            let pos1 = vertices[i];
+            let pos2 = vertices[i+1];
+            let pos3 = vertices[i+2];
+
+            let uv1 = texCoords[i];
+            let uv2 = texCoords[i+1];
+            let uv3 = texCoords[i+2];
+
+            let edge1 = pos2.sub(pos1);
+            let edge2 = pos3.sub(pos1);
+            let deltaUV1 = uv2.sub(uv1);
+            let deltaUV2 = uv3.sub(uv1);
+
+            let fraction = 1.0/(deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+            let tangent = new Vector(0,0,0,1);
+            let bitangent = new Vector(0,0,0,1);
+
+            tangent.x = fraction * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+            tangent.y = fraction * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+            tangent.z = fraction * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+
+            bitangent.x = fraction * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+            bitangent.y = fraction * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+            bitangent.z = fraction * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+
+            tangentsVectors.push(tangent);
+            bitangetsVectors.push(bitangent);
+        }
+
+        let tangentIndices : Array<number> = [];
+        tangentsVectors.forEach(vector =>{
+            tangentIndices.push(vector.x);
+            tangentIndices.push(vector.y);
+            tangentIndices.push(vector.z);
+
+            tangentIndices.push(vector.x);
+            tangentIndices.push(vector.y);
+            tangentIndices.push(vector.z);
+
+            tangentIndices.push(vector.x);
+            tangentIndices.push(vector.y);
+            tangentIndices.push(vector.z);
+        });
+
+        let bitangentIndices : Array<number> = [];
+        bitangetsVectors.forEach(vector =>{
+            bitangentIndices.push(vector.x);
+            bitangentIndices.push(vector.y);
+            bitangentIndices.push(vector.z);
+
+            bitangentIndices.push(vector.x);
+            bitangentIndices.push(vector.y);
+            bitangentIndices.push(vector.z);
+
+            bitangentIndices.push(vector.x);
+            bitangentIndices.push(vector.y);
+            bitangentIndices.push(vector.z);
+        });
+
+        return [tangentIndices,bitangentIndices];
     }
 
     /**
@@ -142,6 +243,15 @@ export default class RasterTextureBox {
         this.gl.enableVertexAttribArray(textureAttribute);
         this.gl.vertexAttribPointer(textureAttribute,2,this.gl.FLOAT,false,0,0);
 
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.tangentBuffer);
+        const tangentAttribute = shader.getAttributeLocation("a_tangent");
+        this.gl.enableVertexAttribArray(tangentAttribute);
+        this.gl.vertexAttribPointer(tangentAttribute,3,this.gl.FLOAT,false,0,0);
+
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.bitangentBuffer);
+        const bitangentAttribute = shader.getAttributeLocation("a_bitangent");
+        this.gl.enableVertexAttribArray(bitangentAttribute);
+        this.gl.vertexAttribPointer(bitangentAttribute,3,this.gl.FLOAT,false,0,0);
 
         this.gl.activeTexture(this.gl.TEXTURE0);
         this.gl.bindTexture(this.gl.TEXTURE_2D, this.texBuffer);
@@ -155,5 +265,8 @@ export default class RasterTextureBox {
 
         this.gl.disableVertexAttribArray(positionLocation);
         this.gl.disableVertexAttribArray(textureAttribute);
+        this.gl.disableVertexAttribArray(tangentAttribute);
+        this.gl.disableVertexAttribArray(bitangentAttribute);
+
     }
 }

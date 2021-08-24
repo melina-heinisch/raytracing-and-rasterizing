@@ -11,13 +11,16 @@ varying vec4 v_position;
 varying vec3 v_lightPositions[4];
 varying vec3 v_cameraPosition;
 varying vec2 v_texCoord;
+varying mat3 v_tbn;
 
 
 
 void main(void) {
+    //https://learnopengl.com/Advanced-Lighting/Normal-Mapping
     vec4 color = texture2D(colorSampler, v_texCoord);
-    vec4 normal = texture2D(normalSampler, v_texCoord);
-    normal = vec4((2.0*normal.x)-1.0,(2.0*normal.y)-1.0,(2.0*normal.z)-1.0,(2.0*normal.w)-1.0);
+    vec3 normal = texture2D(normalSampler, v_texCoord).rgb;
+    normal = normalize(normal * 2.0 - 1.0);
+    //normal = normalize(v_tbn * normal);
     vec3 vectorToCamera = normalize(v_cameraPosition-v_position.xyz);
     vec3 lightVectors[4];
     float lightSourceEnergy = 0.8;
@@ -32,15 +35,15 @@ void main(void) {
     //diffuse
     vec3 diffuse = vec3(0,0,0);
     for(int i = 0; i < 4; i++) {
-        float max_diffuse = max(0.0, dot(normal.xyz, lightVectors[i]));
+        float max_diffuse = max(0.0, dot(normal, lightVectors[i]));
         diffuse += (color.xyz * kD * (lightSourceEnergy * max_diffuse));
     }
 
     //specular
     vec3 specular = vec3(0,0,0);
     for(int i = 0; i < 4; i++) {
-        float df = max(dot(normal.xyz, lightVectors[i]), 0.0);
-        vec3 reflectionVector = normalize((2.0 * df * normal.xyz) - lightVectors[i]);
+        float df = max(dot(normal, lightVectors[i]), 0.0);
+        vec3 reflectionVector = normalize((2.0 * df * normal) - lightVectors[i]);
         float max_specular = pow(max(0.0, dot(vectorToCamera, reflectionVector)), shininess);
         specular += (color.xyz * (max_specular*lightSourceEnergy));
     }
@@ -52,4 +55,5 @@ void main(void) {
     gl_FragColor.g = phong.y;
     gl_FragColor.b = phong.z;
     gl_FragColor.a = 1.0;
+
 }

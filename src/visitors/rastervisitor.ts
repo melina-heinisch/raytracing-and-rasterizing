@@ -262,9 +262,21 @@ export class RasterVisitor implements Visitor {
     const shader = this.textureshader;
     shader.use();
     let toWorld = this.matrixStack[this.matrixStack.length-1];
+    let fromWorld = this.inverseMatrixStack[this.inverseMatrixStack.length-1];
 
     // Set the transformation Matrix of the vertex shader to be used for every vertex of the sphere
     shader.getUniformMatrix("M").set(toWorld);
+
+    let normalMatrix : Matrix = fromWorld.transpose();
+    normalMatrix.setVal(0,3,0);
+    normalMatrix.setVal(1,3,0);
+    normalMatrix.setVal(2,3,0);
+    normalMatrix.setVal(3,3,0);
+    normalMatrix.setVal(3,0,0);
+    normalMatrix.setVal(3,1,0);
+    normalMatrix.setVal(3,2,0);
+    normalMatrix.setVal(3,3,1);
+    shader.getUniformMatrix("N").set(normalMatrix);
 
     let P = shader.getUniformMatrix("P");
     if (P && this.perspective) {
