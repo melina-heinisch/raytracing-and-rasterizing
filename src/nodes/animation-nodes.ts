@@ -120,26 +120,24 @@ export class JumperNode extends AnimationNode {
    * The direction (plus/minus) to move to
    */
   direction: number;
-
   /**
-   * translation parameter
+   * The number that keeps track of how far the object has moved and is moving
    */
   translation: number;
-
   /**
-   * The Magnitude (Height) of the Jump
+   * The height of the Jump
    */
    _magnitude : number;
-
   /**
-   * The GroupNode that is changes when animating
+   * The GroupNode that is changed when animating
    */
    _groupNode : GroupNode;
 
   /**
-   * Creates a new RotationNode
+   * Creates a new JumperNode
    * @param groupNode The group node to attach to
-   * @param axis The axis to rotate around
+   * @param axis The axis to jump on
+   * @param magnitude How far it should jump
    */
   constructor(groupNode: GroupNode, axis: Vector, magnitude: number) {
     super(groupNode);
@@ -164,9 +162,6 @@ export class JumperNode extends AnimationNode {
    * @param deltaT The time difference, the animation is advanced by
    */
   simulate(deltaT: number) {
-    // change the matrix of the attached
-    // group node to reflect a rotation
-
     if(this.active){
       if(this.translation >= this._magnitude){
         this.direction *= -1;
@@ -225,25 +220,29 @@ export class JumperNode extends AnimationNode {
  */
 export class DriverNode extends AnimationNode {
   /**
-   * The vector to rotate around
+   * How far the object has moved and is moving in x direction
    */
-  private _axis: Vector;
-
   xOffset: number;
-
+  /**
+   * How far the object has moved and is moving in y direction
+   */
   yOffset: number;
-
+  /**
+   * The group node to attach to
+   */
   groupNode: GroupNode;
 
+  /**
+   * Either of the indicate, if the corresponding button is being pressed or not
+   */
   private _xNegActive : boolean;
   private _xPosActive : boolean;
   private _yNegActive : boolean;
   private _yPosActive : boolean;
 
   /**
-   * Creates a new RotationNode
+   * Creates a new JumperNode
    * @param groupNode The group node to attach to
-   * @param axis The axis to rotate around
    */
   constructor(groupNode: GroupNode) {
     super(groupNode);
@@ -289,35 +288,32 @@ export class DriverNode extends AnimationNode {
     this._yPosActive = value;
   }
 
-
-  get axis(): Vector {
-    return this._axis;
-  }
-
-
-  set axis(value: Vector) {
-    this._axis = value;
-  }
 }
 
 /**
- * Class responsible for the Camera Free flight mode
+ * Class responsible for the Camera Free flight Mode Movement
  * @extends AnimationNode
  */
 export class MoveCameraNode extends AnimationNode {
   /**
-   * The vector to rotate around
+   * How far the object has moved and is moving in x direction
    */
-  axis: Vector;
-
   xOffset: number;
-
+  /**
+   * How far the object has moved and is moving in y direction
+   */
   yOffset: number;
-
+  /**
+   * How far the object has moved and is moving in z direction
+   */
   zOffset: number;
-
+  /**
+   * The group node to attach to
+   */
   groupNode: GroupNode;
-
+  /**
+   * Either of the indicate, if the corresponding button is being pressed or not
+   */
   private _xNegActive : boolean;
   private _xPosActive : boolean;
   private _yNegActive : boolean;
@@ -328,7 +324,6 @@ export class MoveCameraNode extends AnimationNode {
   /**
    * Creates a new MoveCameraNode
    * @param groupNode The group node to attach to
-   * @param axis The axis to rotate around
    */
   constructor(groupNode: GroupNode) {
     super(groupNode);
@@ -392,16 +387,16 @@ export class MoveCameraNode extends AnimationNode {
 }
 
 /**
- * Class representing the rotation operation for the camera
+ * Class responsible for the Camera Free flight Mode Rotation
  * @extends AnimationNode
  */
 export class RotateCameraNode extends AnimationNode {
   /**
-   * The absolute angle of the rotation
+   * The absolute angle in x direction of the rotation
    */
   angleX: number;
   /**
-   * The absolute angle of the rotation
+   * The absolute angle in y direction of the rotation
    */
   angleY: number;
   /**
@@ -410,12 +405,12 @@ export class RotateCameraNode extends AnimationNode {
    _axis: Vector;
 
   /**
-   * Direction of rotation
+   * Direction (pos/neg) of rotation in x direction
    */
   _directionX: number;
 
   /**
-   * Direction of rotation
+   * Direction (pos/neg) of rotation in y direction
    */
   _directionY: number;
 
@@ -430,9 +425,8 @@ export class RotateCameraNode extends AnimationNode {
   private _xActive: boolean;
 
   /**
-   * Creates a new RotationNode
+   * Creates a new RotateCameraNode
    * @param groupNode The group node to attach to
-   * @param axis The axis to rotate around
    */
   constructor(groupNode: GroupNode) {
     super(groupNode);
@@ -522,7 +516,8 @@ export class SlerpNode extends AnimationNode {
   /**
    * Creates a new RotationNode
    * @param groupNode The group node to attach to
-   * @param axis The axis to rotate around
+   * @param rotation1 The first keyframe
+   * @param rotation2 The second keyframe
    */
   constructor(groupNode: GroupNode, rotation1: Quaternion, rotation2: Quaternion) {
     super(groupNode);
@@ -537,8 +532,7 @@ export class SlerpNode extends AnimationNode {
   simulate(deltaT: number) {
     if (this.active) {
       this.t += 0.001 * deltaT;
-      const rot = this.rotations[0].slerp(this.rotations[1], (Math.sin(this.t) + 1) / 2);
-      (this.groupNode.transform as SQT).rotation = rot;
+      (this.groupNode.transform as SQT).rotation = this.rotations[0].slerp(this.rotations[1], (Math.sin(this.t) + 1) / 2);
     }
   }
 

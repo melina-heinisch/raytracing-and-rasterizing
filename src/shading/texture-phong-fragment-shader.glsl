@@ -19,7 +19,7 @@ varying mat3 v_tbn;
 
 
 void main(void) {
-    //https://learnopengl.com/Advanced-Lighting/Normal-Mapping
+    //Based on OpenGl reference https://learnopengl.com/Advanced-Lighting/Normal-Mapping
     vec4 color = texture2D(colorSampler, v_texCoord);
     vec3 normal = texture2D(normalSampler, v_texCoord).rgb;
     normal = normal * 2.0 - 1.0;

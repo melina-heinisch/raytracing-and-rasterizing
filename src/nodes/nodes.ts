@@ -26,7 +26,7 @@ export class GroupNode extends Node {
 
   /**
    * Constructor
-   * @param mat A matrix describing the node's transformation
+   * @param transform A matrix describing the node's transformation
    */
   constructor(public transform: Transformation) {
     super();
@@ -75,10 +75,14 @@ export class SphereNode extends Node {
     visitor.visitSphereNode(this);
   }
 }
+
+/**
+ * Class representing a Pyramid in the Scenegraph
+ * @extends Node
+ */
 export class PyramidNode extends Node {
 
   /**
-   *
    * @param baseColor Base color of the pyramid
    * @param extraColors Extra colors, if wanted
    */
@@ -105,8 +109,8 @@ export class AABoxNode extends Node {
    * Creates an axis aligned box.
    * The box's center is located at the origin
    * with all edges of length 1
-   * @param baseColor The colour of the cube
-   * @param extraColors If wanted, additional Colors
+   * @param baseColor The color of the cube
+   * @param extraColors If wanted, additional colors
    */
   constructor(public baseColor : Vector, public extraColors: Array<Vector>) {
     super();
@@ -131,6 +135,7 @@ export class TextureBoxNode extends Node {
    * The box's center is located at the origin
    * with all edges of length 1
    * @param texture The image filename for the texture
+   * @param normal The image filename for the normal map
    */
   constructor(public texture: string, public normal: string) {
     super();
@@ -146,7 +151,7 @@ export class TextureBoxNode extends Node {
 }
 
 /**
- * Class representing a light sourche in the Scenegraph
+ * Class representing a light source in the scenegraph
  * @extends Node
  */
 export class LightNode extends Node {
@@ -167,12 +172,12 @@ export class LightNode extends Node {
 }
 
 /**
- * Class representing a light sourche in the Scenegraph
+ * Class representing the camera in the Scenegraph
  * @extends Node
  */
 export class CameraNode extends Node {
   /**
-   * Creates an light source
+   * Creates a camera
    */
   constructor() {
     super();

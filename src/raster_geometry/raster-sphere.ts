@@ -31,7 +31,8 @@ export default class RasterSphere {
      * @param gl The canvas' context
      * @param center The center of the sphere
      * @param radius The radius of the sphere
-     * @param color The color of the sphere
+     * @param color1 The base color of the sphere
+     * @param color2 If given, second color of the sphere
      */
     constructor(private gl: WebGL2RenderingContext, center: Vector, radius: number, color1: Vector, color2 : Vector = undefined) {
 

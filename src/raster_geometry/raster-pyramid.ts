@@ -2,11 +2,11 @@ import Vector from '../math_library/vector';
 import Shader from '../shading/shader';
 
 /**
- * A class creating buffers for an axis aligned box to render it with WebGL
+ * A class creating buffers for a pyramid to render it with WebGL
  */
 export default class RasterPyramid {
     /**
-     * The buffer containing the box's vertices
+     * The buffer containing the pyramid's vertices
      */
     vertexBuffer: WebGLBuffer;
     /**
@@ -22,13 +22,12 @@ export default class RasterPyramid {
      */
     normalBuffer: WebGLBuffer;
     /**
-    /**
      * The amount of indices
      */
     elements: number;
 
     /**
-     * Creates all WebGL buffers for the box
+     * Creates all WebGL buffers for the pyramid
      *          top
      *        /  \ \
      *      / /   \  \
@@ -36,10 +35,11 @@ export default class RasterPyramid {
      *  / /         \ /
      * b1 ----------- b2
      *
-     *  looking in negative z axis direction
+     * looking in negative z axis direction
      * @param gl The canvas' context
-     * @param minPoint The minimal x,y,z of the box
-     * @param maxPoint The maximal x,y,z of the box
+     * @param topPoint The top, highest point of the box
+     * @param baseColor The base color of the pyramid
+     * @param extraColors If given, colors for the other 4 sides of the pyramid
      */
     constructor(private gl: WebGL2RenderingContext, topPoint: Vector, baseColor : Vector, extraColors : Array<Vector> = undefined) {
         this.gl = gl;
@@ -118,8 +118,13 @@ export default class RasterPyramid {
         this.normalBuffer = normalBuffer;
     }
 
-    //https://stackoverflow.com/questions/13205226/most-efficient-algorithm-to-calculate-vertex-normals-from-set-of-triangles-for-g
-    calcNormal(vertices : Array<Vector>){
+    /**
+     * Calculates the normals for each vertex in the vertex buffer
+     * @param vertices Vertices of the pyramid
+     * @return Array<number> Coordinates of the normals
+     */
+    //Based on https://stackoverflow.com/questions/13205226/most-efficient-algorithm-to-calculate-vertex-normals-from-set-of-triangles-for-g
+    calcNormal(vertices : Array<Vector>) : Array<number>{
         let top = vertices[0];
         let b1 = vertices[1];
         let b2 = vertices[2];
@@ -134,17 +139,8 @@ export default class RasterPyramid {
         let bottomLeftNormal = b3.sub(b4).cross(b1.sub(b4));
         let bottomRightNormal = b1.sub(b2).cross(b3.sub(b2));
 
-     /*   //Normals for Vertices
-        let topNormal = frontNormal.add(rightNormal).add(backNormal).add(leftNormal).normalize();
-        let b1Normal = frontNormal.add(leftNormal).add(bottomLeftNormal).add(bottomRightNormal).normalize();
-        let b2Normal = frontNormal.add(rightNormal).add(bottomRightNormal).normalize();
-        let b3Normal = rightNormal.add(backNormal).add(bottomLeftNormal).add(bottomRightNormal).normalize();
-        let b4Normal = backNormal.add(leftNormal).add(bottomLeftNormal).normalize();
- */
         let normalVectors = [frontNormal,rightNormal, backNormal, leftNormal, bottomRightNormal, bottomLeftNormal];
         let normals : Array<number> = [];
-
-
 
         normalVectors.forEach(normal =>{
             normals.push(normal.x);
@@ -161,39 +157,50 @@ export default class RasterPyramid {
         return normals;
     }
 
+    /**
+     * Random color, in case no color is given
+     */
     randomColor = new Vector(Math.random(),Math.random(),Math.random(),1);
-    setColors(c0 : Vector = this.randomColor, c1 : Vector, c2 : Vector, c3 : Vector, c4: Vector) : Array<number> {
-
+    /**
+     * Sets the colors for each side of the pyramid, if no additional color are given it is colored in color1 or random color
+     * @param color1 Base color of the pyramid, used for all 6 faces if there are no or incomplete additional colors
+     * @param color2 Second color
+     * @param color3 Third color
+     * @param color4 Fourth color
+     * @param color5 Fifth color
+     * @return Array<number> Color Values for the buffer
+     */
+    setColors(color1 : Vector = this.randomColor, color2 : Vector, color3 : Vector, color4 : Vector, color5: Vector) : Array<number> {
         let colors : Array<number> = [];
-        if(c1 && c2 && c3 && c4){
+        if(color2 && color3 && color4 && color5){
             for (let i = 0; i < 18; i++) {
                 if(i === 0 || i === 3 || i === 6 || i === 9){
-                    colors.push(c0.x);
-                    colors.push(c0.y);
-                    colors.push(c0.z);
+                    colors.push(color1.x);
+                    colors.push(color1.y);
+                    colors.push(color1.z);
                 } else if(i === 1 || i === 11 || i ===13 || i === 17){
-                    colors.push(c1.x);
-                    colors.push(c1.y);
-                    colors.push(c1.z);
+                    colors.push(color2.x);
+                    colors.push(color2.y);
+                    colors.push(color2.z);
                 } else if(i === 2 || i === 4 || i === 12){
-                    colors.push(c2.x);
-                    colors.push(c2.y);
-                    colors.push(c2.z);
+                    colors.push(color3.x);
+                    colors.push(color3.y);
+                    colors.push(color3.z);
                 } else if(i === 5 || i === 7 || i === 14 || i === 16){
-                    colors.push(c3.x);
-                    colors.push(c3.y);
-                    colors.push(c3.z);
+                    colors.push(color4.x);
+                    colors.push(color4.y);
+                    colors.push(color4.z);
                 } else if(i === 8 || i === 10 || i === 15){
-                    colors.push(c4.x);
-                    colors.push(c4.y);
-                    colors.push(c4.z);
+                    colors.push(color5.x);
+                    colors.push(color5.y);
+                    colors.push(color5.z);
                 }
             }
         } else {
             for (let i = 0; i < 18; i++) {
-                colors.push(c0.x);
-                colors.push(c0.y);
-                colors.push(c0.z);
+                colors.push(color1.x);
+                colors.push(color1.y);
+                colors.push(color1.z);
             }
         }
 
@@ -201,7 +208,7 @@ export default class RasterPyramid {
     }
 
     /**
-     * Renders the box
+     * Renders the pyramid
      * @param shader The shader used to render
      */
     render(shader: Shader) {

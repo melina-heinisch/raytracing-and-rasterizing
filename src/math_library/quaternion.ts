@@ -10,15 +10,12 @@ export default class Quaternion {
     }
 
     static fromAxisAngle(axis: Vector, angle: number) {
-        //Geteilt durch 2 oder nicht?
         let qv = axis.mul(Math.sin(angle));
-        let q = new Quaternion(qv.x, qv.y, qv.z, Math.cos(angle));
-        return q;
+        return new Quaternion(qv.x, qv.y, qv.z, Math.cos(angle));
     }
 
     get conjugate(): Quaternion {
-        let q = new Quaternion(-this.data.x, -this.data.y, -this.data.z, this.data.w);
-        return q;
+        return new Quaternion(-this.data.x, -this.data.y, -this.data.z, this.data.w);
     }
 
     get inverse(): Quaternion {
@@ -40,13 +37,12 @@ export default class Quaternion {
         let s : number = 2/Math.pow(this.norm(),2);
         let q : Vector = this.data;
 
-        let mat : Matrix = new Matrix([
+        return new Matrix([
             1-s*(q.y*q.y+q.z*q.z), s*(q.x*q.y-q.w*q.z), s*(q.x*q.z+q.w*q.y), 0,
             s*(q.x*q.y+q.w*q.z), 1-s*(q.x*q.x+q.z*q.z), s*(q.y*q.z-q.w*q.x), 0,
             s*(q.x*q.z-q.w*q.y), s*(q.y*q.z+q.w*q.x), 1-s*(q.x*q.x+q.y*q.y), 0,
             0,0,0,1
-        ])
-        return mat;
+        ]);
     }
 
     /*

@@ -1,12 +1,7 @@
 import 'bootstrap';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './math_library/vector';
-import {
-    AABoxNode,
-    GroupNode, LightNode, PyramidNode,
-    SphereNode,
-    TextureBoxNode
-} from './nodes/nodes';
+import {GroupNode,} from './nodes/nodes';
 import {
     RasterVisitor,
     RasterSetupVisitor
@@ -21,13 +16,10 @@ import phongVertexShader from './shading/phong-vertex-perspective-shader.glsl';
 import phongFragmentShader from './shading/phong-fragment-shader.glsl';
 import textureVertexShader from './shading/texture-vertex-perspective-shader.glsl';
 import texturePhongShader from './shading/texture-phong-fragment-shader.glsl';
-import textureFragmentShader from './shading/texture-fragment-shader.glsl';
-import {Rotation, Scaling, Translation} from './math_library/transformation';
-import RasterBox from "./raster_geometry/raster-box";
 import RayVisitor from "./visitors/rayvisitor";
-import {XmlToScrenegraph} from "./xmlToScrenegraph";
+import {XmlToScrenegraph} from "./xmlParser/xmlToScrenegraph";
 import {LightAndCameraVisitor} from "./visitors/lightAndCameraVisitor";
-import {ScenegraphToXMLVisitor} from "./scenegraphToXMLVisitor";
+import {ScenegraphToXMLVisitor} from "./xmlParser/scenegraphToXMLVisitor";
 
 window.addEventListener('load', () => {
 
@@ -52,7 +44,6 @@ window.addEventListener('load', () => {
     let parser : XmlToScrenegraph= new XmlToScrenegraph();
     let scenegraphString = "";
     let animationNodes : (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[] = [];
-   // document.getElementById("yDirection").style.color = "limegreen";
 
     function simulate(deltaT: number) {
         for (let animationNode of animationNodes) {
@@ -85,6 +76,8 @@ window.addEventListener('load', () => {
     document.getElementById('uploadInput').addEventListener('change',function (){
         //@ts-ignore
         let files = this.files;
+        //@ts-ignore
+        this.files = [];
         if (files.length === 0) {
             alert('Es wurde keine Datei ausgewählt.');
         }
@@ -102,6 +95,7 @@ window.addEventListener('load', () => {
             render()
         };
         reader.readAsText(files[0]);
+
     })
 
     //https://www.w3schools.com/xml/met_element_getattribute.asp
@@ -253,8 +247,9 @@ window.addEventListener('load', () => {
 
             case "1":
                 for (let i = 0; i < animationNodes.length; i++) {
-                    if(animationNodes[i] instanceof JumperNode){
-                        animationNodes[i].axis = new Vector(1,0,0,1);
+                    let node = animationNodes[i];
+                    if(node instanceof JumperNode){
+                        node.axis = new Vector(1,0,0,1);
                     }
                 }
                 document.getElementById("xDirection").style.color = "limegreen";
@@ -264,8 +259,9 @@ window.addEventListener('load', () => {
 
             case "2":
                 for (let i = 0; i < animationNodes.length; i++) {
-                    if(animationNodes[i] instanceof JumperNode){
-                        animationNodes[i].axis = new Vector(0,1,0,1);
+                    let node = animationNodes[i];
+                    if(node instanceof JumperNode){
+                        node.axis = new Vector(0,1,0,1);
                     }
                 }
                 document.getElementById("xDirection").style.color = "black";
@@ -275,8 +271,9 @@ window.addEventListener('load', () => {
 
             case "3":
                 for (let i = 0; i < animationNodes.length; i++) {
-                    if(animationNodes[i] instanceof JumperNode){
-                        animationNodes[i].axis = new Vector(0,0,1,1);
+                    let node = animationNodes[i];
+                    if(node instanceof JumperNode){
+                        node.axis = new Vector(0,0,1,1);
                     }
                 }
                 document.getElementById("xDirection").style.color = "black";

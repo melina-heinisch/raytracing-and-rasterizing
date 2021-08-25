@@ -23,12 +23,9 @@ varying vec3 v_normal;
 varying vec3 v_lightPositions[8];
 varying vec3 v_cameraPosition;
 
-// Pass the vertex position in view space
-// to the fragment shader
-
-
 void main() {
   gl_Position = P * V * M * vec4(a_position, 1.0);
+  // Pass the vertex position in view space to the fragment shader
   v_position = V* M * vec4(a_position,1.0);
 
   for(int i = 0; i < 8; i++) {
@@ -39,8 +36,8 @@ void main() {
   }
 
   v_cameraPosition = cameraPosition;
-  // Pass the color and transformed vertex position through
 
+  // Pass the color and transformed vertex position through
   v_color = a_color;
   v_normal = normalize((V * N * vec4(a_normal, 0)).xyz);
 }

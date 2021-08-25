@@ -19,7 +19,6 @@ varying vec2 v_texCoord;
 varying mat3 v_tbn;
 
 void main() {
-  //https://learnopengl.com/Advanced-Lighting/Normal-Mapping
   gl_Position = P * V * M * vec4(a_position, 1.0);
   v_position = V* M * vec4(a_position,1.0);
   v_texCoord = a_texCoord;
@@ -32,7 +31,7 @@ void main() {
     v_lightPositions[i] = ( V * vec4(lightSources[i],1.0)).xyz;
   }
 
-
+  //Based on OpenGl reference https://learnopengl.com/Advanced-Lighting/Normal-Mapping
   vec3 T = normalize(vec3(V * M * vec4(a_tangent, 0.0)));
   vec3 B = normalize(vec3(V * M * vec4(a_bitangent, 0.0)));
   vec3 N2 = normalize(vec3(V * M * vec4(a_tbnNormal, 0.0)));

@@ -15,10 +15,8 @@ import {
   LightNode,
   CameraNode
 } from '../nodes/nodes';
-import AABox from '../ray_geometry/aabox';
 
 const UNIT_SPHERE = new Sphere(new Vector(0, 0, 0, 1), 1, new Vector(0, 0, 0, 1));
-const UNIT_AABOX = new AABox(new Vector(-0.5, -0.5, -0.5, 1), new Vector(0.5, 0.5, 0.5, 1), new Vector(0, 0, 0, 1));
 
 /**
  * Class representing a Visitor that uses
@@ -77,27 +75,27 @@ export default class RayVisitor implements Visitor {
           if(this.intersectionColor2){
             if(y % 20 >= 10){
               let color = phong(this.intersectionColor1, this.intersection, lightPositions, 10, camera.origin);
-              data[4 * (width * y + x) + 0] = color.r * 255;
+              data[4 * (width * y + x)] = color.r * 255;
               data[4 * (width * y + x) + 1] = color.g * 255;
               data[4 * (width * y + x) + 2] = color.b * 255;
               data[4 * (width * y + x) + 3] = 255;
             } else {
               let color = phong(this.intersectionColor2, this.intersection, lightPositions, 10, camera.origin);
-              data[4 * (width * y + x) + 0] = color.r * 255;
+              data[4 * (width * y + x)] = color.r * 255;
               data[4 * (width * y + x) + 1] = color.g * 255;
               data[4 * (width * y + x) + 2] = color.b * 255;
               data[4 * (width * y + x) + 3] = 255;
             }
           }else {
             let color = phong(this.intersectionColor1, this.intersection, lightPositions, 10, camera.origin);
-            data[4 * (width * y + x) + 0] = color.r * 255;
+            data[4 * (width * y + x)] = color.r * 255;
             data[4 * (width * y + x) + 1] = color.g * 255;
             data[4 * (width * y + x) + 2] = color.b * 255;
             data[4 * (width * y + x) + 3] = 255;
           }
 
         } else {
-          data[4 * (width * y + x) + 0] = 255;
+          data[4 * (width * y + x)] = 255;
           data[4 * (width * y + x) + 1] = 255;
           data[4 * (width * y + x) + 2] = 255;
           data[4 * (width * y + x) + 3] = 255;
@@ -157,27 +155,7 @@ export default class RayVisitor implements Visitor {
    * Visits an axis aligned box node
    * @param node The node to visit
    */
-  visitAABoxNode(node: AABoxNode) {
-    let toWorld = Matrix.identity();
-    let fromWorld = Matrix.identity();
-
-    const ray = new Ray(fromWorld.mulVec(this.ray.origin), fromWorld.mulVec(this.ray.direction).normalize());
-    let intersection = UNIT_AABOX.intersect(ray);
-
-    if (intersection) {
-      const intersectionPointWorld = toWorld.mulVec(intersection.point);
-      const intersectionNormalWorld = toWorld.mulVec(intersection.normal).normalize();
-      intersection = new Intersection(
-        (intersectionPointWorld.x - ray.origin.x) / ray.direction.x,
-        intersectionPointWorld,
-        intersectionNormalWorld
-      );
-      if (this.intersection === null || intersection.closerThan(this.intersection)) {
-        this.intersection = intersection;
-        this.intersectionColor1 = node.baseColor;
-      }
-    }
-  }
+  visitAABoxNode(node: AABoxNode) {}
 
   /**
    * Visits a textured box node
@@ -189,11 +167,18 @@ export default class RayVisitor implements Visitor {
    * Visits a pyramid node
    * @param node The node to visit
    */
-  visitPyramidNode(node: PyramidNode) {
-  }
+  visitPyramidNode(node: PyramidNode) {}
 
+  /**
+   * Visits a light node
+   * @param node The node to visit
+   */
   visitLightNode(node: LightNode) {}
 
+  /**
+   * Visits a camera node
+   * @param node The node to visit
+   */
   visitCameraNode(node: CameraNode) {}
 
 }

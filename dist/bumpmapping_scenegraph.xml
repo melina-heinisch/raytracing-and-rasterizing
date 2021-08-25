@@ -1,32 +1,31 @@
 <GroupNode translation="0,0,-3,0">
-    <TextureBoxNode texPath="grey.jpg" normalPath="normalMapExample.png"></TextureBoxNode>
-
+    <TextureBoxNode texPath="textures/grey.jpg" normalPath="textures/normalMapExample.png"/>
     <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0">
         <GroupNode translation="0,0,0,1">
             <GroupNode translation="-2,2,2,1">
-                <LightNode></LightNode>
+                <LightNode/>
             </GroupNode>
             <GroupNode translation="-2,-2,2,2">
-                <LightNode></LightNode>
+                <LightNode/>
             </GroupNode>
             <GroupNode translation="2,2,2,1">
-                <LightNode></LightNode>
+                <LightNode/>
             </GroupNode>
             <GroupNode translation="2,-2,2,1">
-                <LightNode></LightNode>
+                <LightNode/>
             </GroupNode>
         </GroupNode>
     </GroupNode>
     <GroupNode translation="0,0,1,1">
         <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0" id="c2">
             <GroupNode translation="0,0,0,1" id="c1">
-                <CameraNode></CameraNode>
+                <CameraNode/>
             </GroupNode>
         </GroupNode>
     </GroupNode>
-    <MoveCameraNode id="c1"></MoveCameraNode>
-    <RotateCameraNode id="c2"></RotateCameraNode>
-    <JumperNode axis="0,1,0,1" magnitude="1"></JumperNode>
+    <MoveCameraNode id="c1"/>
+    <RotateCameraNode id="c2"/>
+    <JumperNode axis="0,1,0,1" magnitude="1"/>
 </GroupNode>
 
 

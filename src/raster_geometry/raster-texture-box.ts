@@ -30,7 +30,7 @@ export default class RasterTextureBox {
      */
     bitangentBuffer: WebGLBuffer;
     /**
-     * The buffer containing the box's texture normals for tangent space
+     * The buffer containing the box's texture normals for creating tangent space
      */
     normalTBNBuffer: WebGLBuffer;
     /**
@@ -169,6 +169,16 @@ export default class RasterTextureBox {
 
     }
 
+
+    /**
+     * Function calculating everything needed to make the transformation Matrix for Tangent Space.
+     * This is used in order to convert the normals of the normal map image from its own, Tangent, space into world space,
+     * this way we can make the lighting calculation as used for other geometries.
+     * Thus we calculate the Tangent, Bitangent and Normal of each Triangle
+     * @param vertices The vertices of the cube
+     * @param texCoords The texture coordinates for both texture images
+     * @return Array<Array<number>> Returns an Array, filled with array of the tangent, bitangent and normals
+     */
     //Calculations taken from https://learnopengl.com/Advanced-Lighting/Normal-Mapping
     calcTangentsBitangentsNormals(vertices : Array<Vector>, texCoords : Array<Vector>) : Array<Array<number>>{
         let tangentsVectors : Array<Vector> = [];

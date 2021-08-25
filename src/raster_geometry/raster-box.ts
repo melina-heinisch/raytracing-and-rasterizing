@@ -22,7 +22,6 @@ export default class RasterBox {
      */
     normalBuffer: WebGLBuffer;
     /**
-    /**
      * The amount of indices
      */
     elements: number;
@@ -40,7 +39,8 @@ export default class RasterBox {
      * @param gl The canvas' context
      * @param minPoint The minimal x,y,z of the box
      * @param maxPoint The maximal x,y,z of the box
-     * @param colors Colors per side of the cube
+     * @param baseColor The base color of the cube
+     * @param extraColors If given, colors for the other 5 sides of the cube
      */
     constructor(private gl: WebGL2RenderingContext, minPoint: Vector, maxPoint: Vector, baseColor : Vector, extraColors : Array<Vector>, ) {
         this.gl = gl;
@@ -165,15 +165,12 @@ export default class RasterBox {
         this.normalBuffer = normalBuffer;
     }
 
-    /**     6 ------- 7
-     *    / |       / |
-     *   3 ------- 2  |
-     *   |  |      |  |
-     *   |  5 -----|- 4
-     *   | /       | /
-     *   0 ------- 1
+    /**
+     * Calculates the normals for each vertex in the vertex buffer
+     * @param vertices Vertices of the cube
+     * @return Array<number> Coordinates of the normals
      */
-    calcNormal(vertices : Array<Vector>){
+    calcNormal(vertices : Array<Vector>) : Array<number>{
        let v = vertices;
         //Normals for faces
         let frontRightNormal = v[2].sub(v[1]).cross(v[0].sub(v[1]));
@@ -188,18 +185,6 @@ export default class RasterBox {
         let leftLeftNormal = v[29].sub(v[28]).cross(v[27].sub(v[28]));
         let bottomRightNormal = v[32].sub(v[31]).cross(v[30].sub(v[31]));
         let bottomLeftNormal = v[35].sub(v[34]).cross(v[33].sub(v[34]));
-
-       /* //Normals for Vertices
-        let v0Normal = frontLeftNormal.add(frontRightNormal).add(bottomLeftNormal).add(leftRightNormal).normalize();
-        let v1Normal = frontRightNormal.add(rightLeftNormal).add(rightRightNormal).add(bottomLeftNormal).add(bottomRightNormal).normalize();
-        let v2Normal = frontRightNormal.add(frontLeftNormal).add(rightLeftNormal).add(topRightNormal).normalize();
-        let v3Normal = frontLeftNormal.add(topRightNormal).add(topLeftNormal).add(leftLeftNormal).add(leftRightNormal).normalize();
-        let v4Normal = backLeftNormal.add(backRightNormal).add(rightLeftNormal).add(bottomRightNormal).normalize();
-        let v5Normal = backLeftNormal.add(leftRightNormal).add(leftLeftNormal).add(bottomRightNormal).add(bottomLeftNormal).normalize();
-        let v6Normal = backLeftNormal.add(backRightNormal).add(leftRightNormal).add(topLeftNormal).normalize();
-        let v7Normal = backRightNormal.add(topLeftNormal).add(topRightNormal).add(rightLeftNormal).add(rightRightNormal).normalize();
-
-        */
 
         let normalVectors = [frontRightNormal,frontLeftNormal, backRightNormal, backLeftNormal, rightRightNormal, rightLeftNormal,
             topRightNormal, topLeftNormal, leftRightNormal, leftLeftNormal, bottomRightNormal, bottomLeftNormal];
@@ -222,43 +207,56 @@ export default class RasterBox {
         return normals;
     }
 
+    /**
+     * Random color, in case no color is given
+     */
     random = new Vector(Math.random(),Math.random(),Math.random(),1);
-    setColors(front : Vector = this.random, back : Vector, right : Vector, top : Vector,
-              left: Vector, bottom : Vector) : Array<number> {
+    /**
+     * Sets the colors for each side of the cube, if no additional color are given it is colored in color1 or random color
+     * @param color1 Base color of the cube, used for all 6 faces if there are no or incomplete additional colors
+     * @param color2 Second color
+     * @param color3 Third color
+     * @param color4 Fourth color
+     * @param color5 Fifth color
+     * @param color6 Sixth color
+     * @return Array<number> Color Values for the buffer
+     */
+    setColors(color1 : Vector = this.random, color2 : Vector, color3 : Vector, color4 : Vector,
+              color5: Vector, color6 : Vector) : Array<number> {
         let colors : Array<number> =[];
-        if(back && right && top && left && bottom){
+        if(color2 && color3 && color4 && color5 && color6){
             for (let i = 0; i < 36; i++) {
                 if(i >= 0 && i <=5){
-                    colors.push(front.x);
-                    colors.push(front.y);
-                    colors.push(front.z);
+                    colors.push(color1.x);
+                    colors.push(color1.y);
+                    colors.push(color1.z);
                 } else if(i >= 6 && i <=11){
-                    colors.push(back.x);
-                    colors.push(back.y);
-                    colors.push(back.z);
+                    colors.push(color2.x);
+                    colors.push(color2.y);
+                    colors.push(color2.z);
                 } else if(i >= 12 && i <= 17){
-                    colors.push(right.x);
-                    colors.push(right.y);
-                    colors.push(right.z);
+                    colors.push(color3.x);
+                    colors.push(color3.y);
+                    colors.push(color3.z);
                 } else if(i >= 18 && i <= 23){
-                    colors.push(top.x);
-                    colors.push(top.y);
-                    colors.push(top.z);
+                    colors.push(color4.x);
+                    colors.push(color4.y);
+                    colors.push(color4.z);
                 }  else if(i >=24 && i <= 29){
-                    colors.push(left.x);
-                    colors.push(left.y);
-                    colors.push(left.z);
+                    colors.push(color5.x);
+                    colors.push(color5.y);
+                    colors.push(color5.z);
                 } else if(i >= 30 && i <= 35){
-                    colors.push(bottom.x);
-                    colors.push(bottom.y);
-                    colors.push(bottom.z);
+                    colors.push(color6.x);
+                    colors.push(color6.y);
+                    colors.push(color6.z);
                 }
             }
         } else {
             for (let i = 0; i < 36; i++) {
-                colors.push(front.x);
-                colors.push(front.y);
-                colors.push(front.z);
+                colors.push(color1.x);
+                colors.push(color1.y);
+                colors.push(color1.z);
             }
         }
 

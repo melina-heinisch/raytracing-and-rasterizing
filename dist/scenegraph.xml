@@ -13,7 +13,7 @@
                 <GroupNode rotation="0,1,0,1" angleX="0" angleY="0" angleZ="0" id="r1">
                     <GroupNode translation="0,0,0,1" id="d1">
                         <GroupNode translation="0,0,0,1">
-                            <TextureBoxNode texPath="brickwall.jpg" normalPath="brickwall_normal.jpg"/>
+                            <TextureBoxNode texPath="textures/brickwall.jpg" normalPath="textures/brickwall_normal.jpg"/>
                         </GroupNode>
                     </GroupNode>
                 </GroupNode>

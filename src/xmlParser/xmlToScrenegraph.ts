@@ -1,15 +1,15 @@
 import 'bootstrap';
 import 'bootstrap/scss/bootstrap.scss';
-import Vector from './math_library/vector';
+import Vector from '../math_library/vector';
 import {
     AABoxNode, CameraNode,
-    GroupNode, LightNode, Node, PyramidNode,
+    GroupNode, LightNode, PyramidNode,
     SphereNode,
     TextureBoxNode
-} from './nodes/nodes';
+} from '../nodes/nodes';
 
-import {Rotation, Scaling, Translation} from './math_library/transformation';
-import {DriverNode, JumperNode, MoveCameraNode, RotateCameraNode, RotationNode} from './nodes/animation-nodes';
+import {Rotation, Scaling, Translation} from '../math_library/transformation';
+import {DriverNode, JumperNode, MoveCameraNode, RotateCameraNode, RotationNode} from '../nodes/animation-nodes';
 
 export class XmlToScrenegraph {
 

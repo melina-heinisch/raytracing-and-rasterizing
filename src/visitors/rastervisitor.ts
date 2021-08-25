@@ -16,7 +16,6 @@ import {
 } from '../nodes/nodes';
 import Shader from '../shading/shader';
 import RasterPyramid from "../raster_geometry/raster-pyramid";
-import phongFragmentShader from '../shading/phong-fragment-shader.glsl';
 
 interface Camera {
   eye: Vector,
@@ -47,11 +46,9 @@ export class RasterVisitor implements Visitor {
    * @param textureshader The texture shader to use
    * @param renderables The objects to render
    */
-  constructor(private gl: WebGL2RenderingContext, private shader: Shader, private textureshader: Shader, private renderables: WeakMap<Node, Renderable>
-  ) {
+  constructor(private gl: WebGL2RenderingContext, private shader: Shader, private textureshader: Shader, private renderables: WeakMap<Node, Renderable>) {
     this.matrixStack.push(Matrix.identity());
     this.inverseMatrixStack.push(Matrix.identity());
-
   }
 
   /**
@@ -70,6 +67,7 @@ export class RasterVisitor implements Visitor {
 
     let shaders = [this.shader,this.textureshader];
 
+    //Sets the same variables for both phong and texture shader
     shaders.forEach(shader => {
       shader.use();
 
@@ -82,6 +80,7 @@ export class RasterVisitor implements Visitor {
       shader.getUniformFloat("kS").set(0.7);
       shader.getUniformFloat("shininess").set(16);
       shader.getUniformVec3('cameraPosition').set(camera.eye);
+
       shader.getUniformInt('numberOfLightSourcesV').set(lightPositions.length);
       shader.getUniformInt('numberOfLightSourcesF').set(lightPositions.length);
     });
@@ -375,8 +374,6 @@ export class RasterSetupVisitor {
     );
   }
 
-
-
   /**
    * Visits a textured box node. Loads the texture
    * and creates a uv coordinate buffer
@@ -394,9 +391,15 @@ export class RasterSetupVisitor {
     );
   }
 
-  visitLightNode(node: LightNode){
-  }
-  visitCameraNode(node: CameraNode){
+  /**
+   * Visits a light node
+   * @param node the node to visit
+   */
+  visitLightNode(node: LightNode){}
 
-  }
+  /**
+   * Visits a camera node
+   * @param node the node to visit
+   */
+  visitCameraNode(node: CameraNode){}
 }

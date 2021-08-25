@@ -47,7 +47,7 @@ export class LightAndCameraVisitor implements Visitor{
     }
 
     /**
-     * Resets all the variables to base values
+     * Resets all the variables to base/empty values
      */
     clear(){
         this.matrixStack = [];
@@ -84,39 +84,31 @@ export class LightAndCameraVisitor implements Visitor{
      * Visits a sphere node
      * @param node - The node to visit
      */
-    visitSphereNode(node: SphereNode) {
-
-    }
+    visitSphereNode(node: SphereNode) {}
 
     /**
      * Visits an axis aligned box node
      * @param  {AABoxNode} node - The node to visit
      */
-    visitAABoxNode(node: AABoxNode) {
-
-    }
+    visitAABoxNode(node: AABoxNode) {}
 
     /**
      * Visits an pyramid node
      * @param  {PyramidNode} node - The node to visit
      */
-    visitPyramidNode(node: PyramidNode) {
-
-    }
+    visitPyramidNode(node: PyramidNode) {}
 
 
     /**
      * Visits a textured box node.
      * @param  {TextureBoxNode} node - The node to visit
      */
-    visitTextureBoxNode(node: TextureBoxNode) {
-
-    }
+    visitTextureBoxNode(node: TextureBoxNode) {}
 
     /**
-     * Visits a Light node and applies the transformation on it,
-     * so that we have it in the world coordinates
-     * Adds the lightposition to the array
+     * Visits a Light node and applies the transformation to it,
+     * so that we have it in the world coordinates.
+     * Then adds the light position to the array
      * @param node The node to visit
      */
     visitLightNode(node: LightNode) {
@@ -124,8 +116,9 @@ export class LightAndCameraVisitor implements Visitor{
     }
 
     /**
-     * Visits a Camera node and applies the transformation on it,
+     * Visits a Camera node and applies the transformation to it,
      * so that we have it in the world coordinates
+     * Assigns the cameras to their own variables
      * @param node The node to visit
      */
     visitCameraNode(node: CameraNode) {
@@ -141,7 +134,7 @@ export class LightAndCameraVisitor implements Visitor{
             center: this.matrixStack[this.matrixStack.length - 1].mulVec(new Vector(0, 0, 0, 1)),
             up: this.matrixStack[this.matrixStack.length - 1].mulVec(new Vector(0, 1, 0, 0)),
             fovy: 60,
-            //rasterCanvasWidth/rasterCanvasHeight
+            //aspect = rasterCanvasWidth/rasterCanvasHeight
             aspect: 600 / 600,
             near: 0.1,
             far: 100

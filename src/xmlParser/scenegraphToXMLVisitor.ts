@@ -1,4 +1,4 @@
-import Visitor from "visitors/visitor";
+import Visitor from "src/visitors/visitor";
 import {
     GroupNode,
     SphereNode,
@@ -8,10 +8,10 @@ import {
     LightNode,
     CameraNode,
     Node
-} from "./nodes/nodes";
-import {Rotation, Scaling, Translation} from "./math_library/transformation";
-import Vector from "./math_library/vector";
-import {DriverNode, JumperNode, MoveCameraNode, RotateCameraNode, RotationNode} from "./nodes/animation-nodes";
+} from "../nodes/nodes";
+import {Rotation, Scaling, Translation} from "../math_library/transformation";
+import Vector from "../math_library/vector";
+import {DriverNode, JumperNode, MoveCameraNode, RotateCameraNode, RotationNode} from "../nodes/animation-nodes";
 
 export class ScenegraphToXMLVisitor implements Visitor {
 
@@ -132,8 +132,7 @@ export class ScenegraphToXMLVisitor implements Visitor {
     }
 
     visitTextureBoxNode(node: TextureBoxNode): void {
-        let texturePath = node.texture;
-        let textureBoxNode = "<TextureBoxNode path=\"" + texturePath + "\"></TextureBoxNode>\n"
+        let textureBoxNode = "<TextureBoxNode path=\"" + node.texture + "\"></TextureBoxNode>\n"
         this._xmlString += textureBoxNode;
     }
 
