@@ -76,8 +76,6 @@ window.addEventListener('load', () => {
     document.getElementById('uploadInput').addEventListener('change',function (){
         //@ts-ignore
         let files = this.files;
-        //@ts-ignore
-        this.files = [];
         if (files.length === 0) {
             alert('Es wurde keine Datei ausgewählt.');
         }
@@ -95,7 +93,8 @@ window.addEventListener('load', () => {
             render()
         };
         reader.readAsText(files[0]);
-
+        //@ts-ignore
+        this.files = [];
     })
 
     //https://www.w3schools.com/xml/met_element_getattribute.asp
