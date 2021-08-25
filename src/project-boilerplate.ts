@@ -20,6 +20,7 @@ import {
 import phongVertexShader from './shading/phong-vertex-perspective-shader.glsl';
 import phongFragmentShader from './shading/phong-fragment-shader.glsl';
 import textureVertexShader from './shading/texture-vertex-perspective-shader.glsl';
+import texturePhongShader from './shading/texture-phong-fragment-shader.glsl';
 import textureFragmentShader from './shading/texture-fragment-shader.glsl';
 import {Rotation, Scaling, Translation} from './math_library/transformation';
 import RasterBox from "./raster_geometry/raster-box";
@@ -34,29 +35,14 @@ window.addEventListener('load', () => {
     const rayCanvas = document.getElementById("rayCanvas") as HTMLCanvasElement;
     const ctx = rayCanvas.getContext("2d");
     const rayVisitor = new RayVisitor(ctx, rayCanvas.width, rayCanvas.height);
-    const rayCamera = {
-        origin: new Vector(0, 0, 1, 1),
-        width: rayCanvas.width,
-        height: rayCanvas.height,
-        alpha: Math.PI / 3
-    }
 
     //Setup constants for Rasterizer
     const rasterCanvas = document.getElementById("rasterCanvas") as HTMLCanvasElement;
     const gl = rasterCanvas.getContext("webgl2");
     const setupVisitor = new RasterSetupVisitor(gl);
     const phongShader = new Shader(gl, phongVertexShader, phongFragmentShader);
-    const textureShader = new Shader(gl, textureVertexShader, textureFragmentShader);
+    const textureShader = new Shader(gl, textureVertexShader, texturePhongShader);
     const rasterVisitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
-    let rasterCamera = {
-        eye: new Vector(0, 0, 1, 1),
-        center: new Vector(0, 0, 0, 1),
-        up: new Vector(0, 1, 0, 0),
-        fovy: 60,
-        aspect: rasterCanvas.width / rasterCanvas.height,
-        near: 0.1,
-        far: 100
-    };
 
     //Variables that are used by both render engines
     const lightAndCameraVisitor = new LightAndCameraVisitor();

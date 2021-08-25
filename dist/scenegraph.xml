@@ -1,17 +1,19 @@
 <GroupNode translation="0,0,-5,0">
     <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0">
         <GroupNode translation="1.2,0.5,2.5,0">
-            <SphereNode baseColor="0,0,1,1" extraColors=""></SphereNode>
+            <SphereNode baseColor="0.8,0,0.8,1" extraColors=""/>
         </GroupNode>
         <GroupNode translation="-0.8,0.6,0,0">
-            <GroupNode scaling="1,1,1,0">
-                <PyramidNode baseColor="1,0,0,1" extraColors=""></PyramidNode>
+            <GroupNode translation="0,0,0,1" id="j1">
+                <GroupNode scaling="1,1,1,0">
+                    <PyramidNode baseColor="1,0,0,1" extraColors="0,1,0,1;0,1,0,1;0,1,0,1;0,1,0,1;"/>
+                </GroupNode>
             </GroupNode>
             <GroupNode translation="1,0,1,1">
-                <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0">
-                    <GroupNode translation="0,0,0,1">
+                <GroupNode rotation="0,1,0,1" angleX="0" angleY="0" angleZ="0" id="r1">
+                    <GroupNode translation="0,0,0,1" id="d1">
                         <GroupNode translation="0,0,0,1">
-                            <TextureBoxNode path="img.png"></TextureBoxNode>
+                            <TextureBoxNode texPath="brickwall.jpg" normalPath="brickwall_normal.jpg"/>
                         </GroupNode>
                     </GroupNode>
                 </GroupNode>
@@ -19,31 +21,33 @@
         </GroupNode>
     </GroupNode>
     <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0">
-        <GroupNode translation="0,0,0,1" id="j1">
+        <GroupNode translation="0,0,0,1">
             <GroupNode translation="-2,2,2,1">
-                <LightNode></LightNode>
+                <LightNode/>
             </GroupNode>
             <GroupNode translation="-2,-2,2,2">
-                <LightNode></LightNode>
+                <LightNode/>
             </GroupNode>
             <GroupNode translation="2,2,2,1">
-                <LightNode></LightNode>
+                <LightNode/>
             </GroupNode>
             <GroupNode translation="2,-2,2,1">
-                <LightNode></LightNode>
+                <LightNode/>
             </GroupNode>
         </GroupNode>
     </GroupNode>
     <GroupNode translation="0,0,5,1">
         <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0" id="c2">
             <GroupNode translation="0,0,0,1" id="c1">
-                <CameraNode></CameraNode>
+                <CameraNode/>
             </GroupNode>
         </GroupNode>
     </GroupNode>
-    <JumperNode id="j1" axis="0,1,0,1" magnitude="2"></JumperNode>
-    <MoveCameraNode id="c1"></MoveCameraNode>
-    <RotateCameraNode id="c2"></RotateCameraNode>
+    <JumperNode id="j1" axis="0,1,0,1" magnitude="2"/>
+    <DriverNode id="d1"/>
+    <RotationNode axis="0,1,0,1" id="r1"/>
+    <MoveCameraNode id="c1"/>
+    <RotateCameraNode id="c2"/>
 </GroupNode>
 
 

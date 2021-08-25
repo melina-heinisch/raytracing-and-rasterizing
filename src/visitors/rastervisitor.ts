@@ -67,18 +67,24 @@ export class RasterVisitor implements Visitor {
     if (camera) {
       this.setupCamera(camera);
     }
-    this.shader.use();
 
-    for (let i = 0; i < lightPositions.length; i++){
-      this.shader.getUniformVec3("lightSources[" + i + "]").set(lightPositions[i]);
-    }
+    let shaders = [this.shader,this.textureshader];
 
-    //Set Parameters for Phong shading
-    this.shader.getUniformFloat("kA").set(0.3);
-    this.shader.getUniformFloat("kD").set(0.6);
-    this.shader.getUniformFloat("kS").set(0.7);
-    this.shader.getUniformFloat("shininess").set(16);
-    this.shader.getUniformVec3('cameraPosition').set(camera.eye);
+    shaders.forEach(shader => {
+      shader.use();
+
+      for (let i = 0; i < lightPositions.length; i++){
+        shader.getUniformVec3("lightSources[" + i + "]").set(lightPositions[i]);
+      }
+      //Set Parameters for Phong shading
+      shader.getUniformFloat("kA").set(0.3);
+      shader.getUniformFloat("kD").set(0.6);
+      shader.getUniformFloat("kS").set(0.7);
+      shader.getUniformFloat("shininess").set(16);
+      shader.getUniformVec3('cameraPosition').set(camera.eye);
+      shader.getUniformInt('numberOfLightSourcesV').set(lightPositions.length);
+      shader.getUniformInt('numberOfLightSourcesF').set(lightPositions.length);
+    });
 
     // traverse and render
     rootNode.accept(this);
@@ -258,9 +264,21 @@ export class RasterVisitor implements Visitor {
     const shader = this.textureshader;
     shader.use();
     let toWorld = this.matrixStack[this.matrixStack.length-1];
+    let fromWorld = this.inverseMatrixStack[this.inverseMatrixStack.length-1];
 
     // Set the transformation Matrix of the vertex shader to be used for every vertex of the sphere
     shader.getUniformMatrix("M").set(toWorld);
+
+    let normalMatrix : Matrix = fromWorld.transpose();
+    normalMatrix.setVal(0,3,0);
+    normalMatrix.setVal(1,3,0);
+    normalMatrix.setVal(2,3,0);
+    normalMatrix.setVal(3,3,0);
+    normalMatrix.setVal(3,0,0);
+    normalMatrix.setVal(3,1,0);
+    normalMatrix.setVal(3,2,0);
+    normalMatrix.setVal(3,3,1);
+    shader.getUniformMatrix("N").set(normalMatrix);
 
     let P = shader.getUniformMatrix("P");
     if (P && this.perspective) {
@@ -371,7 +389,7 @@ export class RasterSetupVisitor {
             this.gl,
             new Vector(-0.5, -0.5, -0.5, 1),
             new Vector(0.5, 0.5, 0.5, 1),
-            node.texture
+            node.texture, node.normal
         )
     );
   }
