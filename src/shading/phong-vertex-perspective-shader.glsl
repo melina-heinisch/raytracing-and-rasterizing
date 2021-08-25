@@ -12,14 +12,15 @@ uniform mat4 M; // From Object CS to World CS
 uniform mat4 V; // From World CS to View (Camera) CS
 uniform mat4 P; // From View CS to Normalized Device CS
 uniform mat4 N; // normal matrix
-uniform vec3 lightSources[4];
+uniform vec3 lightSources[8];
 uniform vec3 cameraPosition;
+uniform int numberOfLightSourcesV;
 
 
 varying vec3 v_color;
 varying vec4 v_position;
 varying vec3 v_normal;
-varying vec3 v_lightPositions[4];
+varying vec3 v_lightPositions[8];
 varying vec3 v_cameraPosition;
 
 // Pass the vertex position in view space
@@ -30,7 +31,10 @@ void main() {
   gl_Position = P * V * M * vec4(a_position, 1.0);
   v_position = V* M * vec4(a_position,1.0);
 
-  for(int i = 0; i < 4; i++) {
+  for(int i = 0; i < 8; i++) {
+    if (i >= numberOfLightSourcesV){
+      break;
+    }
     v_lightPositions[i] = ( V * vec4(lightSources[i],1.0)).xyz;
   }
 

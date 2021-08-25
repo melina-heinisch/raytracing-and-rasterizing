@@ -82,6 +82,8 @@ export class RasterVisitor implements Visitor {
       shader.getUniformFloat("kS").set(0.7);
       shader.getUniformFloat("shininess").set(16);
       shader.getUniformVec3('cameraPosition').set(camera.eye);
+      shader.getUniformInt('numberOfLightSourcesV').set(lightPositions.length);
+      shader.getUniformInt('numberOfLightSourcesF').set(lightPositions.length);
     });
 
     // traverse and render
