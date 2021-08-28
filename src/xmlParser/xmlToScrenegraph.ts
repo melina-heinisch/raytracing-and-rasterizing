@@ -11,14 +11,38 @@ import {
 import {Rotation, Scaling, Translation} from '../math_library/transformation';
 import {DriverNode, JumperNode, MoveCameraNode, RotateCameraNode, RotationNode} from '../nodes/animation-nodes';
 
+/**
+ * Converts an xml file (stored in a NodeList of ChildNodes) into a scenegraph to use for the render engines
+ */
 export class XmlToScrenegraph {
 
+    /**
+     * The first node (Head) of the scenegraph
+     */
     private _head : GroupNode;
+    /**
+     * The currently used group node that all child nodes are being added to
+     */
     currentGroupNode : GroupNode;
+    /**
+     * The last group nodes that have been used, stored so they can be retrieved
+     * once all children of the current group node have been visited
+     */
     oldGroupNodes : Array<GroupNode>;
+    /**
+     * The animation Nodes to be used with the scenegraph
+     */
     animationNodes: (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[];
+    /**
+     * Stores the group nodes that have animation nodes attatched to them,
+     * with an unique id as key/identifiyer. The corresponding animation node
+     * has the same id in order to match them to the group node.
+     */
     animatedGroupNodes: Map<String,GroupNode>;
 
+    /**
+     * Creates a xml to scenegraph parser and sets the default values
+     */
     constructor() {
         this._head = null;
         this.currentGroupNode = null;
@@ -27,6 +51,11 @@ export class XmlToScrenegraph {
         this.animatedGroupNodes = new Map<String, GroupNode>();
     }
 
+    /**
+     * Checks which type of XML node is currently being read and calls the
+     * corresponding method to create the node
+     * @param children The child nodes to visit
+     */
     createAndVisitChildren(children : NodeListOf<ChildNode>){
         for (let i = 0; i < children.length; i++) {
             if(children[i].nodeName === "#text")
@@ -60,6 +89,16 @@ export class XmlToScrenegraph {
 
         }
     }
+
+    /**
+     * Creates either a group node with translation, rotation or scaling.
+     * Knows which to create by checking for the corresponding attribute.
+     * Reads the needed values (e.g. axis or angle) from the attributes of the xml node.
+     * If this is the first group node, the head is being set.
+     * If there are any childnodes, those are visited too.
+     * Once all child nodes are visited, we continue to visit the group node before that one.
+     * @param childNode The node to create
+     */
     // @ts-ignore
     createGroupNode(childNode){
         if (childNode.attributes.translation) {
@@ -122,6 +161,10 @@ export class XmlToScrenegraph {
         }
     }
 
+    /**
+     * Creates a sphere node with the values retrieved from the xml attributes
+     * @param childNode The xml node to use
+     */
     // @ts-ignore
     createSphereNode(childNode){
         let baseColor = this.getOneValue(childNode.attributes.baseColor.value) || [Math.random(),Math.random(),Math.random(),1];
@@ -136,6 +179,10 @@ export class XmlToScrenegraph {
         this.currentGroupNode.add(node);
     }
 
+    /**
+     * Creates a pyramid node with the values retrieved from the xml attributes
+     * @param childNode The xml node to use
+     */
     // @ts-ignore
     createPyramidNode(childNode){
         let baseColor = this.getOneValue(childNode.attributes.baseColor.value) || [Math.random(),Math.random(),Math.random(),1];
@@ -153,6 +200,10 @@ export class XmlToScrenegraph {
         this.currentGroupNode.add(node);
     }
 
+    /**
+     * Creates an aa-box node with the values retrieved from the xml attributes
+     * @param childNode The xml node to use
+     */
     // @ts-ignore
     createAABoxNode(childNode){
         let baseColor = this.getOneValue(childNode.attributes.baseColor.value) || [Math.random(),Math.random(),Math.random(),1];
@@ -171,6 +222,10 @@ export class XmlToScrenegraph {
         this.currentGroupNode.add(node);
     }
 
+    /**
+     * Creates a texture box node with the values retrieved from the xml attributes
+     * @param childNode The xml node to use
+     */
     // @ts-ignore
     createTextureBoxNode(childNode){
         let texturePath = childNode.attributes.texPath.value || 'brickwall.jpg';
@@ -179,6 +234,10 @@ export class XmlToScrenegraph {
         this.currentGroupNode.add(node);
     }
 
+    /**
+     * Creates a jumper node with the values retrieved from the xml attributes
+     * @param childNode The xml node to use
+     */
     // @ts-ignore
     createJumperNode(childNode){
         if(childNode.attributes.id){
@@ -191,6 +250,10 @@ export class XmlToScrenegraph {
         }
     }
 
+    /**
+     * Creates a rotation node with the values retrieved from the xml attributes
+     * @param childNode The xml node to use
+     */
     // @ts-ignore
     createRotationNode(childNode){
         if(childNode.attributes.id){
@@ -203,6 +266,10 @@ export class XmlToScrenegraph {
         }
     }
 
+    /**
+     * Creates a driver node with the values retrieved from the xml attributes
+     * @param childNode The xml node to use
+     */
     // @ts-ignore
     createDriverNode(childNode){
         if(childNode.attributes.id){
@@ -212,6 +279,11 @@ export class XmlToScrenegraph {
         }
     }
 
+    /**
+     * Creates a node to move the camera along all axis'
+     * with the values retrieved from the xml attributes
+     * @param childNode The xml node to use
+     */
     // @ts-ignore
     createMoveCameraNode(childNode){
         if(childNode.attributes.id){
@@ -220,7 +292,11 @@ export class XmlToScrenegraph {
             this.animationNodes.push(new MoveCameraNode(gn));
         }
     }
-
+    /**
+     * Creates a node to rotate the camera around the y- and z-axis
+     * with the values retrieved from the xml attributes
+     * @param childNode The xml node to use
+     */
     // @ts-ignore
     createRotateCameraNode(childNode){
         if(childNode.attributes.id){
@@ -230,11 +306,18 @@ export class XmlToScrenegraph {
         }
     }
 
-
+    /**
+     * Returns the head of the scenegraph
+     */
     get head(): GroupNode {
         return this._head;
     }
 
+    /**
+     * Takes a string of 4 coordinates (one vector) seperated by ',' and
+     * returns them as numbers in an array
+     * @param string The string of coordinated to parse
+     */
     getOneValue(string :String) : Array<number>{
         if(string === null ||string === undefined || string === ""){
             return undefined;
@@ -249,6 +332,13 @@ export class XmlToScrenegraph {
         return result;
     }
 
+    /**
+     * Takes a string of more than one vector, where the vectors are
+     * seperated by ';' and the coordinates of one vector are seperated by ','.
+     * Saves each vector as a separate array of numbers, and saves each vector
+     * (number array) in one array, which is being returned.
+     * @param string The string of coordinated to parse
+     */
     getSeveralValues(string :String) : Array<Array<number>>{
         if(string === null ||string === undefined || string === ""){
             return undefined;
