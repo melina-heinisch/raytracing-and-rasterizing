@@ -75,11 +75,11 @@ export class RasterVisitor implements Visitor {
         shader.getUniformVec3("lightSources[" + i + "]").set(lightPositions[i]);
       }
       //Set Parameters for Phong shading
-      shader.getUniformFloat("kA").set(0.3);
+      shader.getUniformFloat("kA").set(0.3); // wird in phong-fragment-shader.glsl gesetzt
       shader.getUniformFloat("kD").set(0.6);
       shader.getUniformFloat("kS").set(0.7);
       shader.getUniformFloat("shininess").set(16);
-      shader.getUniformVec3('cameraPosition').set(camera.eye);
+      shader.getUniformVec3('cameraPosition').set(camera.eye); //wird in phong-vertex-perspective-shader.glsl gesetzt
 
       shader.getUniformInt('numberOfLightSourcesV').set(lightPositions.length);
       shader.getUniformInt('numberOfLightSourcesF').set(lightPositions.length);

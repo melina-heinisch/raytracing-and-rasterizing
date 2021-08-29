@@ -60,7 +60,6 @@ export class ScenegraphToXMLVisitor implements Visitor {
         this._xmlString = this._xmlString.substring(0,this._xmlString.length-13);
         this._xmlString += animationNodesString;
         this._xmlString += "</GroupNode>\n";
-
     }
 
     /**

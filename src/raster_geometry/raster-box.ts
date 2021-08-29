@@ -55,6 +55,8 @@ export default class RasterBox {
         const p6 = new Vector(mi.x, ma.y, mi.z,1);
         const p7 = new Vector(ma.x, ma.y, mi.z,1)
         let vertices = [
+
+
             // front right
             p0.x, p0.y, p0.z,
             p1.x, p1.y, p1.z,
@@ -226,7 +228,7 @@ export default class RasterBox {
         let colors : Array<number> =[];
         if(color2 && color3 && color4 && color5 && color6){
             for (let i = 0; i < 36; i++) {
-                if(i >= 0 && i <=5){
+                if(i >= 0 && i <=5){ //diese Inzized bilden zwei Dreiecke ab, die eine Seite bilden
                     colors.push(color1.x);
                     colors.push(color1.y);
                     colors.push(color1.z);

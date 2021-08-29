@@ -142,7 +142,7 @@ export default class RasterPyramid {
         let normalVectors = [frontNormal,rightNormal, backNormal, leftNormal, bottomRightNormal, bottomLeftNormal];
         let normals : Array<number> = [];
 
-        normalVectors.forEach(normal =>{
+        normalVectors.forEach(normal =>{ //brauchen gleiche Normalen für jeden Vertex eines Dreiecks (deswegen dreimal die gleichen Werte pushen)
             normals.push(normal.x);
             normals.push(normal.y);
             normals.push(normal.z);
@@ -174,11 +174,11 @@ export default class RasterPyramid {
         let colors : Array<number> = [];
         if(color2 && color3 && color4 && color5){
             for (let i = 0; i < 18; i++) {
-                if(i === 0 || i === 3 || i === 6 || i === 9){
+                if(i === 0 || i === 3 || i === 6 || i === 9){ //verschiedene Indizes bilden den selben "Eck-Punkt" in der Pyramide ab
                     colors.push(color1.x);
                     colors.push(color1.y);
                     colors.push(color1.z);
-                } else if(i === 1 || i === 11 || i ===13 || i === 17){
+                } else if(i === 1 || i === 11 || i === 13 || i === 17){
                     colors.push(color2.x);
                     colors.push(color2.y);
                     colors.push(color2.z);

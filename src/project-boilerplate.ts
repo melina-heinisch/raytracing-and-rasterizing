@@ -17,7 +17,7 @@ import phongFragmentShader from './shading/phong-fragment-shader.glsl';
 import textureVertexShader from './shading/texture-vertex-perspective-shader.glsl';
 import texturePhongShader from './shading/texture-phong-fragment-shader.glsl';
 import RayVisitor from "./visitors/rayvisitor";
-import {XmlToScrenegraph} from "./xmlParser/xmlToScrenegraph";
+import {XmlToScenegraph} from "./xmlParser/xmlToScenegraph";
 import {LightAndCameraVisitor} from "./visitors/lightAndCameraVisitor";
 import {ScenegraphToXMLVisitor} from "./xmlParser/scenegraphToXMLVisitor";
 
@@ -41,7 +41,7 @@ window.addEventListener('load', () => {
     let scenegraph : GroupNode;
     let isRasterizer = true;
     let animationHandle: number;
-    let parser : XmlToScrenegraph= new XmlToScrenegraph();
+    let parser : XmlToScenegraph= new XmlToScenegraph();
     let scenegraphString = "";
     let animationNodes : (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[] = [];
 
@@ -86,7 +86,7 @@ window.addEventListener('load', () => {
             scenegraphString = result;
             let doc = new DOMParser().parseFromString(result, "text/xml");
             let children = doc.childNodes;
-            parser = new XmlToScrenegraph();
+            parser = new XmlToScenegraph();
             parser.createAndVisitChildren(children);
             animationNodes = parser.animationNodes;
             scenegraph = parser.head;
@@ -150,7 +150,6 @@ window.addEventListener('load', () => {
         ).then(x =>
             animationHandle = window.requestAnimationFrame(animate)
         );
-
     }
 
     function renderRaytracer(scenegraph : GroupNode){

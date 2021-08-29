@@ -111,7 +111,7 @@ export default class RasterTextureBox {
         cubeNormalImage.src = normal;
         this.normalBuffer = cubeNormalTexture;
 
-        let uv = [
+        let uv = [ //texture coordinates
             // front
             0, 0, 1, 0, 1, 1,
             1, 1, 0, 1, 0, 0,
@@ -165,8 +165,6 @@ export default class RasterTextureBox {
         gl.bindBuffer(gl.ARRAY_BUFFER, tbnNormalBuffer);
         gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(tbnNormals),gl.STATIC_DRAW);
         this.normalTBNBuffer = tbnNormalBuffer;
-
-
     }
 
 

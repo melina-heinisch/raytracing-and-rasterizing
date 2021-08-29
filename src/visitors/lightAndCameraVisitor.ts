@@ -112,7 +112,7 @@ export class LightAndCameraVisitor implements Visitor{
      * @param node The node to visit
      */
     visitLightNode(node: LightNode) {
-        this.lightPositions.push(this.matrixStack[this.matrixStack.length - 1].mulVec(new Vector(1, 1, 1, 1)));
+        this.lightPositions.push(this.matrixStack[this.matrixStack.length - 1].mulVec(new Vector(1, 1, 1, 1))); //from matrix to vector
     }
 
     /**
@@ -139,7 +139,5 @@ export class LightAndCameraVisitor implements Visitor{
             near: 0.1,
             far: 100
         };
-
-
     }
 }

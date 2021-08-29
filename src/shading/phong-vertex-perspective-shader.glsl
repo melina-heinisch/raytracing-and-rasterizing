@@ -26,7 +26,7 @@ varying vec3 v_cameraPosition;
 void main() {
   gl_Position = P * V * M * vec4(a_position, 1.0);
   // Pass the vertex position in view space to the fragment shader
-  v_position = V* M * vec4(a_position,1.0);
+  v_position = V * M * vec4(a_position,1.0);
 
   for(int i = 0; i < 8; i++) {
     if (i >= numberOfLightSourcesV){

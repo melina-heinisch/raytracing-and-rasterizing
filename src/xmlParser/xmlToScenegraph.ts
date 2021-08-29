@@ -14,7 +14,7 @@ import {DriverNode, JumperNode, MoveCameraNode, RotateCameraNode, RotationNode} 
 /**
  * Converts an xml file (stored in a NodeList of ChildNodes) into a scenegraph to use for the render engines
  */
-export class XmlToScrenegraph {
+export class XmlToScenegraph {
 
     /**
      * The first node (Head) of the scenegraph
