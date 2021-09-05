@@ -140,7 +140,7 @@ export class XmlToScenegraph {
             if(this._head === null){
                 this._head = node;
                 this.currentGroupNode = this._head;
-            }else {
+            } else {
                 this.currentGroupNode.add(node);
                 this.oldGroupNodes.push(this.currentGroupNode);
                 this.currentGroupNode = node;

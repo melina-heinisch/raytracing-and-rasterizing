@@ -8,7 +8,8 @@ import {
     Node,
     PyramidNode,
     SphereNode,
-    TextureBoxNode
+    TextureBoxNode,
+    ObjNode
 } from "../nodes/nodes";
 interface Camera {
     eye: Vector,
@@ -139,5 +140,8 @@ export class LightAndCameraVisitor implements Visitor{
             near: 0.1,
             far: 100
         };
+    }
+
+    visitObjNode(node: CameraNode) {
     }
 }

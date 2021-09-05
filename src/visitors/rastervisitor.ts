@@ -12,7 +12,7 @@ import {
   TextureBoxNode,
   PyramidNode,
   LightNode,
-  CameraNode
+  CameraNode, ObjNode
 } from '../nodes/nodes';
 import Shader from '../shading/shader';
 import RasterPyramid from "../raster_geometry/raster-pyramid";
@@ -288,6 +288,10 @@ export class RasterVisitor implements Visitor {
 
     this.renderables.get(node).render(shader);
   }
+
+  visitObjNode(node: CameraNode) {
+
+  }
 }
 
 /**
@@ -402,4 +406,8 @@ export class RasterSetupVisitor {
    * @param node the node to visit
    */
   visitCameraNode(node: CameraNode){}
+
+  visitObjNode(node: ObjNode){
+
+  }
 }

@@ -20,6 +20,7 @@ import RayVisitor from "./visitors/rayvisitor";
 import {XmlToScenegraph} from "./xmlParser/xmlToScenegraph";
 import {LightAndCameraVisitor} from "./visitors/lightAndCameraVisitor";
 import {ScenegraphToXMLVisitor} from "./xmlParser/scenegraphToXMLVisitor";
+import {RasterObj} from "./raster_geometry/raster-obj"
 
 window.addEventListener('load', () => {
 
@@ -116,6 +117,43 @@ window.addEventListener('load', () => {
         xhttp.open("GET", 'scenegraph.xml', true);
         xhttp.send();
     }
+
+    document.getElementById('uploadObj').addEventListener('click',function (){
+        let event = new MouseEvent('click', {bubbles: false});
+        document.getElementById('uploadObjInput').dispatchEvent(event);
+    });
+
+   document.getElementById('uploadObjInput').addEventListener('change',function (){
+        //@ts-ignore
+        let files = this.files;
+        if (files.length === 0) {
+            alert('Es wurde keine Datei ausgewählt.');
+        }
+
+        let reader = new FileReader();
+        reader.onload = function(event) {
+            let result = event.target.result.toString();
+            //scenegraphString = result;
+            let parser = new RasterObj(gl, result);
+            //TODO: neue Node (ObjNode) --> rastervisitor
+            // man muss als parameter result übergeben glaub ich
+            scenegraph.add(parser);
+           // console.log(parser.elements);
+
+            /*
+            let doc = new DOMParser().parseFromString(result, "text/obj");
+            let children = doc.childNodes;
+            parser = new RasterObj();
+            parser.createAndVisitChildren(children);
+            animationNodes = parser.animationNodes;
+            scenegraph = parser.head;
+             */
+            render()
+        };
+        reader.readAsText(files[0]);
+        //@ts-ignore
+        this.files = [];
+    })
 
     function render(){
         if(isRasterizer){
