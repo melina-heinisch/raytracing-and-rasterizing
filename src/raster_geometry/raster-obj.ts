@@ -83,11 +83,13 @@ export class RasterObj{
         this.gl.enableVertexAttribArray(positionLocation);
         this.gl.vertexAttribPointer(positionLocation, 3, this.gl.FLOAT, false, 0, 0);
 
-
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.normalBuffer);
         const normalAttribute = shader.getAttributeLocation("a_normal");
         this.gl.enableVertexAttribArray(normalAttribute);
         this.gl.vertexAttribPointer(normalAttribute,3,this.gl.FLOAT,false,0,0);
+
+        //weiß nicht genau, ob man hier die Texturen auch an Buffer binden muss wie in raster-texture-box
+        //mit dem bitangent zeug aber texturen müssen ja bei objs nicht unterstützt werden
 
         this.gl.drawArrays(this.gl.TRIANGLES, 0, this.elements);
 

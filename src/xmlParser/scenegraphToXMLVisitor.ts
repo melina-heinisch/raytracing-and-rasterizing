@@ -7,7 +7,7 @@ import {
     TextureBoxNode,
     LightNode,
     CameraNode,
-    Node
+    Node, ObjNode
 } from "../nodes/nodes";
 import {Rotation, Scaling, Translation} from "../math_library/transformation";
 import Vector from "../math_library/vector";
@@ -189,6 +189,11 @@ export class ScenegraphToXMLVisitor implements Visitor {
      */
     visitCameraNode(node: CameraNode): void {
         this._xmlString += "<CameraNode></CameraNode>\n";
+    }
+
+    visitObjNode(node: CameraNode): void {
+        let objNode = "<ObjectNode></ObjectNode>\n"
+        this._xmlString += objNode;
     }
 
     /**

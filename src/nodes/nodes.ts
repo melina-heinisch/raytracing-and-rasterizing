@@ -194,7 +194,7 @@ export class CameraNode extends Node {
 
 export class ObjNode extends Node{
   /**
-   * Creates a camera
+   * Creates an obj
    */
   constructor() {
     super();

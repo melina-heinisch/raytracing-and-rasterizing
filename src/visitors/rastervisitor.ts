@@ -16,6 +16,7 @@ import {
 } from '../nodes/nodes';
 import Shader from '../shading/shader';
 import RasterPyramid from "../raster_geometry/raster-pyramid";
+import {RasterObj} from "../raster_geometry/raster-obj";
 
 interface Camera {
   eye: Vector,
@@ -408,6 +409,6 @@ export class RasterSetupVisitor {
   visitCameraNode(node: CameraNode){}
 
   visitObjNode(node: ObjNode){
-
+    this.objects.set(node, new RasterObj(this.gl, "dist/quader.obj"));
   }
 }

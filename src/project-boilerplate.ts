@@ -1,7 +1,7 @@
 import 'bootstrap';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './math_library/vector';
-import {GroupNode,} from './nodes/nodes';
+import {GroupNode, ObjNode,} from './nodes/nodes';
 import {
     RasterVisitor,
     RasterSetupVisitor
@@ -20,7 +20,7 @@ import RayVisitor from "./visitors/rayvisitor";
 import {XmlToScenegraph} from "./xmlParser/xmlToScenegraph";
 import {LightAndCameraVisitor} from "./visitors/lightAndCameraVisitor";
 import {ScenegraphToXMLVisitor} from "./xmlParser/scenegraphToXMLVisitor";
-import {RasterObj} from "./raster_geometry/raster-obj"
+import {RasterObj} from "./raster_geometry/raster-obj";
 
 window.addEventListener('load', () => {
 
@@ -135,9 +135,8 @@ window.addEventListener('load', () => {
             let result = event.target.result.toString();
             //scenegraphString = result;
             let parser = new RasterObj(gl, result);
-            //TODO: neue Node (ObjNode) --> rastervisitor
-            // man muss als parameter result übergeben glaub ich
-            scenegraph.add(parser);
+            //TODO: wie füge ich das RasterObj als Node ein?
+            scenegraph.add(new ObjNode());
            // console.log(parser.elements);
 
             /*
