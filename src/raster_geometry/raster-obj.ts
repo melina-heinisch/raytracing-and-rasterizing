@@ -1,6 +1,6 @@
 import Shader from "../shading/shader";
 
-export class RasterObj{
+export class RasterObj {
     /**
      * The buffer containing the box's vertices
      */
@@ -37,10 +37,12 @@ export class RasterObj{
 
         let lines = src.split('\n');
 
+        debugger;
 
         let initialVertices: Array<number> = [];
         let initialNormals: Array<number> = [];
 
+        let vectors: Array<number> = [];
         let vertices: Array<number> = [];
         let normals: Array<number> = [];
         let indices: Array<number> = [];
@@ -53,18 +55,22 @@ export class RasterObj{
             } else if ((result = NORM.exec(line)) != null) {
                 // Add new vertex normal
                 initialNormals.push(parseFloat(result[1]), parseFloat(result[2]), parseFloat(result[3]));
-            }
-             else if ((result = FACE.exec(line)) != null) {
+            } else if ((result = FACE.exec(line)) != null) {
 
                 // Create three vertices from the passed one-indexed indices
                 for (var i = 1; i < 10; i += 3) {
                     var part = result.slice(i, i + 3)
-                    vertices.push(initialVertices[parseInt(part[0])-1]);
-                    normals.push(initialNormals[parseInt(part[2])-1]);
-                    indices.push(parseInt(part[0]));
+                    vectors.push(parseInt(part[0])-1);
+                    normals.push(parseInt(part[2])-1);
                 }
             }
 
+        });
+        vectors.forEach(function (num) {
+            vertices.push(initialVertices[num * 3], initialVertices[num * 3 + 1], initialVertices[num * 3 + 2]);
+            //normals.push(initialNormals[num * 3], initialNormals[num * 3 + 1], initialNormals[num * 3 + 2]);
+            let length = indices.length;
+            indices.push(length, length + 1, length + 2);
         });
         const vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
@@ -79,13 +85,13 @@ export class RasterObj{
 
         // For each of the vertices, I add a RGB color
         let colorArray = [];
-        for (let i = 0; i < indices.length/3; i++) {
+        for (let i = 0; i < indices.length / 3; i++) {
             colorArray.push(Math.random(), Math.random(), Math.random());
         }
         // Creates a new buffer, binds it so we reference the right buffer and then saves the color array to the buffer
         const colorBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER,colorBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(colorArray),gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorArray), gl.STATIC_DRAW);
         this.colorBuffer = colorBuffer;
 
         const normalBuffer = this.gl.createBuffer();
@@ -103,7 +109,7 @@ export class RasterObj{
 
         //https://developer.mozilla.org/de/docs/Web/API/WebGL_API/Tutorial/Using_shaders_to_apply_color_in_WebGL
         //Bind buffer so it knows we are referencing the color buffer
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.colorBuffer);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.colorBuffer);
 
         //Get color attribute from vertex shader
         const colorAttribute = shader.getAttributeLocation("a_color");
@@ -115,10 +121,10 @@ export class RasterObj{
         //Reference buffer, user 3 values at a time, read as float values, do not normalize, how many to skip, where to start
         this.gl.vertexAttribPointer(colorAttribute, 3, this.gl.FLOAT, false, 0, 0);
 
-        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,this.normalBuffer);
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.normalBuffer);
         const normalAttribute = shader.getAttributeLocation("a_normal");
         this.gl.enableVertexAttribArray(normalAttribute);
-        this.gl.vertexAttribPointer(normalAttribute,3,this.gl.FLOAT,false,0,0);
+        this.gl.vertexAttribPointer(normalAttribute, 3, this.gl.FLOAT, false, 0, 0);
 
         this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.indexBuffer);
         this.gl.drawElements(this.gl.TRIANGLES, this.elements, this.gl.UNSIGNED_SHORT, 0);
