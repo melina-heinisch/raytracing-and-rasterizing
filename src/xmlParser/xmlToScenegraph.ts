@@ -3,7 +3,7 @@ import 'bootstrap/scss/bootstrap.scss';
 import Vector from '../math_library/vector';
 import {
     AABoxNode, CameraNode,
-    GroupNode, LightNode, PyramidNode,
+    GroupNode, LightNode, ObjNode, PyramidNode,
     SphereNode,
     TextureBoxNode
 } from '../nodes/nodes';
@@ -84,6 +84,8 @@ export class XmlToScenegraph {
                 this.createMoveCameraNode(children[i]);
             } else if(children[i].nodeName === "RotateCameraNode"){
                 this.createRotateCameraNode(children[i]);
+            } else if(children[i].nodeName === "ObjNode"){
+                this.createObjNode(children[i]);
             }
 
 
@@ -235,6 +237,18 @@ export class XmlToScenegraph {
     }
 
     /**
+     *
+     * @param childNode
+     */
+    // @ts-ignore
+    createObjNode(childNode){
+        let objSource= childNode.attributes.source.value;
+        let node = new ObjNode(objSource);
+        this.currentGroupNode.add(node);
+    }
+
+
+    /**
      * Creates a jumper node with the values retrieved from the xml attributes
      * @param childNode The xml node to use
      */
@@ -278,6 +292,7 @@ export class XmlToScenegraph {
             this.animationNodes.push(new DriverNode(gn));
         }
     }
+
 
     /**
      * Creates a node to move the camera along all axis'

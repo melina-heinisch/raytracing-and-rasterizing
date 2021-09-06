@@ -1,7 +1,7 @@
 import 'bootstrap';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './math_library/vector';
-import {GroupNode, ObjNode,} from './nodes/nodes';
+import {AABoxNode, CameraNode, GroupNode, LightNode, ObjNode,} from './nodes/nodes';
 import {
     RasterVisitor,
     RasterSetupVisitor
@@ -21,6 +21,7 @@ import {XmlToScenegraph} from "./xmlParser/xmlToScenegraph";
 import {LightAndCameraVisitor} from "./visitors/lightAndCameraVisitor";
 import {ScenegraphToXMLVisitor} from "./xmlParser/scenegraphToXMLVisitor";
 import {RasterObj} from "./raster_geometry/raster-obj";
+import {Rotation, Translation} from "./math_library/transformation";
 
 window.addEventListener('load', () => {
 
@@ -133,20 +134,24 @@ window.addEventListener('load', () => {
         let reader = new FileReader();
         reader.onload = function(event) {
             let result = event.target.result.toString();
-            //scenegraphString = result;
-            let parser = new RasterObj(gl, result);
-            //TODO: wie füge ich das RasterObj als Node ein?
-            scenegraph.add(new ObjNode());
-           // console.log(parser.elements);
+            let sg = new GroupNode(new Translation(new Vector(0,0,-5,1)));
+            let gnCamera = new GroupNode(new Translation(new Vector(0,0,5,1)));
+            let gnRotateCamera = new GroupNode(new Rotation(new Vector(0,0,0,1),0,0,0));
+            let gnMoveCamera = new GroupNode(new Translation(new Vector(0,0,0,1)));
+            let gnLight = new GroupNode(new Translation(new Vector(0,0,3,1)));
 
-            /*
-            let doc = new DOMParser().parseFromString(result, "text/obj");
-            let children = doc.childNodes;
-            parser = new RasterObj();
-            parser.createAndVisitChildren(children);
-            animationNodes = parser.animationNodes;
-            scenegraph = parser.head;
-             */
+            gnLight.add(new LightNode());
+            gnCamera.add(gnRotateCamera);
+            gnRotateCamera.add(gnMoveCamera);
+            gnMoveCamera.add(new CameraNode());
+            sg.add(new ObjNode(result));
+            sg.add(new AABoxNode(new Vector(1,0,0,1),[]));
+            sg.add(gnLight);
+            sg.add(gnCamera);
+
+            animationNodes = [new RotateCameraNode(gnRotateCamera),new MoveCameraNode(gnMoveCamera)];
+            scenegraph = sg;
+
             render()
         };
         reader.readAsText(files[0]);

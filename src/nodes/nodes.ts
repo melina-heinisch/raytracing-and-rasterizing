@@ -196,7 +196,7 @@ export class ObjNode extends Node{
   /**
    * Creates an obj
    */
-  constructor() {
+  constructor(public source: string) {
     super();
   }
 
