@@ -2,7 +2,7 @@ import Shader from "../shading/shader";
 
 export class RasterObj {
     /**
-     * The buffer containing the objectss vertices
+     * The buffer containing the objects vertices
      */
     vertexBuffer: WebGLBuffer;
 
@@ -26,7 +26,6 @@ export class RasterObj {
      */
     elements: number;
 
-    //TODO: Obj Source beim erstellen mitgeben und sowas
     //https://www.toptal.com/javascript/3d-graphics-a-webgl-tutorial
     constructor(private gl: WebGL2RenderingContext, src: String) {
         this.gl = gl;
@@ -58,11 +57,10 @@ export class RasterObj {
                 // Save the indices for the initial vertices and normals
                 for (var i = 1; i < 10; i += 3) {
                     var part = result.slice(i, i + 3)
-                    verticesIndices.push(parseInt(part[0])-1);
-                    normalIndices.push(parseInt(part[2])-1);
+                    verticesIndices.push(parseInt(part[0]) - 1);
+                    normalIndices.push(parseInt(part[2]) - 1);
                 }
             }
-
         });
 
         verticesIndices.forEach(function (num) {
