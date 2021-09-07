@@ -435,6 +435,6 @@ export class RasterSetupVisitor {
   visitCameraNode(node: CameraNode){}
 
   visitObjNode(node: ObjNode){
-    this.objects.set(node, new RasterObj(this.gl, node.source));
+    this.objects.set(node, new RasterObj(this.gl, node.src));
   }
 }

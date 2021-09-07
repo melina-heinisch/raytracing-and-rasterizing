@@ -242,9 +242,11 @@ export class XmlToScenegraph {
      */
     // @ts-ignore
     createObjNode(childNode){
-        let objSource= childNode.attributes.source.value;
+        debugger;
+        let objSource= childNode.attributes.src.value;
         let node = new ObjNode(objSource);
         this.currentGroupNode.add(node);
+
     }
 
 

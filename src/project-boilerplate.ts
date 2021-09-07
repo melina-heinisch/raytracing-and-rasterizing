@@ -133,6 +133,7 @@ window.addEventListener('load', () => {
         let reader = new FileReader();
         reader.onload = function(event) {
             let result = event.target.result.toString();
+            /*
             let sg = new GroupNode(new Translation(new Vector(0,0,-5,1)));
             let gnCamera = new GroupNode(new Translation(new Vector(0,0,5,1)));
             let gnRotateCamera = new GroupNode(new Rotation(new Vector(0,0,0,1),0,0,0));
@@ -149,6 +150,25 @@ window.addEventListener('load', () => {
 
             animationNodes = [new RotateCameraNode(gnRotateCamera),new MoveCameraNode(gnMoveCamera)];
             scenegraph = sg;
+*/
+            let obj = new ObjNode(result);
+            scenegraph.add(obj);
+/*
+            let obj1 = document.createElement("objn");
+            obj1.setAttribute("source", result);
+            document.getElementById("maingn").appendChild(obj1);
+
+ */
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    let xmlDoc = this.responseXML;
+                    let newElement = xmlDoc.createElement("obj");
+                    newElement.setAttribute("src", result);
+                    let x = xmlDoc.getElementById("maingn");
+                    x.appendChild(newElement);
+                }
+            };
 
             render()
         };

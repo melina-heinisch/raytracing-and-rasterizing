@@ -71,6 +71,7 @@ export class ScenegraphToXMLVisitor implements Visitor {
         if(node.transform instanceof Translation){
             let pos : Vector = new Vector(node.transform.getMatrix().getVal(0,3), node.transform.getMatrix().getVal(1,3), node.transform.getMatrix().getVal(2,3),node.transform.getMatrix().getVal(3,3));
             let gn : string = "<GroupNode translation=\"" +pos.x+ "," + pos.y + "," + pos.z + "," + pos.w + "\"";
+
             if(this.animatedGroupNodes.get(node)){
                 gn +=" id=\"" + this.animatedGroupNodes.get(node) + "\"";
             }
@@ -192,7 +193,7 @@ export class ScenegraphToXMLVisitor implements Visitor {
     }
 
     visitObjNode(node: ObjNode): void {
-        let objNode = "<ObjNode source=\""+ node.source + "\"></ObjNode>\n"
+        let objNode = "<ObjNode src=\""+ node.src + "\"></ObjNode>\n";
         this._xmlString += objNode;
     }
 
