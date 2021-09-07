@@ -95,8 +95,6 @@ window.addEventListener('load', () => {
             render()
         };
         reader.readAsText(files[0]);
-        //@ts-ignore
-        this.files = [];
     })
 
     //https://www.w3schools.com/xml/met_element_getattribute.asp
@@ -124,6 +122,7 @@ window.addEventListener('load', () => {
         document.getElementById('uploadObjInput').dispatchEvent(event);
     });
 
+    // Loads an object from an .obj File into a simple, pre-constructed scene
    document.getElementById('uploadObjInput').addEventListener('change',function (){
         //@ts-ignore
         let files = this.files;
@@ -145,7 +144,6 @@ window.addEventListener('load', () => {
             gnRotateCamera.add(gnMoveCamera);
             gnMoveCamera.add(new CameraNode());
             sg.add(new ObjNode(result));
-            sg.add(new AABoxNode(new Vector(1,0,0,1),[]));
             sg.add(gnLight);
             sg.add(gnCamera);
 
@@ -155,8 +153,6 @@ window.addEventListener('load', () => {
             render()
         };
         reader.readAsText(files[0]);
-        //@ts-ignore
-        this.files = [];
     })
 
     function render(){

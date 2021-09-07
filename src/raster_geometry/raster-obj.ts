@@ -2,13 +2,12 @@ import Shader from "../shading/shader";
 
 export class RasterObj {
     /**
-     * The buffer containing the box's vertices
+     * The buffer containing the objectss vertices
      */
     vertexBuffer: WebGLBuffer;
 
-    texCoords: WebGLBuffer;
     /**
-     * The buffer containing the box's texture normals
+     * The buffer containing the objects normals
      */
     normalBuffer: WebGLBuffer;
 
@@ -37,12 +36,11 @@ export class RasterObj {
 
         let lines = src.split('\n');
 
-        debugger;
-
         let initialVertices: Array<number> = [];
         let initialNormals: Array<number> = [];
 
-        let vectors: Array<number> = [];
+        let verticesIndices: Array<number> = [];
+        let normalIndices: Array<number> = [];
         let vertices: Array<number> = [];
         let normals: Array<number> = [];
         let indices: Array<number> = [];
@@ -57,21 +55,25 @@ export class RasterObj {
                 initialNormals.push(parseFloat(result[1]), parseFloat(result[2]), parseFloat(result[3]));
             } else if ((result = FACE.exec(line)) != null) {
 
-                // Create three vertices from the passed one-indexed indices
+                // Save the indices for the initial vertices and normals
                 for (var i = 1; i < 10; i += 3) {
                     var part = result.slice(i, i + 3)
-                    vectors.push(parseInt(part[0])-1);
-                    normals.push(parseInt(part[2])-1);
+                    verticesIndices.push(parseInt(part[0])-1);
+                    normalIndices.push(parseInt(part[2])-1);
                 }
             }
 
         });
-        vectors.forEach(function (num) {
+
+        verticesIndices.forEach(function (num) {
             vertices.push(initialVertices[num * 3], initialVertices[num * 3 + 1], initialVertices[num * 3 + 2]);
-            //normals.push(initialNormals[num * 3], initialNormals[num * 3 + 1], initialNormals[num * 3 + 2]);
             let length = indices.length;
-            indices.push(length, length + 1, length + 2);
+            indices.push(length);
         });
+        normalIndices.forEach(num => {
+            normals.push(initialNormals[num * 3], initialNormals[num * 3 + 1], initialNormals[num * 3 + 2]);
+        });
+
         const vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -83,12 +85,14 @@ export class RasterObj {
         this.indexBuffer = indexBuffer;
         this.elements = indices.length;
 
-        // For each of the vertices, I add a RGB color
         let colorArray = [];
-        for (let i = 0; i < indices.length / 3; i++) {
-            colorArray.push(Math.random(), Math.random(), Math.random());
+        let c1 = Math.random();
+        let c2 = Math.random();
+        let c3 = Math.random();
+        for (let i = 0; i < indices.length; i++) {
+            colorArray.push(c1, c2, c3);
         }
-        // Creates a new buffer, binds it so we reference the right buffer and then saves the color array to the buffer
+
         const colorBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colorArray), gl.STATIC_DRAW);
@@ -98,7 +102,7 @@ export class RasterObj {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(normals), this.gl.STATIC_DRAW);
         this.normalBuffer = normalBuffer;
-
+        debugger;
     }
 
     render(shader: Shader) {
