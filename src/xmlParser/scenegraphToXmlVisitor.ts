@@ -11,7 +11,14 @@ import {
 } from "../nodes/nodes";
 import {Rotation, Scaling, Translation} from "../math_library/transformation";
 import Vector from "../math_library/vector";
-import {DriverNode, JumperNode, MoveCameraNode, RotateCameraNode, RotationNode} from "../nodes/animation-nodes";
+import {
+    DriverNode,
+    FreeFlightNode,
+    JumperNode,
+    MoveCameraNode,
+    RotateCameraNode,
+    RotationNode
+} from "../nodes/animation-nodes";
 
 /**
  * Converts the Scenegraph into a String that will later be saved to a file
@@ -35,7 +42,7 @@ export class ScenegraphToXmlVisitor implements Visitor {
      * @param rootNode The root node of the scenegraph
      * @param animationNodes The animation nodes used with the scenegraoh
      */
-    setup(rootNode: Node, animationNodes : (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[] ) {
+    setup(rootNode: Node, animationNodes : (DriverNode | JumperNode | RotationNode | FreeFlightNode)[] ) {
         this.animatedGroupNodes = new Map<GroupNode, String>();
         let animationNodesString ="";
         for (let i = 0; i < animationNodes.length; i++) {
@@ -50,10 +57,8 @@ export class ScenegraphToXmlVisitor implements Visitor {
                 animationNodesString += "<JumperNode id=\"a" + i + "\" axis=\"" +axis.x+ "," + axis.y + "," + axis.z + "," + axis.w + "\" magnitude=\"" + magnitude +"\"></JumperNode>\n";
             } else if(node instanceof DriverNode){
                 animationNodesString += "<DriverNode id=\"a" + i + "\"></DriverNode>\n";
-            } else if(node instanceof MoveCameraNode){
-                animationNodesString += "<MoveCameraNode id=\"a" + i + "\"></MoveCameraNode>\n";
-            } else if(node instanceof RotateCameraNode){
-                animationNodesString += "<RotateCameraNode id=\"a" + i + "\"></RotateCameraNode>\n";
+            } else if(node instanceof FreeFlightNode){
+                animationNodesString += "<FreeFlightNode id=\"a" + i + "\"></FreeFlightNode>\n";
             }
         }
         rootNode.accept(this);
@@ -91,6 +96,19 @@ export class ScenegraphToXmlVisitor implements Visitor {
         } else if(node.transform instanceof Scaling){
             let scale : Vector = new Vector(node.transform.getMatrix().getVal(0,0), node.transform.getMatrix().getVal(1,1), node.transform.getMatrix().getVal(2,2),node.transform.getMatrix().getVal(3,3));
             let gn : string = "<GroupNode scaling=\"" +scale.x+ "," + scale.y + "," + scale.z + "," + scale.w + "\""
+            if(this.animatedGroupNodes.get(node)){
+                gn +=" id=\"" + this.animatedGroupNodes.get(node) + "\"";
+            }
+            gn += ">\n";
+            this._xmlString += gn;
+        }else if(node.transform instanceof FreeFlightNode){
+            let pos : Vector = new Vector(node.transform.getMatrix().getVal(0,3), node.transform.getMatrix().getVal(1,3), node.transform.getMatrix().getVal(2,3),node.transform.getMatrix().getVal(3,3));
+            let axis = node.transform.axis;
+            let angleX = node.transform.angleX;
+            let angleY = node.transform.angleY;
+            let angleZ = 0;
+            let gn="<GroupNode freeflight=\"true\" translation=\"" +pos.x+ "," + pos.y + "," + pos.z + "," + pos.w + "\" rotation=\"" +axis.x+ "," + axis.y + "," + axis.z + "," + axis.w + "\" angleX=\"" + angleX + "\" " + "angleY=\"" + angleY + "\" angleZ=\"" + angleZ + "\""
+
             if(this.animatedGroupNodes.get(node)){
                 gn +=" id=\"" + this.animatedGroupNodes.get(node) + "\"";
             }

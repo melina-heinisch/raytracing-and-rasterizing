@@ -90,6 +90,75 @@ export class Scaling extends MatrixTransformation {
     }
 }
 
+export class FreeFlight extends MatrixTransformation {
+    private _translation: Vector;
+    private _axis: Vector;
+    private _angleX: number;
+    private _angleY: number;
+    private _angleZ: number;
+
+
+
+    constructor(translation: Vector, axis: Vector, angleX: number, angleY : number, angleZ : number) {
+
+        let matrix = (Matrix.rotation(axis, angleX,angleY,angleZ)).mul(Matrix.translation(translation));
+        let inverseMatrix = (Matrix.rotation(axis, -angleX,-angleY,-angleZ)).mul(Matrix.translation(translation.mul(-1)));
+        super(matrix,inverseMatrix);
+
+        this._translation = translation;
+        this._axis = axis;
+        this._angleX = angleX;
+        this._angleY = angleY;
+        this._angleZ = angleZ
+    }
+
+
+    get translation(): Vector {
+        return this._translation;
+    }
+
+    set translation(value: Vector) {
+        this._translation = value;
+    }
+
+    get axis(): Vector {
+        return this._axis;
+    }
+
+    set axis(value: Vector) {
+        this._axis = value;
+    }
+
+    get angleX(): number {
+        return this._angleX;
+    }
+
+    set angleX(value: number) {
+        this._angleX = value;
+    }
+
+    get angleY(): number {
+        return this._angleY;
+    }
+
+    set angleY(value: number) {
+        this._angleY = value;
+    }
+
+    get angleZ(): number {
+        return this._angleZ;
+    }
+
+    set angleZ(value: number) {
+        this._angleZ = value;
+    }
+
+    private  recalculate() {
+    this.matrix = (Matrix.rotation(this.axis, this.angleX,this.angleY, this.angleZ)).mul(Matrix.translation(this.translation));
+    this.inverse = (Matrix.rotation(this.axis, -this.angleX,-this.angleY,-this.angleZ)).mul(Matrix.translation(this.translation.mul(-1)));
+    }
+}
+
 export class SQT extends MatrixTransformation {
     scale: Vector;
     quaternion: Quaternion;

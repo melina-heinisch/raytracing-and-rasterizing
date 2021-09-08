@@ -8,8 +8,15 @@ import {
     TextureBoxNode
 } from '../nodes/nodes';
 
-import {Rotation, Scaling, Translation} from '../math_library/transformation';
-import {DriverNode, JumperNode, MoveCameraNode, RotateCameraNode, RotationNode} from '../nodes/animation-nodes';
+import {FreeFlight, Rotation, Scaling, Translation} from '../math_library/transformation';
+import {
+    DriverNode,
+    FreeFlightNode,
+    JumperNode,
+    MoveCameraNode,
+    RotateCameraNode,
+    RotationNode
+} from '../nodes/animation-nodes';
 
 /**
  * Converts an xml file (stored in a NodeList of ChildNodes) into a scenegraph to use for the render engines
@@ -32,7 +39,7 @@ export class XmlToScenegraph {
     /**
      * The animation Nodes to be used with the scenegraph
      */
-    animationNodes: (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[];
+    animationNodes: (DriverNode | JumperNode | RotationNode | FreeFlightNode)[];
     /**
      * Stores the group nodes that have animation nodes attatched to them,
      * with an unique id as key/identifiyer. The corresponding animation node
@@ -80,10 +87,8 @@ export class XmlToScenegraph {
                 this.createRotationNode(children[i]);
             } else if(children[i].nodeName === "DriverNode"){
                 this.createDriverNode(children[i]);
-            } else if(children[i].nodeName === "MoveCameraNode"){
-                this.createMoveCameraNode(children[i]);
-            } else if(children[i].nodeName === "RotateCameraNode"){
-                this.createRotateCameraNode(children[i]);
+            } else if(children[i].nodeName === "FreeFlightNode"){
+                this.createFreeFlightNode(children[i]);
             }
 
 
@@ -101,7 +106,28 @@ export class XmlToScenegraph {
      */
     // @ts-ignore
     createGroupNode(childNode){
-        if (childNode.attributes.translation) {
+        if(childNode.attributes.freeflight){
+            let translation = this.getOneValue(childNode.attributes.translation.value);
+            let axis = this.getOneValue(childNode.attributes.rotation.value);
+            let angleX = parseFloat(childNode.attributes.angleX.value);
+            let angleY = parseFloat(childNode.attributes.angleY.value);
+            let angleZ = parseFloat(childNode.attributes.angleZ.value);
+
+            let node = new GroupNode(new FreeFlight(new Vector(translation[0],translation[1],translation[2],translation[3]),new Vector(axis[0], axis[1], axis[2], axis[3]), angleX,angleY,angleZ));
+
+            if(this._head === null){
+                this._head = node;
+                this.currentGroupNode = this._head;
+            }else {
+                this.currentGroupNode.add(node);
+                this.oldGroupNodes.push(this.currentGroupNode);
+                this.currentGroupNode = node;
+                if (childNode.attributes.id) {
+                    this.animatedGroupNodes.set(childNode.attributes.id.value, node);
+                }
+            }
+
+        } else if (childNode.attributes.translation) {
             let values = this.getOneValue(childNode.attributes.translation.value);
             let node = new GroupNode(new Translation(new Vector(values[0], values[1], values[2], values[3])));
             if(this._head === null){
@@ -280,29 +306,16 @@ export class XmlToScenegraph {
     }
 
     /**
-     * Creates a node to move the camera along all axis'
+     * Creates a node to move and rotate the camera along all axis'
      * with the values retrieved from the xml attributes
      * @param childNode The xml node to use
      */
     // @ts-ignore
-    createMoveCameraNode(childNode){
+    createFreeFlightNode(childNode){
         if(childNode.attributes.id){
             let id = childNode.attributes.id.value;
             let gn : GroupNode = this.animatedGroupNodes.get(id);
-            this.animationNodes.push(new MoveCameraNode(gn));
-        }
-    }
-    /**
-     * Creates a node to rotate the camera around the y- and z-axis
-     * with the values retrieved from the xml attributes
-     * @param childNode The xml node to use
-     */
-    // @ts-ignore
-    createRotateCameraNode(childNode){
-        if(childNode.attributes.id){
-            let id = childNode.attributes.id.value;
-            let gn : GroupNode = this.animatedGroupNodes.get(id);
-            this.animationNodes.push(new RotateCameraNode(gn));
+            this.animationNodes.push(new FreeFlightNode(gn));
         }
     }
 

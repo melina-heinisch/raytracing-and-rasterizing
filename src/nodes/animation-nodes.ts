@@ -1,6 +1,6 @@
 import Vector from '../math_library/vector';
 import { GroupNode } from './nodes';
-import {Rotation, SQT, Translation} from '../math_library/transformation';
+import {FreeFlight, Rotation, SQT, Translation} from '../math_library/transformation';
 import Quaternion from '../math_library/quaternion';
 
 /**
@@ -172,7 +172,7 @@ export class JumperNode extends AnimationNode {
       } else if ( this.translation === 0){
         this.direction *= -1;
       }
-      
+
       if(this.direction >0){
         this.translation += (deltaT/250) % this._magnitude;
       }else{
@@ -476,6 +476,194 @@ export class RotateCameraNode extends AnimationNode {
     }
 
 
+
+  set axis(value: Vector) {
+    this._axis = value;
+  }
+
+  set yActive(value: boolean) {
+    this._yActive = value;
+  }
+
+  set xActive(value: boolean) {
+    this._xActive = value;
+  }
+
+  set directionX(value: number) {
+    this._directionX = value;
+  }
+  set directionY(value: number) {
+    this._directionY = value;
+  }
+}
+
+export class FreeFlightNode extends AnimationNode{
+  /**
+   * How far the object has moved and is moving in x direction
+   */
+  xOffset: number;
+  /**
+   * How far the object has moved and is moving in y direction
+   */
+  yOffset: number;
+  /**
+   * How far the object has moved and is moving in z direction
+   */
+  zOffset: number;
+  /**
+   * The group node to attach to
+   */
+  groupNode: GroupNode;
+  /**
+   * Either of the indicate, if the corresponding button is being pressed or not
+   */
+  private _xNegActive : boolean;
+  private _xPosActive : boolean;
+  private _yNegActive : boolean;
+  private _yPosActive : boolean;
+  private _zNegActive : boolean;
+  private _zPosActive : boolean;
+
+  /**
+   * The absolute angle in x direction of the rotation
+   */
+  private _angleX: number;
+  /**
+   * The absolute angle in y direction of the rotation
+   */
+  private _angleY: number;
+  /**
+   * The vector to rotate around
+   */
+  private _axis: Vector;
+
+  /**
+   * Direction (pos/neg) of rotation in x direction
+   */
+  private _directionX: number;
+
+  /**
+   * Direction (pos/neg) of rotation in y direction
+   */
+  private _directionY: number;
+
+  /**
+   * The indicator if key is pressed
+   */
+  private _yActive: boolean;
+
+  /**
+   * The indicator if key is pressed
+   */
+  private _xActive: boolean;
+
+  /**
+   * Creates a new MoveCameraNode
+   * @param groupNode The group node to attach to
+   */
+  constructor(groupNode: GroupNode) {
+    super(groupNode);
+    this.groupNode = groupNode;
+    let transformation = this.groupNode.transform;
+
+    this._xNegActive = false;
+    this._xPosActive = false;
+    this._yNegActive = false;
+    this._yPosActive = false;
+    this._zNegActive = false;
+    this._zPosActive = false;
+    let translationVector = new Vector(0,0,0,1);
+    if(transformation instanceof FreeFlight){
+      translationVector = transformation.translation;
+    }
+    this.xOffset = translationVector.x;
+    this.yOffset = translationVector.y;
+    this.zOffset = translationVector.z;
+
+    this._axis = new Vector(1,1,0,1);
+    this._yActive = false;
+    this._xActive = false;
+    this._directionX = 1;
+    this._directionY = 1;
+    if(transformation instanceof FreeFlight){
+      this._angleX = transformation.angleX;
+      this._angleY = transformation.angleY;
+    }else {
+      this._angleX = 0;
+      this._angleY = 0;
+    }
+  }
+
+  simulate(deltaT : number){
+    if(this.active){
+      if (this._xPosActive){
+        this.xOffset += deltaT/500;
+      } else if (this._xNegActive){
+        this.xOffset -= deltaT/500;
+      }
+      if (this._yPosActive){
+        this.yOffset += deltaT/500;
+      }  else if (this._yNegActive){
+        this.yOffset -= deltaT/500;
+      }
+      if (this._zPosActive){
+        this.zOffset += deltaT/500;
+      } else if (this._zNegActive){
+        this.zOffset -= deltaT/500;
+      }
+
+      if(this._xActive) {
+        if (this._directionX < 0) {
+          this._angleX += deltaT / 1000;
+        } else {
+          this._angleX -= deltaT / 1000;
+        }
+      }
+      if(this._yActive) {
+        if (this._directionY < 0) {
+          this._angleY += deltaT / 1000;
+        } else {
+          this._angleY -= deltaT / 1000;
+        }
+      }
+
+      this.groupNode.transform = new FreeFlight(new Vector(this.xOffset, this.yOffset, this.zOffset, 1),this._axis, this._angleX, this._angleY, 0);
+
+    }
+  }
+
+
+  get angleX(): number {
+    return this._angleX;
+  }
+
+  get angleY(): number {
+    return this._angleY;
+  }
+
+  set xNegActive(value: boolean) {
+    this._xNegActive = value;
+  }
+
+  set xPosActive(value: boolean) {
+    this._xPosActive = value;
+  }
+
+  set yNegActive(value: boolean) {
+    this._yNegActive = value;
+  }
+
+  set yPosActive(value: boolean) {
+    this._yPosActive = value;
+  }
+
+  set zNegActive(value: boolean) {
+    this._zNegActive = value;
+  }
+
+  set zPosActive(value: boolean) {
+    this._zPosActive = value;
+  }
 
   set axis(value: Vector) {
     this._axis = value;
