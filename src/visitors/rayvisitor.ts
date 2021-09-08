@@ -73,20 +73,20 @@ export default class RayVisitor implements Visitor {
         if (this.intersection) {
           if(this.intersectionColor2){
             if(y % 20 >= 10){ //kugeln zweifarbig (gestreift) darstellen
-              let color = phong(this.intersectionColor1, this.intersection, lightPositions, shininess, camera.origin);
+              let color = phong(this.intersectionColor1, this.intersection, lightPositions, shininess, ambient, diffuse, specular, camera.origin);
               data[4 * (width * y + x)] = color.r * 255;
               data[4 * (width * y + x) + 1] = color.g * 255;
               data[4 * (width * y + x) + 2] = color.b * 255;
               data[4 * (width * y + x) + 3] = 255;
             } else {
-              let color = phong(this.intersectionColor2, this.intersection, lightPositions, shininess, camera.origin);
+              let color = phong(this.intersectionColor2, this.intersection, lightPositions, shininess, ambient, diffuse, specular, camera.origin);
               data[4 * (width * y + x)] = color.r * 255;
               data[4 * (width * y + x) + 1] = color.g * 255;
               data[4 * (width * y + x) + 2] = color.b * 255;
               data[4 * (width * y + x) + 3] = 255;
             }
           }else {
-            let color = phong(this.intersectionColor1, this.intersection, lightPositions, shininess, camera.origin);
+            let color = phong(this.intersectionColor1, this.intersection, lightPositions, shininess, ambient, diffuse, specular, camera.origin);
             data[4 * (width * y + x)] = color.r * 255;
             data[4 * (width * y + x) + 1] = color.g * 255;
             data[4 * (width * y + x) + 2] = color.b * 255;
