@@ -7,15 +7,18 @@ import Intersection from '../math_library/intersection';
  * @param intersection The intersection information
  * @param lightPositions The light positions
  * @param shininess The shininess parameter of the Phong model
+ * @param ambient The ambient parameter of the Phong model
+ * @param diffuse The diffuse parameter of the Phong model
+ * @param specular The specular parameter of the Phong model
  * @param cameraPosition The position of the camera
  * @return The resulting colour
  */
-export default function phong(color: Vector, intersection: Intersection, lightPositions: Array<Vector>, shininess: number, cameraPosition: Vector): Vector {
+export default function phong(color: Vector, intersection: Intersection, lightPositions: Array<Vector>, shininess: number, ambient: number, diffuse: number, specular: number, cameraPosition: Vector): Vector {
 
     const lightColor = new Vector(0.8, 0.8, 0.8, 0);
-    const kA = 0.8; // Ambient reflectivity coefficient
-    const kD = 0.5; // Diffuse reflectivity coefficient
-    const kS = 0.5; // Specular reflectivity coefficient
+    const kA = ambient; // Ambient reflectivity coefficient
+    const kD = diffuse; // Diffuse reflectivity coefficient
+    const kS = specular; // Specular reflectivity coefficient
 
     const intersectionPoint = intersection.point;
     const surfaceNormal = intersection.normal;

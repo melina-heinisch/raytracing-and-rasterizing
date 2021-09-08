@@ -38,12 +38,17 @@ window.addEventListener('load', () => {
 
     //Variables that are used by both render engines
     const lightAndCameraVisitor = new LightAndCameraVisitor();
-    let scenegraph : GroupNode;
+    let scenegraph: GroupNode;
     let isRasterizer = true;
     let animationHandle: number;
-    let parser : XmlToScenegraph= new XmlToScenegraph();
+    let parser: XmlToScenegraph = new XmlToScenegraph();
     let scenegraphString = "";
-    let animationNodes : (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[] = [];
+    let animationNodes: (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[] = [];
+
+    let shininess = 10;
+    let specular = 0.5;
+    let diffuse = 0.5;
+    let ambient = 0.8;
 
     function simulate(deltaT: number) {
         for (let animationNode of animationNodes) {
@@ -54,11 +59,11 @@ window.addEventListener('load', () => {
     loadXMLScenegraph();
 
     //Download via https://gist.github.com/liabru/11263260
-    document.getElementById('download').addEventListener('click',function (){
+    document.getElementById('download').addEventListener('click', function () {
         let toXMLParser = new ScenegraphToXMLVisitor();
-        toXMLParser.setup(scenegraph,animationNodes);
-        let  blob = new Blob([toXMLParser.xmlString], { type: 'text/plain' });
-        let  anchor = document.createElement('a');
+        toXMLParser.setup(scenegraph, animationNodes);
+        let blob = new Blob([toXMLParser.xmlString], {type: 'text/plain'});
+        let anchor = document.createElement('a');
 
         anchor.download = "scenegraph.xml";
         anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
@@ -66,14 +71,14 @@ window.addEventListener('load', () => {
         anchor.click();
     })
 
-    document.getElementById('upload').addEventListener('click',function (){
+    document.getElementById('upload').addEventListener('click', function () {
         let event = new MouseEvent('click', {bubbles: false});
         document.getElementById('uploadInput').dispatchEvent(event);
     });
 
     // Loads a custom XML Scenegraph
     // Picked together from https://stackoverflow.com/questions/3103962/converting-html-string-into-dom-elements and https://stackoverflow.com/questions/14155310/upload-file-as-string-to-javascript-variable
-    document.getElementById('uploadInput').addEventListener('change',function (){
+    document.getElementById('uploadInput').addEventListener('change', function () {
         //@ts-ignore
         let files = this.files;
         if (files.length === 0) {
@@ -81,7 +86,7 @@ window.addEventListener('load', () => {
         }
 
         let reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
             let result = event.target.result.toString();
             scenegraphString = result;
             let doc = new DOMParser().parseFromString(result, "text/xml");
@@ -100,9 +105,9 @@ window.addEventListener('load', () => {
     //https://www.w3schools.com/xml/met_element_getattribute.asp
     // Only works when rendering is started in the onreadystatechange function
     // as otherwise the scenegraph is not loaded yet
-    function loadXMLScenegraph(){
+    function loadXMLScenegraph() {
         var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
+        xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
                 var xmlDoc = this.responseXML;
                 scenegraphString = new XMLSerializer().serializeToString(xmlDoc.documentElement);
@@ -117,16 +122,46 @@ window.addEventListener('load', () => {
         xhttp.send();
     }
 
-    function render(){
-        if(isRasterizer){
+    const shininessElement = document.getElementById("shininess") as HTMLInputElement;
+    shininessElement.onchange = function () {
+        shininess = Number(shininessElement.value);
+        render()
+    }
+    const specularElement = document.getElementById("specular") as HTMLInputElement;
+    specularElement.onchange = function () {
+        specular = convertRange(Number(specularElement.value));
+        render()
+    }
+    const diffuseElement = document.getElementById("diffuse") as HTMLInputElement;
+    diffuseElement.onchange = function () {
+        diffuse = convertRange(Number(diffuseElement.value));
+        render()
+    }
+    const ambientElement = document.getElementById("ambient") as HTMLInputElement;
+    ambientElement.onchange = function () {
+        ambient = convertRange(Number(ambientElement.value));
+        render()
+    }
+
+    function convertRange(num: number){
+        let oldMin = 1;
+        let oldMax = 50;
+        let newMin = 0;
+        let range = 1;
+        let oldRange = Math.abs(oldMax-oldMin);
+        return (((num - oldMin) * range) / oldRange) + newMin;
+    }
+
+    function render() {
+        if (isRasterizer) {
             renderRasterizer(scenegraph);
-        } else{
+        } else {
             renderRaytracer(scenegraph);
         }
     }
 
-    function renderRasterizer(scenegraph : GroupNode){
-        if(animationHandle){
+    function renderRasterizer(scenegraph: GroupNode) {
+        if (animationHandle) {
             window.cancelAnimationFrame(animationHandle);
         }
         rayCanvas.classList.add("hidden");
@@ -136,15 +171,16 @@ window.addEventListener('load', () => {
         let lastTimestamp = performance.now();
 
         function animate(timestamp: number) {
-            if(isRasterizer){
+            if (isRasterizer) {
                 simulate(timestamp - lastTimestamp);
                 lightAndCameraVisitor.clear();
                 lightAndCameraVisitor.setup(scenegraph);
-                rasterVisitor.render(scenegraph, lightAndCameraVisitor.rasterCamera, lightAndCameraVisitor.lightPositions);
+                rasterVisitor.render(scenegraph, lightAndCameraVisitor.rasterCamera, lightAndCameraVisitor.lightPositions, shininess, specular, ambient, diffuse);
                 lastTimestamp = timestamp;
                 animationHandle = window.requestAnimationFrame(animate);
             }
         }
+
         Promise.all(
             [phongShader.load(), textureShader.load()]
         ).then(x =>
@@ -152,8 +188,8 @@ window.addEventListener('load', () => {
         );
     }
 
-    function renderRaytracer(scenegraph : GroupNode){
-        if(animationHandle){
+    function renderRaytracer(scenegraph: GroupNode) {
+        if (animationHandle) {
             window.cancelAnimationFrame(animationHandle);
         }
         rasterCanvas.classList.add("hidden");
@@ -164,7 +200,7 @@ window.addEventListener('load', () => {
         let animationHasStarted = true;
 
         function animate(timestamp: number) {
-            if(!isRasterizer){
+            if (!isRasterizer) {
                 let deltaT = timestamp - lastTimestamp;
                 if (animationHasStarted) {
                     deltaT = 0;
@@ -175,18 +211,19 @@ window.addEventListener('load', () => {
                 simulate(deltaT);
                 lightAndCameraVisitor.clear();
                 lightAndCameraVisitor.setup(scenegraph);
-                rayVisitor.render(scenegraph, lightAndCameraVisitor.rayCamera, lightAndCameraVisitor.lightPositions);
+                rayVisitor.render(scenegraph, lightAndCameraVisitor.rayCamera, lightAndCameraVisitor.lightPositions, shininess, specular, ambient, diffuse);
                 animationHandle = window.requestAnimationFrame(animate);
             }
         }
+
         animate(0);
     }
 
     window.addEventListener('keydown', function (event) {
         switch (event.key) {
             case "4":
-                animationNodes.forEach(node =>{
-                    if(node instanceof JumperNode) {
+                animationNodes.forEach(node => {
+                    if (node instanceof JumperNode) {
                         node.toggleActive();
                         if (node.active) {
                             document.getElementById("toggleJumper").style.color = "limegreen";
@@ -199,13 +236,13 @@ window.addEventListener('load', () => {
                 })
                 break;
             case "5":
-                animationNodes.forEach(node =>{
-                    if(node instanceof DriverNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof DriverNode) {
                         node.toggleActive();
-                        if(node.active){
+                        if (node.active) {
                             document.getElementById("toggleDriver").style.color = "limegreen";
                             document.getElementById("toggleDriver").innerText = "Driver ausschalten = 5";
-                        }else{
+                        } else {
                             document.getElementById("toggleDriver").style.color = "black";
                             document.getElementById("toggleDriver").innerText = "Driver einschalten = 5";
                         }
@@ -214,13 +251,13 @@ window.addEventListener('load', () => {
                 })
                 break;
             case "6":
-                animationNodes.forEach(node =>{
-                    if(node instanceof RotationNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof RotationNode) {
                         node.toggleActive();
-                        if(node.active){
+                        if (node.active) {
                             document.getElementById("toggleRotor").style.color = "limegreen";
                             document.getElementById("toggleRotor").innerText = "Rotor ausschalten = 6";
-                        }else{
+                        } else {
                             document.getElementById("toggleRotor").style.color = "black";
                             document.getElementById("toggleRotor").innerText = "Rotor einschalten = 6";
                         }
@@ -246,8 +283,8 @@ window.addEventListener('load', () => {
             case "1":
                 for (let i = 0; i < animationNodes.length; i++) {
                     let node = animationNodes[i];
-                    if(node instanceof JumperNode){
-                        node.axis = new Vector(1,0,0,1);
+                    if (node instanceof JumperNode) {
+                        node.axis = new Vector(1, 0, 0, 1);
                     }
                 }
                 document.getElementById("xDirection").style.color = "limegreen";
@@ -258,8 +295,8 @@ window.addEventListener('load', () => {
             case "2":
                 for (let i = 0; i < animationNodes.length; i++) {
                     let node = animationNodes[i];
-                    if(node instanceof JumperNode){
-                        node.axis = new Vector(0,1,0,1);
+                    if (node instanceof JumperNode) {
+                        node.axis = new Vector(0, 1, 0, 1);
                     }
                 }
                 document.getElementById("xDirection").style.color = "black";
@@ -270,8 +307,8 @@ window.addEventListener('load', () => {
             case "3":
                 for (let i = 0; i < animationNodes.length; i++) {
                     let node = animationNodes[i];
-                    if(node instanceof JumperNode){
-                        node.axis = new Vector(0,0,1,1);
+                    if (node instanceof JumperNode) {
+                        node.axis = new Vector(0, 0, 1, 1);
                     }
                 }
                 document.getElementById("xDirection").style.color = "black";
@@ -280,109 +317,109 @@ window.addEventListener('load', () => {
                 break;
 
             case "ArrowUp":
-                animationNodes.forEach(node =>{
-                    if(node instanceof DriverNode) {
+                animationNodes.forEach(node => {
+                    if (node instanceof DriverNode) {
                         node.yPosActive = true;
                     }
                 })
                 break;
 
             case "ArrowDown":
-                animationNodes.forEach(node =>{
-                    if(node instanceof DriverNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof DriverNode) {
                         node.yNegActive = true;
                     }
                 })
                 break;
 
             case "ArrowRight":
-                animationNodes.forEach(node =>{
-                    if(node instanceof DriverNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof DriverNode) {
                         node.xPosActive = true;
                     }
                 })
                 break;
 
             case "ArrowLeft":
-                animationNodes.forEach(node =>{
-                    if(node instanceof DriverNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof DriverNode) {
                         node.xNegActive = true;
                     }
                 })
                 break;
             case "w":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.zNegActive = true;
                     }
                 })
                 break;
             case "s":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.zPosActive = true;
                     }
                 })
                 break;
 
             case "d":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.xPosActive = true;
                     }
                 })
                 break;
             case "a":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.xNegActive = true;
                     }
                 })
                 break;
             case "e":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.yPosActive = true;
                     }
                 })
                 break;
             case "q":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.yNegActive = true;
                     }
                 })
                 break;
-            case "y":{
+            case "y": {
                 animationNodes.forEach(node => {
-                    if(node instanceof RotateCameraNode){
+                    if (node instanceof RotateCameraNode) {
                         node.yActive = true;
                         node.directionY = -1;
                     }
                 })
                 break;
             }
-            case "x":{
+            case "x": {
                 animationNodes.forEach(node => {
-                    if(node instanceof RotateCameraNode){
+                    if (node instanceof RotateCameraNode) {
                         node.yActive = true;
                         node.directionY = 1;
                     }
                 })
                 break;
             }
-            case "c":{
+            case "c": {
                 animationNodes.forEach(node => {
-                    if(node instanceof RotateCameraNode){
+                    if (node instanceof RotateCameraNode) {
                         node.xActive = true;
                         node.directionX = 1;
                     }
                 })
                 break;
             }
-            case "f":{
+            case "f": {
                 animationNodes.forEach(node => {
-                    if(node instanceof RotateCameraNode){
+                    if (node instanceof RotateCameraNode) {
                         node.xActive = true;
                         node.directionX = -1;
                     }
@@ -395,103 +432,103 @@ window.addEventListener('load', () => {
     window.addEventListener('keyup', function (event) {
         switch (event.key) {
             case "ArrowUp":
-                animationNodes.forEach(node =>{
-                    if(node instanceof DriverNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof DriverNode) {
                         node.yPosActive = false;
                     }
                 })
                 break;
             case "ArrowDown":
-                animationNodes.forEach(node =>{
-                    if(node instanceof DriverNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof DriverNode) {
                         node.yNegActive = false;
                     }
                 })
                 break;
             case "ArrowRight":
-                animationNodes.forEach(node =>{
-                    if(node instanceof DriverNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof DriverNode) {
                         node.xPosActive = false;
                     }
                 })
                 break;
             case  "ArrowLeft":
-                animationNodes.forEach(node =>{
-                    if(node instanceof DriverNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof DriverNode) {
                         node.xNegActive = false;
                     }
                 })
                 break;
             case "w":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.zNegActive = false;
                     }
                 })
                 break;
             case "s":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.zPosActive = false;
                     }
                 })
                 break;
 
             case "d":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.xPosActive = false;
                     }
                 })
                 break;
             case "a":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.xNegActive = false;
                     }
                 })
                 break;
             case "e":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.yPosActive = false;
                     }
                 })
                 break;
             case "q":
-                animationNodes.forEach(node=>{
-                    if(node instanceof MoveCameraNode){
+                animationNodes.forEach(node => {
+                    if (node instanceof MoveCameraNode) {
                         node.yNegActive = false;
                     }
                 })
                 break;
-            case "y":{
+            case "y": {
                 animationNodes.forEach(node => {
-                    if(node instanceof RotateCameraNode){
+                    if (node instanceof RotateCameraNode) {
                         node.yActive = false;
                     }
                 })
                 break;
             }
-            case "x":{
+            case "x": {
                 animationNodes.forEach(node => {
-                    if(node instanceof RotateCameraNode){
+                    if (node instanceof RotateCameraNode) {
                         node.yActive = false;
                     }
                 })
                 break;
             }
-            case "c":{
+            case "c": {
                 animationNodes.forEach(node => {
-                    if(node instanceof RotateCameraNode){
+                    if (node instanceof RotateCameraNode) {
                         node.xActive = false;
                     }
                 })
                 break;
             }
-            case "f":{
+            case "f": {
                 animationNodes.forEach(node => {
-                    if(node instanceof RotateCameraNode){
+                    if (node instanceof RotateCameraNode) {
                         node.xActive = false;
                     }
                 })
