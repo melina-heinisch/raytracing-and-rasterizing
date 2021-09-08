@@ -87,8 +87,6 @@ export class XmlToScenegraph {
             } else if(children[i].nodeName === "ObjNode"){
                 this.createObjNode(children[i]);
             }
-
-
         }
     }
 
@@ -242,11 +240,10 @@ export class XmlToScenegraph {
      */
     // @ts-ignore
     createObjNode(childNode){
-        debugger;
-        let objSource= childNode.attributes.src.value;
-        let node = new ObjNode(objSource);
+        let objSource = childNode.attributes.src.value;
+        let lines = objSource.split(",");
+        let node = new ObjNode(lines);
         this.currentGroupNode.add(node);
-
     }
 
 
