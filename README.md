@@ -64,7 +64,7 @@ Dieses Repository beinhaltet das Projekt des Kurses  "Interaktive Computergraphi
 ```
 
 Das Projekt ist in mehreren Ordner thematisch aufgeteilt. 
-`dist` beinhaltet Ressourcen die im Browser direkt verwendet werden. In `objs` liegen Beispieldateien, welche durch unseren OBJ Loader in die Szene geladen werden können. 
+`dist` beinhaltet Ressourcen die im Browser direkt verwendet werden. In `objs` liegen Beispieldateien, welche durch unseren OBJ Loader in die Szene geladen werden können, in `textures` Texturen die von der Texture Box verwendet werden. 
 Unter `src` sind alle Quelldateien zusammengefasst, welche durch `webgl` transpiliert werden.
 Hierbei haben wir die Pakete entsprechend ihren Funktionen strukturiert:
 - `math-library`  umfasst jegliche mathematische Berechnungen die benötigt werden, so z.B. Matrizen
