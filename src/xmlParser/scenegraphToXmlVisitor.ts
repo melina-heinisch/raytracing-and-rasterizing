@@ -9,7 +9,7 @@ import {
     CameraNode,
     Node
 } from "../nodes/nodes";
-import {Rotation, Scaling, Translation} from "../math_library/transformation";
+import {FreeFlight, Rotation, Scaling, Translation} from "../math_library/transformation";
 import Vector from "../math_library/vector";
 import {
     DriverNode,
@@ -73,19 +73,20 @@ export class ScenegraphToXmlVisitor implements Visitor {
      * @param node The node to parse
      */
     visitGroupNode(node: GroupNode): void {
-        if(node.transform instanceof Translation){
-            let pos : Vector = new Vector(node.transform.getMatrix().getVal(0,3), node.transform.getMatrix().getVal(1,3), node.transform.getMatrix().getVal(2,3),node.transform.getMatrix().getVal(3,3));
+        let transformation = node.transform;
+        if(transformation instanceof Translation){
+            let pos : Vector = new Vector(transformation.getMatrix().getVal(0,3), transformation.getMatrix().getVal(1,3), transformation.getMatrix().getVal(2,3),transformation.getMatrix().getVal(3,3));
             let gn : string = "<GroupNode translation=\"" +pos.x+ "," + pos.y + "," + pos.z + "," + pos.w + "\"";
             if(this.animatedGroupNodes.get(node)){
                 gn +=" id=\"" + this.animatedGroupNodes.get(node) + "\"";
             }
             gn += ">\n";
             this._xmlString += gn;
-        } else if(node.transform instanceof Rotation){
-            let axis = node.transform.axis;
-            let angleX = node.transform.angleX;
-            let angleY = node.transform.angleY;
-            let angleZ = node.transform.angleZ;
+        } else if(transformation instanceof Rotation){
+            let axis = transformation.axis;
+            let angleX = transformation.angleX;
+            let angleY = transformation.angleY;
+            let angleZ = transformation.angleZ;
             let gn="<GroupNode rotation=\"" +axis.x+ "," + axis.y + "," + axis.z + "," + axis.w + "\" angleX=\"" + angleX + "\" " + "angleY=\"" + angleY + "\" angleZ=\"" + angleZ + "\""
 
             if(this.animatedGroupNodes.get(node)){
@@ -93,21 +94,18 @@ export class ScenegraphToXmlVisitor implements Visitor {
             }
             gn += ">\n";
             this._xmlString += gn;
-        } else if(node.transform instanceof Scaling){
-            let scale : Vector = new Vector(node.transform.getMatrix().getVal(0,0), node.transform.getMatrix().getVal(1,1), node.transform.getMatrix().getVal(2,2),node.transform.getMatrix().getVal(3,3));
+        } else if(transformation instanceof Scaling){
+            let scale : Vector = new Vector(transformation.getMatrix().getVal(0,0), transformation.getMatrix().getVal(1,1), transformation.getMatrix().getVal(2,2),transformation.getMatrix().getVal(3,3));
             let gn : string = "<GroupNode scaling=\"" +scale.x+ "," + scale.y + "," + scale.z + "," + scale.w + "\""
             if(this.animatedGroupNodes.get(node)){
                 gn +=" id=\"" + this.animatedGroupNodes.get(node) + "\"";
             }
             gn += ">\n";
             this._xmlString += gn;
-        }else if(node.transform instanceof FreeFlightNode){
-            let pos : Vector = new Vector(node.transform.getMatrix().getVal(0,3), node.transform.getMatrix().getVal(1,3), node.transform.getMatrix().getVal(2,3),node.transform.getMatrix().getVal(3,3));
-            let axis = node.transform.axis;
-            let angleX = node.transform.angleX;
-            let angleY = node.transform.angleY;
-            let angleZ = 0;
-            let gn="<GroupNode freeflight=\"true\" translation=\"" +pos.x+ "," + pos.y + "," + pos.z + "," + pos.w + "\" rotation=\"" +axis.x+ "," + axis.y + "," + axis.z + "," + axis.w + "\" angleX=\"" + angleX + "\" " + "angleY=\"" + angleY + "\" angleZ=\"" + angleZ + "\""
+        }else if(transformation instanceof FreeFlight){
+            let matrix = transformation.freeFlightMatrix.toString();
+            let inverseMatrix = transformation.inverseFreeFlightMatrix.toString();
+            let gn="<GroupNode matrix=\"" + matrix + "\" inverse=\"" + inverseMatrix + "\" "
 
             if(this.animatedGroupNodes.get(node)){
                 gn +=" id=\"" + this.animatedGroupNodes.get(node) + "\"";

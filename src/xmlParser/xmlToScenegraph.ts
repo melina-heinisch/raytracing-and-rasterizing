@@ -17,6 +17,7 @@ import {
     RotateCameraNode,
     RotationNode
 } from '../nodes/animation-nodes';
+import Matrix from "../math_library/matrix";
 
 /**
  * Converts an xml file (stored in a NodeList of ChildNodes) into a scenegraph to use for the render engines
@@ -106,14 +107,11 @@ export class XmlToScenegraph {
      */
     // @ts-ignore
     createGroupNode(childNode){
-        if(childNode.attributes.freeflight){
-            let translation = this.getOneValue(childNode.attributes.translation.value);
-            let axis = this.getOneValue(childNode.attributes.rotation.value);
-            let angleX = parseFloat(childNode.attributes.angleX.value);
-            let angleY = parseFloat(childNode.attributes.angleY.value);
-            let angleZ = parseFloat(childNode.attributes.angleZ.value);
+        if(childNode.attributes.matrix){
+            let matrix = new Matrix(this.getOneValue(childNode.attributes.matrix.value));
+            let inverseMatrix = new Matrix(this.getOneValue(childNode.attributes.inverse.value))
 
-            let node = new GroupNode(new FreeFlight(new Vector(translation[0],translation[1],translation[2],translation[3]),new Vector(axis[0], axis[1], axis[2], axis[3]), angleX,angleY,angleZ));
+            let node = new GroupNode(new FreeFlight(matrix,inverseMatrix));
 
             if(this._head === null){
                 this._head = node;
@@ -327,7 +325,7 @@ export class XmlToScenegraph {
     }
 
     /**
-     * Takes a string of 4 coordinates (one vector) seperated by ',' and
+     * Takes a string of 4 coordinates (one vector) or a 4x4 Matrix seperated by ',' and
      * returns them as numbers in an array
      * @param string The string of coordinated to parse
      */
@@ -337,10 +335,9 @@ export class XmlToScenegraph {
         }
         let result : Array<number> = [];
         let split = string.split(",");
-        result.push(parseFloat(split[0]));
-        result.push(parseFloat(split[1]));
-        result.push(parseFloat(split[2]));
-        result.push(parseFloat(split[3]));
+        split.forEach(i =>{
+            result.push(parseFloat(i));
+        })
 
         return result;
     }

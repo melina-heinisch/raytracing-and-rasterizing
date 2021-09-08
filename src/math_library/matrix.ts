@@ -286,4 +286,17 @@ export default class Matrix {
       );
     }
   }
+
+  toString(){
+      let result = "";
+      for (let i = 0; i < 16; i++) {
+          if(i!=15){
+              result+=this.data[i]+ ",";
+          }else{
+              result+=this.data[i];
+          }
+
+      }
+      return result;
+  }
 }

@@ -37,7 +37,7 @@
         </GroupNode>
     </GroupNode>
     <GroupNode translation="0,0,5,1">
-        <GroupNode freeflight="true" translation="0,0,0,1" rotation="1,1,0,1" angleX="0" angleY="0" angleZ="0" id="c1">
+        <GroupNode matrix="1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1" inverse="1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1" id="c1">
             <CameraNode/>
         </GroupNode>
     </GroupNode>

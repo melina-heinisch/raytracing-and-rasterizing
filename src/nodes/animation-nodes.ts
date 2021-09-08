@@ -564,7 +564,6 @@ export class FreeFlightNode extends AnimationNode{
   constructor(groupNode: GroupNode) {
     super(groupNode);
     this.groupNode = groupNode;
-    let transformation = this.groupNode.transform;
 
     this._xNegActive = false;
     this._xPosActive = false;
@@ -572,26 +571,18 @@ export class FreeFlightNode extends AnimationNode{
     this._yPosActive = false;
     this._zNegActive = false;
     this._zPosActive = false;
-    let translationVector = new Vector(0,0,0,1);
-    if(transformation instanceof FreeFlight){
-      translationVector = transformation.translation;
-    }
-    this.xOffset = translationVector.x;
-    this.yOffset = translationVector.y;
-    this.zOffset = translationVector.z;
+
+    this.xOffset = 0;
+    this.yOffset = 0;
+    this.zOffset = 0;
 
     this._axis = new Vector(1,1,0,1);
     this._yActive = false;
     this._xActive = false;
     this._directionX = 1;
     this._directionY = 1;
-    if(transformation instanceof FreeFlight){
-      this._angleX = transformation.angleX;
-      this._angleY = transformation.angleY;
-    }else {
-      this._angleX = 0;
-      this._angleY = 0;
-    }
+    this._angleX = 0;
+    this._angleY = 0;
   }
 
   simulate(deltaT : number){
@@ -627,7 +618,33 @@ export class FreeFlightNode extends AnimationNode{
         }
       }
 
-      this.groupNode.transform = new FreeFlight(new Vector(this.xOffset, this.yOffset, this.zOffset, 1),this._axis, this._angleX, this._angleY, 0);
+      let transformation = this.groupNode.transform as FreeFlight;
+      let matrix = transformation.freeFlightMatrix;
+      let inverse = transformation.inverseFreeFlightMatrix;
+
+      if(this.xOffset != 0 || this.yOffset != 0 || this.zOffset != 0){
+
+        let newTranslation = new Translation(new Vector(this.xOffset, this.yOffset, this.zOffset, 0));
+        matrix = matrix.mul(newTranslation.getMatrix());
+        inverse = newTranslation.getInverseMatrix().mul(inverse);
+        this.xOffset = 0;
+        this.yOffset = 0;
+        this.zOffset = 0;
+      }
+
+      if(this.angleX != 0 || this.angleY != 0) {
+
+        let newRotation = new Rotation(this._axis, this._angleX, this._angleY, 0);
+        matrix = matrix.mul(newRotation.getMatrix());
+        inverse = newRotation.getInverseMatrix().mul(inverse);
+        this._angleX = 0;
+        this._angleY = 0;
+      }
+
+      if(transformation.freeFlightMatrix.data != matrix.data && transformation.inverseFreeFlightMatrix.data != inverse.data){
+        this.groupNode.transform = new FreeFlight(matrix,inverse);
+      }
+
 
     }
   }
