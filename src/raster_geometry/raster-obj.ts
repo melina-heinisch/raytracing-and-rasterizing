@@ -27,13 +27,11 @@ export class RasterObj {
     elements: number;
 
     //https://www.toptal.com/javascript/3d-graphics-a-webgl-tutorial
-    constructor(private gl: WebGL2RenderingContext, src: String) {
+    constructor(private gl: WebGL2RenderingContext, objLines: string[]) {
         this.gl = gl;
         let POS = /^v\s+([\d\.\+\-eE]+)\s+([\d\.\+\-eE]+)\s+([\d\.\+\-eE]+)/
         let NORM = /^vn\s+([\d\.\+\-eE]+)\s+([\d\.\+\-eE]+)\s+([\d\.\+\-eE]+)/
         let FACE = /^f\s+(-?\d+)\/(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)\/(-?\d+)\s+(-?\d+)\/(-?\d+)\/(-?\d+)(?:\s+(-?\d+)\/(-?\d+)\/(-?\d+))?/
-
-        let lines = src.split('\n');
 
         let initialVertices: Array<number> = [];
         let initialNormals: Array<number> = [];
@@ -43,7 +41,8 @@ export class RasterObj {
         let vertices: Array<number> = [];
         let normals: Array<number> = [];
         let indices: Array<number> = [];
-        lines.forEach(function (line) {
+
+        objLines.forEach(function (line) {
             // Match each line of the file against various RegEx-es
             var result;
             if ((result = POS.exec(line)) != null) {

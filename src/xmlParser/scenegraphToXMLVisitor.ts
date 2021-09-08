@@ -193,7 +193,7 @@ export class ScenegraphToXMLVisitor implements Visitor {
     }
 
     visitObjNode(node: ObjNode): void {
-        let objNode = "<ObjNode src=\""+ node.src + "\"></ObjNode>\n";
+        let objNode = "<ObjNode src=\""+ node.objLines + "\"></ObjNode>\n";
         this._xmlString += objNode;
     }
 

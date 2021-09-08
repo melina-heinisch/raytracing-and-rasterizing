@@ -1,7 +1,7 @@
 import 'bootstrap';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './math_library/vector';
-import {AABoxNode, CameraNode, GroupNode, LightNode, ObjNode,} from './nodes/nodes';
+import {AABoxNode, CameraNode, GroupNode, LightNode, ObjNode} from './nodes/nodes';
 import {
     RasterVisitor,
     RasterSetupVisitor
@@ -133,43 +133,9 @@ window.addEventListener('load', () => {
         let reader = new FileReader();
         reader.onload = function(event) {
             let result = event.target.result.toString();
-            /*
-            let sg = new GroupNode(new Translation(new Vector(0,0,-5,1)));
-            let gnCamera = new GroupNode(new Translation(new Vector(0,0,5,1)));
-            let gnRotateCamera = new GroupNode(new Rotation(new Vector(0,0,0,1),0,0,0));
-            let gnMoveCamera = new GroupNode(new Translation(new Vector(0,0,0,1)));
-            let gnLight = new GroupNode(new Translation(new Vector(0,0,3,1)));
-
-            gnLight.add(new LightNode());
-            gnCamera.add(gnRotateCamera);
-            gnRotateCamera.add(gnMoveCamera);
-            gnMoveCamera.add(new CameraNode());
-            sg.add(new ObjNode(result));
-            sg.add(gnLight);
-            sg.add(gnCamera);
-
-            animationNodes = [new RotateCameraNode(gnRotateCamera),new MoveCameraNode(gnMoveCamera)];
-            scenegraph = sg;
-*/
-            let obj = new ObjNode(result);
+            let lines = result.split('\n');
+            let obj = new ObjNode(lines);
             scenegraph.add(obj);
-/*
-            let obj1 = document.createElement("objn");
-            obj1.setAttribute("source", result);
-            document.getElementById("maingn").appendChild(obj1);
-
- */
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    let xmlDoc = this.responseXML;
-                    let newElement = xmlDoc.createElement("obj");
-                    newElement.setAttribute("src", result);
-                    let x = xmlDoc.getElementById("maingn");
-                    x.appendChild(newElement);
-                }
-            };
-
             render()
         };
         reader.readAsText(files[0]);
