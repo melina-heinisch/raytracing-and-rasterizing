@@ -19,7 +19,7 @@ import texturePhongShader from './shading/texture-phong-fragment-shader.glsl';
 import RayVisitor from "./visitors/rayvisitor";
 import {XmlToScenegraph} from "./xmlParser/xmlToScenegraph";
 import {LightAndCameraVisitor} from "./visitors/lightAndCameraVisitor";
-import {ScenegraphToXMLVisitor} from "./xmlParser/scenegraphToXMLVisitor";
+import {ScenegraphToXmlVisitor} from "./xmlParser/scenegraphToXmlVisitor";
 
 window.addEventListener('load', () => {
 
@@ -60,7 +60,7 @@ window.addEventListener('load', () => {
 
     //Download via https://gist.github.com/liabru/11263260
     document.getElementById('download').addEventListener('click', function () {
-        let toXMLParser = new ScenegraphToXMLVisitor();
+        let toXMLParser = new ScenegraphToXmlVisitor();
         toXMLParser.setup(scenegraph, animationNodes);
         let blob = new Blob([toXMLParser.xmlString], {type: 'text/plain'});
         let anchor = document.createElement('a');
