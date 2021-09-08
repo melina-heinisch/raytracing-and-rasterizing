@@ -3,14 +3,13 @@
 
 <img src="img/screenshot.jpg" width="75%">
 
-Dieses Repository beinhaltet das Projekt des Kurses  "Interaktive Computergraphik" von Melina Heinisch, Bao Han Dam, Martin Böhm
+Dieses Repository beinhaltet das Projekt des Kurses  "Interaktive Computergraphik" von Melina Heinisch, Bao Han Dam und Martin Böhm
 
 # Projekt Struktur
 <!-- Ihr könnt die Projektstruktur beliebig beschreiben. Hier einfach mit dem Unix Programm `tree`  -->
 
 ```
 .
-├── README.md
 ├── dist
 │   ├── objs <-- .obj Files
 │   ├── textures <-- Texturen
@@ -148,13 +147,13 @@ Auf der Seite befinden sich vier beschriftete Slider, mit denen man die entsprec
 
 | Nummer  | Punkte | Beschreibung  | bearbeitet | Verantwortliche/r |
 | ------------- | ------------- | ------------- | ------------- | ------------- |
-| M1  |6  |Szenengraph | <ul><li>[X] </li></ul> |Melina Heinisch (& Bao Han Dam?) |
-| M2  |14 |Rasteriser & Ray Tracer | <ul><li>[X] </li></ul> |Melina Heinisch (& Bao Han Dam?)|
-| M3  |5  |min. drei eingebundene Objekte | <ul><li>[X] </li></ul> |Melina Heinisch (& Bao Han Dam?) |
+| M1  |6  |Szenengraph | <ul><li>[X] </li></ul> |Melina Heinisch, Bao Han Dam |
+| M2  |14 |Rasteriser & Ray Tracer | <ul><li>[X] </li></ul> |Melina Heinisch, Bao Han Dam|
+| M3  |5  |min. drei eingebundene Objekte | <ul><li>[X] </li></ul> |Melina Heinisch, Bao Han Dam |
 | M4  |7  |min. drei verschiedene Animationsknoten| <ul><li>[X] </li></ul> |Melina Heinisch |
 | M5  |4  |mehrfarbige Objekte | <ul><li> [X] </li></ul> |Melina Heinisch |
-| M6  |7  |mathematische Bibliothek |<ul><li> [X] </li></ul> |Melina Heinisch (& Bao Han Dam?)|
-| M7  |7  |Phong Shader | <ul><li> [X] </li></ul> |Melina Heinisch (& Bao Han Dam?) |
+| M6  |7  |mathematische Bibliothek |<ul><li> [X] </li></ul> |Melina Heinisch, Bao Han Dam|
+| M7  |7  |Phong Shader | <ul><li> [X] </li></ul> |Melina Heinisch, Bao Han Dam |
 | O1  |6  |mehrere Texturen | <ul><li> [X] </li></ul> |Melina Heinisch |
 | O2  |10 |Auswahl und Manipulation von Objekten | <ul><li> [] </li></ul> | /|
 | O3  |6 |Laden und Speichern | <ul><li> [X] </li></ul> |Melina Heinisch |
@@ -171,23 +170,9 @@ Auf der Seite befinden sich vier beschriftete Slider, mit denen man die entsprec
 ## Kompatibilität
 Das Projekt wurde mit folgenden Konfigurationen getestet:
 <!-- Nur die Konfigurationen angeben die ihr wirklich getestet habt. Eine gängige Kombination ist hier schon ausreichend-->
-- Windows 10 Build Version <> mit
-  - Firefox Version <>
-  - Chrome Version <> 
+- Windows 10 Version 21H1, Build 19043.1165 mit
+  - Firefox Version 91.0.2
+  - Chrome Version 93.0.4577.63 
   - Edge Version - nein
   - Internet Explorer - nein 
-  - node js Version <>
-<!--
-- Manjaro Build Version <> mit
-  - Firefox Version <>
-  - Chrome Version <> 
-  - Opera Version <>
-  - Chromium Version <>
-  - node js Version <> 
-- macOs Build Version <> mit
-  - Firefox Version <>
-  - Chrome Version <> 
-  - Safari Version <>
-  - Chromium Version <>
-  - node js Version <>
--->
+  - node js Version v14.16.1. und  v14.17.0.
