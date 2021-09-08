@@ -50,14 +50,11 @@ export default class Matrix {
    */
   static translation(translation: Vector): Matrix {
 
-    let values : Array<number> = [
-        1,0,0,translation.x,
-        0,1,0,translation.y,
-        0,0,1,translation.z,
-        0,0,0,1];
-    let matrix : Matrix = new Matrix(values);
-
-    return matrix;
+      let mat = Matrix.identity();
+      mat.setVal(0,3, translation.x);
+      mat.setVal(1,3, translation.y);
+      mat.setVal(2,3, translation.z);
+      return mat;
   }
 
   /**
