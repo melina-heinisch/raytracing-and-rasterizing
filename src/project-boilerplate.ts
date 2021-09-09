@@ -45,10 +45,11 @@ window.addEventListener('load', () => {
     let scenegraphString = "";
     let animationNodes: (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[] = [];
 
-    let shininess = 10;
-    let specular = 0.5;
-    let diffuse = 0.5;
-    let ambient = 0.8;
+    //beispielwerte, um zu prüfen, ob diese Werte oder die vorgespeichertel Werte in der xml date geladen werden --> xml-werte
+    let shininess = 1;
+    let specular = 0.1;
+    let diffuse = 0.1;
+    let ambient = 0.1;
 
     function simulate(deltaT: number) {
         for (let animationNode of animationNodes) {
@@ -91,6 +92,7 @@ window.addEventListener('load', () => {
             scenegraphString = result;
             let doc = new DOMParser().parseFromString(result, "text/xml");
             let children = doc.childNodes;
+
             parser = new XmlToScenegraph();
             parser.createAndVisitChildren(children);
             animationNodes = parser.animationNodes;
@@ -112,6 +114,14 @@ window.addEventListener('load', () => {
                 var xmlDoc = this.responseXML;
                 scenegraphString = new XMLSerializer().serializeToString(xmlDoc.documentElement);
                 let children = xmlDoc.childNodes;
+
+                // lädt die Werte aus xml datei richtig aus, slider sind aber noch falsch
+                let cam = xmlDoc.getElementById("cam");
+                shininess = parseFloat(cam.getAttribute("shininess"));
+                specular = parseFloat(cam.getAttribute("specular"));
+                diffuse = parseFloat(cam.getAttribute("diffuse"));
+                ambient = parseFloat(cam.getAttribute("ambient"));
+
                 parser.createAndVisitChildren(children);
                 animationNodes = parser.animationNodes;
                 scenegraph = parser.head;
@@ -125,7 +135,6 @@ window.addEventListener('load', () => {
     const shininessElement = document.getElementById("shininess") as HTMLInputElement;
     shininessElement.onchange = function () {
         shininess = Number(shininessElement.value);
-        //document.getElementById("cam").setAttribute("shininess", shininessElement.value);
         //console.log(shininessElement.value);
         render()
     }

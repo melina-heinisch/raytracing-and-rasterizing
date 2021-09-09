@@ -253,6 +253,8 @@ export class RasterVisitor implements Visitor {
   }
 
   visitCameraNode(node: CameraNode) {
+ //   let shin = this.shader.getUniformFloat("shininess");
+   // node.shininess = shin;
   }
 
   /**
@@ -401,5 +403,6 @@ export class RasterSetupVisitor {
    * Visits a camera node
    * @param node the node to visit
    */
-  visitCameraNode(node: CameraNode){}
+  visitCameraNode(node: CameraNode){
+  }
 }

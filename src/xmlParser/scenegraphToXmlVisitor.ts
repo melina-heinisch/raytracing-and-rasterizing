@@ -71,6 +71,7 @@ export class ScenegraphToXmlVisitor implements Visitor {
         if(node.transform instanceof Translation){
             let pos : Vector = new Vector(node.transform.getMatrix().getVal(0,3), node.transform.getMatrix().getVal(1,3), node.transform.getMatrix().getVal(2,3),node.transform.getMatrix().getVal(3,3));
             let gn : string = "<GroupNode translation=\"" +pos.x+ "," + pos.y + "," + pos.z + "," + pos.w + "\"";
+
             if(this.animatedGroupNodes.get(node)){
                 gn +=" id=\"" + this.animatedGroupNodes.get(node) + "\"";
             }
@@ -188,9 +189,16 @@ export class ScenegraphToXmlVisitor implements Visitor {
      * @param node The node to parse
      */
     visitCameraNode(node: CameraNode): void {
-        let cameraNode = "<CameraNode id =\"cam\" shininess=\"" + node.shininess + "\" specular=\"" + node.specular + "\" diffuse=\"" + node.diffuse + "\" ambient=\"" + node.ambient + "\"></CameraNode>\n"
+        let cameraNode = "<CameraNode id=\"cam\" shininess=\"" + node.shininess + "\" specular=\""+ node.specular + "\" diffuse=\"" + node.diffuse + "\" ambient=\"" + node.ambient + "\"></CameraNode>\n"
         this._xmlString += cameraNode;
     }
+/*
+    visitObjNode(node: ObjNode): void {
+        let objNode = "<ObjNode src=\""+ node.objLines + "\"></ObjNode>\n";
+        this._xmlString += objNode;
+    }
+
+ */
 
     /**
      * Returns the whole scenegraph as xml string
