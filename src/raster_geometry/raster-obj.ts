@@ -83,9 +83,9 @@ export class RasterObj {
         this.elements = indices.length;
 
         let colorArray = [];
-        let c1 = Math.random();
-        let c2 = Math.random();
-        let c3 = Math.random();
+        let c1 = 0.5;
+        let c2 = 0.5;
+        let c3 = 0.5;
         for (let i = 0; i < indices.length; i++) {
             colorArray.push(c1, c2, c3);
         }
