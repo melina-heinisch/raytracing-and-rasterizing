@@ -125,6 +125,8 @@ window.addEventListener('load', () => {
     const shininessElement = document.getElementById("shininess") as HTMLInputElement;
     shininessElement.onchange = function () {
         shininess = Number(shininessElement.value);
+        //document.getElementById("cam").setAttribute("shininess", shininessElement.value);
+        //console.log(shininessElement.value);
         render()
     }
     const specularElement = document.getElementById("specular") as HTMLInputElement;

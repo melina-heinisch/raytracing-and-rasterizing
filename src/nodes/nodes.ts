@@ -179,7 +179,7 @@ export class CameraNode extends Node {
   /**
    * Creates a camera
    */
-  constructor() {
+  constructor(public shininess: number, public specular: number, public diffuse: number, public ambient: number) {
     super();
   }
 
