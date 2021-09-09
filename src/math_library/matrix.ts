@@ -288,15 +288,22 @@ export default class Matrix {
   }
 
   toString(){
-      let result = "";
-      for (let i = 0; i < 16; i++) {
-          if(i!=15){
-              result+=this.data[i]+ ",";
-          }else{
-              result+=this.data[i];
+      let result : Array<number> = [];
+
+      for (let row = 0; row < 4; row++) {
+          for (let col = 0; col < 4; col++) {
+              result[row * 4 + col] = this.data[col * 4 + row];
           }
 
       }
-      return result;
+      let resultString = "";
+      for (let i = 0; i < result.length; i++) {
+          if(i === result.length-1){
+              resultString += result[i];
+          } else {
+              resultString += result[i] + ",";
+          }
+      }
+      return resultString;
   }
 }
