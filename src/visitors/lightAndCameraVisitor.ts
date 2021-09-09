@@ -39,6 +39,8 @@ export class LightAndCameraVisitor implements Visitor{
      */
     rasterCamera : Camera;
 
+    cameraNode : CameraNode;
+
     /**
      * Creates a new LightAndCameraVisitor
      */
@@ -122,6 +124,7 @@ export class LightAndCameraVisitor implements Visitor{
      * @param node The node to visit
      */
     visitCameraNode(node: CameraNode) {
+        this.cameraNode = node;
         this.rayCamera = {
             origin: this.matrixStack[this.matrixStack.length - 1].mulVec( new Vector(0, 0, 1, 1)),
             width: 600,

@@ -1,7 +1,7 @@
 import 'bootstrap';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './math_library/vector';
-import {GroupNode,} from './nodes/nodes';
+import {CameraNode, GroupNode,} from './nodes/nodes';
 import {
     RasterVisitor,
     RasterSetupVisitor
@@ -37,6 +37,7 @@ window.addEventListener('load', () => {
     const rasterVisitor = new RasterVisitor(gl, phongShader, textureShader, setupVisitor.objects);
 
     //Variables that are used by both render engines
+    let cameraNode = new CameraNode(10,0.5,0.5,0.8);
     const lightAndCameraVisitor = new LightAndCameraVisitor();
     let scenegraph: GroupNode;
     let isRasterizer = true;
@@ -44,12 +45,6 @@ window.addEventListener('load', () => {
     let parser: XmlToScenegraph = new XmlToScenegraph();
     let scenegraphString = "";
     let animationNodes: (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[] = [];
-
-    //beispielwerte, um zu prüfen, ob diese Werte oder die vorgespeichertel Werte in der xml date geladen werden --> xml-werte
-    let shininess = 1;
-    let specular = 0.1;
-    let diffuse = 0.1;
-    let ambient = 0.1;
 
     function simulate(deltaT: number) {
         for (let animationNode of animationNodes) {
@@ -93,6 +88,19 @@ window.addEventListener('load', () => {
             let doc = new DOMParser().parseFromString(result, "text/xml");
             let children = doc.childNodes;
 
+            let cam = doc.getElementById("cam");
+            cameraNode.shininess = parseFloat(cam.getAttribute("shininess"));
+            shininessElement.value = "" + cameraNode.shininess;
+
+            cameraNode.specular = parseFloat(cam.getAttribute("specular"));
+            specularElement.value = ""+(convertRangeBackwards(cameraNode.specular));
+
+            cameraNode.diffuse = parseFloat(cam.getAttribute("diffuse"));
+            diffuseElement.value = ""+(convertRangeBackwards(cameraNode.diffuse));
+
+            cameraNode.ambient = parseFloat(cam.getAttribute("ambient"));
+            ambientElement.value = ""+(convertRangeBackwards(cameraNode.ambient));
+
             parser = new XmlToScenegraph();
             parser.createAndVisitChildren(children);
             animationNodes = parser.animationNodes;
@@ -103,6 +111,33 @@ window.addEventListener('load', () => {
         //@ts-ignore
         this.files = [];
     })
+
+
+    const shininessElement = document.getElementById("shininess") as HTMLInputElement;
+    shininessElement.value = ""+cameraNode.shininess;
+    shininessElement.onchange = function () {
+        cameraNode.shininess = Number(shininessElement.value);
+        //console.log(shininessElement.value);
+        render()
+    }
+    const specularElement = document.getElementById("specular") as HTMLInputElement;
+    specularElement.value = ""+(convertRangeBackwards(cameraNode.specular));
+    specularElement.onchange = function () {
+        cameraNode.specular = convertRange(Number(specularElement.value));
+        render()
+    }
+    const diffuseElement = document.getElementById("diffuse") as HTMLInputElement;
+    diffuseElement.value = ""+(convertRangeBackwards(cameraNode.diffuse));
+    diffuseElement.onchange = function () {
+        cameraNode.diffuse = convertRange(Number(diffuseElement.value));
+        render()
+    }
+    const ambientElement = document.getElementById("ambient") as HTMLInputElement;
+    ambientElement.value = ""+(convertRangeBackwards(cameraNode.ambient));
+    ambientElement.onchange = function () {
+        cameraNode.ambient = convertRange(Number(ambientElement.value));
+        render()
+    }
 
     //https://www.w3schools.com/xml/met_element_getattribute.asp
     // Only works when rendering is started in the onreadystatechange function
@@ -117,10 +152,17 @@ window.addEventListener('load', () => {
 
                 // lädt die Werte aus xml datei richtig aus, slider sind aber noch falsch
                 let cam = xmlDoc.getElementById("cam");
-                shininess = parseFloat(cam.getAttribute("shininess"));
-                specular = parseFloat(cam.getAttribute("specular"));
-                diffuse = parseFloat(cam.getAttribute("diffuse"));
-                ambient = parseFloat(cam.getAttribute("ambient"));
+                cameraNode.shininess = parseFloat(cam.getAttribute("shininess"));
+                shininessElement.value = "" + cameraNode.shininess;
+
+                cameraNode.specular = parseFloat(cam.getAttribute("specular"));
+                specularElement.value = ""+(convertRangeBackwards(cameraNode.specular));
+
+                cameraNode.diffuse = parseFloat(cam.getAttribute("diffuse"));
+                diffuseElement.value = ""+(convertRangeBackwards(cameraNode.diffuse));
+
+                cameraNode.ambient = parseFloat(cam.getAttribute("ambient"));
+                ambientElement.value = ""+(convertRangeBackwards(cameraNode.ambient));
 
                 parser.createAndVisitChildren(children);
                 animationNodes = parser.animationNodes;
@@ -132,33 +174,20 @@ window.addEventListener('load', () => {
         xhttp.send();
     }
 
-    const shininessElement = document.getElementById("shininess") as HTMLInputElement;
-    shininessElement.onchange = function () {
-        shininess = Number(shininessElement.value);
-        //console.log(shininessElement.value);
-        render()
-    }
-    const specularElement = document.getElementById("specular") as HTMLInputElement;
-    specularElement.onchange = function () {
-        specular = convertRange(Number(specularElement.value));
-        render()
-    }
-    const diffuseElement = document.getElementById("diffuse") as HTMLInputElement;
-    diffuseElement.onchange = function () {
-        diffuse = convertRange(Number(diffuseElement.value));
-        render()
-    }
-    const ambientElement = document.getElementById("ambient") as HTMLInputElement;
-    ambientElement.onchange = function () {
-        ambient = convertRange(Number(ambientElement.value));
-        render()
-    }
-
     function convertRange(num: number){
         let oldMin = 1;
         let oldMax = 50;
         let newMin = 0;
         let range = 1;
+        let oldRange = Math.abs(oldMax-oldMin);
+        return (((num - oldMin) * range) / oldRange) + newMin;
+    }
+
+    function convertRangeBackwards(num: number){
+        let oldMin = 0;
+        let oldMax = 1;
+        let newMin = 1;
+        let range = 50;
         let oldRange = Math.abs(oldMax-oldMin);
         return (((num - oldMin) * range) / oldRange) + newMin;
     }
@@ -186,7 +215,8 @@ window.addEventListener('load', () => {
                 simulate(timestamp - lastTimestamp);
                 lightAndCameraVisitor.clear();
                 lightAndCameraVisitor.setup(scenegraph);
-                rasterVisitor.render(scenegraph, lightAndCameraVisitor.rasterCamera, lightAndCameraVisitor.lightPositions, shininess, specular, ambient, diffuse);
+                cameraNode = lightAndCameraVisitor.cameraNode;
+                rasterVisitor.render(scenegraph, lightAndCameraVisitor.rasterCamera, lightAndCameraVisitor.lightPositions, cameraNode.shininess, cameraNode.specular, cameraNode.ambient, cameraNode.diffuse);
                 lastTimestamp = timestamp;
                 animationHandle = window.requestAnimationFrame(animate);
             }
@@ -222,7 +252,8 @@ window.addEventListener('load', () => {
                 simulate(deltaT);
                 lightAndCameraVisitor.clear();
                 lightAndCameraVisitor.setup(scenegraph);
-                rayVisitor.render(scenegraph, lightAndCameraVisitor.rayCamera, lightAndCameraVisitor.lightPositions, shininess, specular, ambient, diffuse);
+                cameraNode = lightAndCameraVisitor.cameraNode;
+                rayVisitor.render(scenegraph, lightAndCameraVisitor.rayCamera, lightAndCameraVisitor.lightPositions, cameraNode.shininess, cameraNode.specular, cameraNode.ambient, cameraNode.diffuse);
                 animationHandle = window.requestAnimationFrame(animate);
             }
         }
