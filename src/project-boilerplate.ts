@@ -1,7 +1,7 @@
 import 'bootstrap';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './math_library/vector';
-import {GroupNode,} from './nodes/nodes';
+import {AABoxNode, CameraNode, GroupNode, LightNode, ObjNode} from './nodes/nodes';
 import {
     RasterVisitor,
     RasterSetupVisitor
@@ -38,6 +38,7 @@ window.addEventListener('load', () => {
 
     //Variables that are used by both render engines
     const lightAndCameraVisitor = new LightAndCameraVisitor();
+    let cameraNode = lightAndCameraVisitor.cameraNode;
     let scenegraph: GroupNode;
     let isRasterizer = true;
     let animationHandle: number;
@@ -45,20 +46,15 @@ window.addEventListener('load', () => {
     let scenegraphString = "";
     let animationNodes: (DriverNode | JumperNode | RotationNode | FreeFlightNode)[] = [];
 
-    let shininess = 10;
-    let specular = 0.5;
-    let diffuse = 0.5;
-    let ambient = 0.8;
-
-    function simulate(deltaT: number) {
-        for (let animationNode of animationNodes) {
-            animationNode.simulate(deltaT);
-        }
-    }
+    //Phong sliders
+    const shininessElement = document.getElementById("shininess") as HTMLInputElement;
+    const specularElement = document.getElementById("specular") as HTMLInputElement;
+    const diffuseElement = document.getElementById("diffuse") as HTMLInputElement;
+    const ambientElement = document.getElementById("ambient") as HTMLInputElement;
 
     loadXMLScenegraph();
 
-    //Download via https://gist.github.com/liabru/11263260
+    //Downloads the current Scene sas XML, download via https://gist.github.com/liabru/11263260
     document.getElementById('download').addEventListener('click', function () {
         let toXMLParser = new ScenegraphToXmlVisitor();
         toXMLParser.setup(scenegraph, animationNodes);
@@ -91,6 +87,14 @@ window.addEventListener('load', () => {
             scenegraphString = result;
             let doc = new DOMParser().parseFromString(result, "text/xml");
             let children = doc.childNodes;
+
+            let cam = doc.getElementById("cam");
+
+            setCameraPhongAndUpdateSliders(parseFloat(cam.getAttribute("shininess")),
+                parseFloat(cam.getAttribute("specular")),
+                parseFloat(cam.getAttribute("diffuse"))
+                ,parseFloat(cam.getAttribute("ambient")));
+
             parser = new XmlToScenegraph();
             parser.createAndVisitChildren(children);
             animationNodes = parser.animationNodes;
@@ -98,8 +102,6 @@ window.addEventListener('load', () => {
             render()
         };
         reader.readAsText(files[0]);
-        //@ts-ignore
-        this.files = [];
     })
 
     //https://www.w3schools.com/xml/met_element_getattribute.asp
@@ -112,6 +114,16 @@ window.addEventListener('load', () => {
                 var xmlDoc = this.responseXML;
                 scenegraphString = new XMLSerializer().serializeToString(xmlDoc.documentElement);
                 let children = xmlDoc.childNodes;
+
+                // lädt die Werte aus xml datei richtig aus, slider sind aber noch falsch
+                let cam = xmlDoc.getElementById("cam");
+
+                setCameraPhongAndUpdateSliders(parseFloat(cam.getAttribute("shininess")),
+                    parseFloat(cam.getAttribute("specular")),
+                    parseFloat(cam.getAttribute("diffuse"))
+                    ,parseFloat(cam.getAttribute("ambient")));
+
+
                 parser.createAndVisitChildren(children);
                 animationNodes = parser.animationNodes;
                 scenegraph = parser.head;
@@ -122,28 +134,72 @@ window.addEventListener('load', () => {
         xhttp.send();
     }
 
-    const shininessElement = document.getElementById("shininess") as HTMLInputElement;
+    document.getElementById('uploadObj').addEventListener('click',function (){
+        let event = new MouseEvent('click', {bubbles: false});
+        document.getElementById('uploadObjInput').dispatchEvent(event);
+    });
+
+    // Loads an object from an .obj File into a simple, pre-constructed scene
+    document.getElementById('uploadObjInput').addEventListener('change',function (){
+        //@ts-ignore
+        let files = this.files;
+        if (files.length === 0) {
+            alert('Es wurde keine Datei ausgewählt.');
+        }
+
+        let reader = new FileReader();
+        reader.onload = function(event) {
+            let result = event.target.result.toString();
+            let lines = result.split('\n');
+            let obj = new ObjNode(lines);
+            scenegraph.add(obj);
+            render()
+        };
+        reader.readAsText(files[0]);
+    })
+
+    //Sets the values of the siders to the current value of the phong parameters in the scene
+    shininessElement.value = ""+cameraNode.shininess;
+    specularElement.value = ""+(convertPhongToSilder(cameraNode.specular));
+    diffuseElement.value = ""+(convertPhongToSilder(cameraNode.diffuse));
+    ambientElement.value = ""+(convertPhongToSilder(cameraNode.ambient));
+
+    //Handles changes in phong parameters
     shininessElement.onchange = function () {
-        shininess = Number(shininessElement.value);
-        render()
-    }
-    const specularElement = document.getElementById("specular") as HTMLInputElement;
-    specularElement.onchange = function () {
-        specular = convertRange(Number(specularElement.value));
-        render()
-    }
-    const diffuseElement = document.getElementById("diffuse") as HTMLInputElement;
-    diffuseElement.onchange = function () {
-        diffuse = convertRange(Number(diffuseElement.value));
-        render()
-    }
-    const ambientElement = document.getElementById("ambient") as HTMLInputElement;
-    ambientElement.onchange = function () {
-        ambient = convertRange(Number(ambientElement.value));
+        cameraNode.shininess = Number(shininessElement.value);
         render()
     }
 
-    function convertRange(num: number){
+    specularElement.onchange = function () {
+        cameraNode.specular = convertSliderToPhong(Number(specularElement.value));
+        render()
+    }
+
+    diffuseElement.onchange = function () {
+        cameraNode.diffuse = convertSliderToPhong(Number(diffuseElement.value));
+        render()
+    }
+
+    ambientElement.onchange = function () {
+        cameraNode.ambient = convertSliderToPhong(Number(ambientElement.value));
+        render()
+    }
+
+    //Sets new phong values for the camera node and updates the sliders accordingly
+    function setCameraPhongAndUpdateSliders(shininess : number, specular : number, diffuse : number, ambient : number){
+        cameraNode.shininess = shininess;
+        cameraNode.specular = specular;
+        cameraNode.diffuse = diffuse;
+        cameraNode.ambient = ambient;
+
+        shininessElement.value = "" + shininess;
+        specularElement.value = ""+(convertPhongToSilder(specular));
+        diffuseElement.value = ""+(convertPhongToSilder(diffuse));
+        ambientElement.value = ""+(convertPhongToSilder(ambient));
+    }
+
+    // Converts the slider values that range from 1 to 50 into the phong range from 0 to 1
+    function convertSliderToPhong(num: number){
         let oldMin = 1;
         let oldMax = 50;
         let newMin = 0;
@@ -152,11 +208,27 @@ window.addEventListener('load', () => {
         return (((num - oldMin) * range) / oldRange) + newMin;
     }
 
-    function render() {
-        if (isRasterizer) {
+    // Converts the phong values that range from 0 to 1 into the slider range thats 1 to 50
+    function convertPhongToSilder(num: number){
+        let oldMin = 0;
+        let oldMax = 1;
+        let newMin = 1;
+        let range = 50;
+        let oldRange = Math.abs(oldMax-oldMin);
+        return (((num - oldMin) * range) / oldRange) + newMin;
+    }
+
+    function render(){
+        if(isRasterizer){
             renderRasterizer(scenegraph);
         } else {
             renderRaytracer(scenegraph);
+        }
+    }
+
+    function simulate(deltaT: number) {
+        for (let animationNode of animationNodes) {
+            animationNode.simulate(deltaT);
         }
     }
 
@@ -175,7 +247,8 @@ window.addEventListener('load', () => {
                 simulate(timestamp - lastTimestamp);
                 lightAndCameraVisitor.clear();
                 lightAndCameraVisitor.setup(scenegraph);
-                rasterVisitor.render(scenegraph, lightAndCameraVisitor.rasterCamera, lightAndCameraVisitor.lightPositions, shininess, specular, ambient, diffuse);
+                cameraNode = lightAndCameraVisitor.cameraNode;
+                rasterVisitor.render(scenegraph, lightAndCameraVisitor.rasterCamera, lightAndCameraVisitor.lightPositions, cameraNode.shininess, cameraNode.specular, cameraNode.ambient, cameraNode.diffuse);
                 lastTimestamp = timestamp;
                 animationHandle = window.requestAnimationFrame(animate);
             }
@@ -211,7 +284,8 @@ window.addEventListener('load', () => {
                 simulate(deltaT);
                 lightAndCameraVisitor.clear();
                 lightAndCameraVisitor.setup(scenegraph);
-                rayVisitor.render(scenegraph, lightAndCameraVisitor.rayCamera, lightAndCameraVisitor.lightPositions, shininess, specular, ambient, diffuse);
+                cameraNode = lightAndCameraVisitor.cameraNode;
+                rayVisitor.render(scenegraph, lightAndCameraVisitor.rayCamera, lightAndCameraVisitor.lightPositions, cameraNode.shininess, cameraNode.specular, cameraNode.ambient, cameraNode.diffuse);
                 animationHandle = window.requestAnimationFrame(animate);
             }
         }
@@ -219,6 +293,7 @@ window.addEventListener('load', () => {
         animate(0);
     }
 
+    //Following are all the key event listeners for various functionalities
     window.addEventListener('keydown', function (event) {
         switch (event.key) {
             case "4":

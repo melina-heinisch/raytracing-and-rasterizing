@@ -1,5 +1,5 @@
 <GroupNode translation="0,0,-5,0">
-    <GroupNode rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0">
+    <GroupNode  rotation="0,0,0,1" angleX="0" angleY="0" angleZ="0">
         <GroupNode translation="1.2,0.5,2.5,0">
             <SphereNode baseColor="0.8,0,0.8,1" extraColors=""/>
         </GroupNode>

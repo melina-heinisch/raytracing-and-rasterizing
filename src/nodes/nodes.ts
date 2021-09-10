@@ -179,7 +179,7 @@ export class CameraNode extends Node {
   /**
    * Creates a camera
    */
-  constructor() {
+  constructor(public shininess: number, public specular: number, public diffuse: number, public ambient: number) {
     super();
   }
 
@@ -189,5 +189,22 @@ export class CameraNode extends Node {
    */
   accept(visitor: Visitor) {
     visitor.visitCameraNode(this);
+  }
+}
+
+export class ObjNode extends Node{
+  /**
+   * Creates an obj
+   */
+  constructor(public objLines: string[]) {
+    super();
+  }
+
+  /**
+   * Accepts a visitor according to the visitor pattern
+   * @param visitor The visitor
+   */
+  accept(visitor: Visitor) {
+    visitor.visitObjNode(this);
   }
 }

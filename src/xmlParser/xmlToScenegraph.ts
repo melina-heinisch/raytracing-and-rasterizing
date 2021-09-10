@@ -3,7 +3,7 @@ import 'bootstrap/scss/bootstrap.scss';
 import Vector from '../math_library/vector';
 import {
     AABoxNode, CameraNode,
-    GroupNode, LightNode, PyramidNode,
+    GroupNode, LightNode, ObjNode, PyramidNode,
     SphereNode,
     TextureBoxNode
 } from '../nodes/nodes';
@@ -13,8 +13,6 @@ import {
     DriverNode,
     FreeFlightNode,
     JumperNode,
-    MoveCameraNode,
-    RotateCameraNode,
     RotationNode
 } from '../nodes/animation-nodes';
 import Matrix from "../math_library/matrix";
@@ -81,7 +79,7 @@ export class XmlToScenegraph {
             } else if(children[i].nodeName === "LightNode"){
                 this.currentGroupNode.add(new LightNode());
             } else if(children[i].nodeName === "CameraNode"){
-                this.currentGroupNode.add(new CameraNode());
+                this.createCameraNode(children[i]);
             } else if(children[i].nodeName === "JumperNode"){
                 this.createJumperNode(children[i]);
             } else if(children[i].nodeName === "RotationNode"){
@@ -90,9 +88,8 @@ export class XmlToScenegraph {
                 this.createDriverNode(children[i]);
             } else if(children[i].nodeName === "FreeFlightNode"){
                 this.createFreeFlightNode(children[i]);
-            }
-
-
+            } else if(children[i].nodeName === "ObjNode"){
+                this.createObjNode(children[i]);
         }
     }
 
@@ -164,7 +161,7 @@ export class XmlToScenegraph {
             if(this._head === null){
                 this._head = node;
                 this.currentGroupNode = this._head;
-            }else {
+            } else {
                 this.currentGroupNode.add(node);
                 this.oldGroupNodes.push(this.currentGroupNode);
                 this.currentGroupNode = node;
@@ -246,6 +243,16 @@ export class XmlToScenegraph {
         this.currentGroupNode.add(node);
     }
 
+    //@ts-ignore
+    createCameraNode(childNode){
+       let shininess = childNode.attributes.shininess.value;
+        let specular = childNode.attributes.specular.value;
+        let diffuse = childNode.attributes.diffuse.value;
+        let ambient = childNode.attributes.ambient.value;
+        let node = new CameraNode(shininess, specular, diffuse, ambient);
+        this.currentGroupNode.add(node);
+    }
+
     /**
      * Creates a texture box node with the values retrieved from the xml attributes
      * @param childNode The xml node to use
@@ -257,6 +264,19 @@ export class XmlToScenegraph {
         let node = new TextureBoxNode(texturePath, normalPath);
         this.currentGroupNode.add(node);
     }
+
+    /**
+     *
+     * @param childNode
+     */
+    // @ts-ignore
+    createObjNode(childNode){
+        let objSource = childNode.attributes.src.value;
+        let lines = objSource.split(",");
+        let node = new ObjNode(lines);
+        this.currentGroupNode.add(node);
+    }
+
 
     /**
      * Creates a jumper node with the values retrieved from the xml attributes
@@ -303,19 +323,19 @@ export class XmlToScenegraph {
         }
     }
 
-    /**
-     * Creates a node to move and rotate the camera along all axis'
-     * with the values retrieved from the xml attributes
-     * @param childNode The xml node to use
-     */
-    // @ts-ignore
-    createFreeFlightNode(childNode){
-        if(childNode.attributes.id){
-            let id = childNode.attributes.id.value;
-            let gn : GroupNode = this.animatedGroupNodes.get(id);
-            this.animationNodes.push(new FreeFlightNode(gn));
+        /**
+         * Creates a node to move and rotate the camera along all axis'
+         * with the values retrieved from the xml attributes
+         * @param childNode The xml node to use
+         */
+        // @ts-ignore
+        createFreeFlightNode(childNode){
+            if(childNode.attributes.id){
+                let id = childNode.attributes.id.value;
+                let gn : GroupNode = this.animatedGroupNodes.get(id);
+                this.animationNodes.push(new FreeFlightNode(gn));
+            }
         }
-    }
 
     /**
      * Returns the head of the scenegraph

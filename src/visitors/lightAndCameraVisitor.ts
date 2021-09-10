@@ -8,7 +8,8 @@ import {
     Node,
     PyramidNode,
     SphereNode,
-    TextureBoxNode
+    TextureBoxNode,
+    ObjNode
 } from "../nodes/nodes";
 interface Camera {
     eye: Vector,
@@ -39,11 +40,14 @@ export class LightAndCameraVisitor implements Visitor{
      */
     rasterCamera : Camera;
 
+    cameraNode : CameraNode;
+
     /**
      * Creates a new LightAndCameraVisitor
      */
     constructor() {
         this.matrixStack.push(Matrix.identity());
+        this.cameraNode = new CameraNode(10,0.5,0.5,0.8)
     }
 
     /**
@@ -55,6 +59,7 @@ export class LightAndCameraVisitor implements Visitor{
         this.rayCamera = null;
         this.rasterCamera = null;
         this.matrixStack.push(Matrix.identity());
+        this.cameraNode = new CameraNode(10,0.5,0.5,0.8)
     }
 
     /**
@@ -122,6 +127,7 @@ export class LightAndCameraVisitor implements Visitor{
      * @param node The node to visit
      */
     visitCameraNode(node: CameraNode) {
+        this.cameraNode = node;
         this.rayCamera = {
             origin: this.matrixStack[this.matrixStack.length - 1].mulVec( new Vector(0, 0, 1, 1)),
             width: 600,
@@ -139,5 +145,8 @@ export class LightAndCameraVisitor implements Visitor{
             near: 0.1,
             far: 100
         };
+    }
+
+    visitObjNode(node: CameraNode) {
     }
 }
