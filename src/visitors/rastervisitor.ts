@@ -290,7 +290,7 @@ export class RasterVisitor implements Visitor {
     this.renderables.get(node).render(shader);
   }
 
-  visitObjNode(node: CameraNode) {
+  visitObjNode(node: ObjNode) {
     const shader = this.shader;
     shader.use();
     let toWorld = this.matrixStack[this.matrixStack.length-1];

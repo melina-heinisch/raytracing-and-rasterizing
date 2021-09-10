@@ -147,6 +147,6 @@ export class LightAndCameraVisitor implements Visitor{
         };
     }
 
-    visitObjNode(node: CameraNode) {
+    visitObjNode(node: ObjNode) {
     }
 }

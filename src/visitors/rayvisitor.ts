@@ -180,5 +180,5 @@ export default class RayVisitor implements Visitor {
    * @param node The node to visit
    */
   visitCameraNode(node: CameraNode) {}
-  visitObjNode(node: CameraNode) {}
+  visitObjNode(node: ObjNode) {}
 }
