@@ -41,9 +41,9 @@
             <CameraNode id="cam" shininess="10" specular="0.5" diffuse="0.5" ambient="0.8"/>
         </GroupNode>
     </GroupNode>
-    <JumperNode id="j1" axis="0,1,0,1" magnitude="2"/>
-    <DriverNode id="d1"/>
-    <RotationNode axis="0,1,0,1" id="r1"/>
+    <JumperNode active="true" id="j1" axis="0,1,0,1" magnitude="2"/>
+    <DriverNode active="true" id="d1"/>
+    <RotationNode active="true" axis="0,1,0,1" id="r1"/>
     <FreeFlightNode id="c1"/>
 </GroupNode>
 

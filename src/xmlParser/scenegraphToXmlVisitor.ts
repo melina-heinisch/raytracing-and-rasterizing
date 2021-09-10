@@ -50,13 +50,13 @@ export class ScenegraphToXmlVisitor implements Visitor {
             this.animatedGroupNodes.set(node.groupNode, "a"+i);
             if(node instanceof RotationNode){
                 let axis = node.axis;
-                animationNodesString += "<RotationNode id=\"a" + i + "\" axis=\"" +axis.x+ "," + axis.y + "," + axis.z + "," + axis.w + "\"></RotationNode>\n";
+                animationNodesString += "<RotationNode active=\"" +node.active +"\" id=\"a" + i + "\" axis=\"" +axis.x+ "," + axis.y + "," + axis.z + "," + axis.w + "\"></RotationNode>\n";
             } else if(node instanceof JumperNode){
                 let axis = node.axis;
                 let magnitude = node.magnitude;
-                animationNodesString += "<JumperNode id=\"a" + i + "\" axis=\"" +axis.x+ "," + axis.y + "," + axis.z + "," + axis.w + "\" magnitude=\"" + magnitude +"\"></JumperNode>\n";
+                animationNodesString += "<JumperNode active=\"" +node.active +"\" id=\"a" + i + "\" axis=\"" +axis.x+ "," + axis.y + "," + axis.z + "," + axis.w + "\" magnitude=\"" + magnitude +"\"></JumperNode>\n";
             } else if(node instanceof DriverNode){
-                animationNodesString += "<DriverNode id=\"a" + i + "\"></DriverNode>\n";
+                animationNodesString += "<DriverNode active=\"" +node.active +"\" id=\"a" + i + "\"></DriverNode>\n";
             } else if(node instanceof FreeFlightNode){
                 animationNodesString += "<FreeFlightNode id=\"a" + i + "\"></FreeFlightNode>\n";
             }

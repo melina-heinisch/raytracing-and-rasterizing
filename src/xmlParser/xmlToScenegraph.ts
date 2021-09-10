@@ -289,11 +289,14 @@ export class XmlToScenegraph {
     createJumperNode(childNode){
         if(childNode.attributes.id){
             let id = childNode.attributes.id.value;
+            let active = childNode.attributes.active.value === "true";
             let gn : GroupNode = this.animatedGroupNodes.get(id);
             let axisArray = this.getOneValue(childNode.attributes.axis.value);
             let axisVec : Vector = new Vector(axisArray[0],axisArray[1],axisArray[2],axisArray[3]);
             let magnitude = parseFloat(childNode.attributes.magnitude.value);
-            this.animationNodes.push(new JumperNode(gn,axisVec,magnitude));
+            let node = new JumperNode(gn,axisVec,magnitude);
+            node.active = active;
+            this.animationNodes.push(node);
         }
     }
 
@@ -305,11 +308,13 @@ export class XmlToScenegraph {
     createRotationNode(childNode){
         if(childNode.attributes.id){
             let id = childNode.attributes.id.value;
+            let active = childNode.attributes.active.value === "true";
             let gn : GroupNode = this.animatedGroupNodes.get(id);
             let axisArray = this.getOneValue(childNode.attributes.axis.value);
             let axisVec : Vector = new Vector(axisArray[0],axisArray[1],axisArray[2],axisArray[3]);
-
-            this.animationNodes.push(new RotationNode(gn,axisVec));
+            let node = new RotationNode(gn,axisVec);
+            node.active = active;
+            this.animationNodes.push(node);
         }
     }
 
@@ -321,8 +326,11 @@ export class XmlToScenegraph {
     createDriverNode(childNode){
         if(childNode.attributes.id){
             let id = childNode.attributes.id.value;
+            let active = childNode.attributes.active.value === "true";
             let gn : GroupNode = this.animatedGroupNodes.get(id);
-            this.animationNodes.push(new DriverNode(gn));
+            let node = new DriverNode(gn);
+            node.active = active;
+            this.animationNodes.push(node);
         }
     }
 
