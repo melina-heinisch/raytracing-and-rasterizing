@@ -8,4 +8,5 @@ export default interface Visitor {
     visitTextureBoxNode(node: TextureBoxNode): void;
     visitLightNode(node: LightNode): void;
     visitCameraNode(node: CameraNode): void;
+    visitObjNode(node: CameraNode): void;
 }

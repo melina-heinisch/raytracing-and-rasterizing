@@ -55,8 +55,6 @@ export default class RasterBox {
         const p6 = new Vector(mi.x, ma.y, mi.z,1);
         const p7 = new Vector(ma.x, ma.y, mi.z,1)
         let vertices = [
-
-
             // front right
             p0.x, p0.y, p0.z,
             p1.x, p1.y, p1.z,

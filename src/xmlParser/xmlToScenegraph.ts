@@ -3,7 +3,7 @@ import 'bootstrap/scss/bootstrap.scss';
 import Vector from '../math_library/vector';
 import {
     AABoxNode, CameraNode,
-    GroupNode, LightNode, PyramidNode,
+    GroupNode, LightNode, ObjNode, PyramidNode,
     SphereNode,
     TextureBoxNode
 } from '../nodes/nodes';
@@ -84,9 +84,9 @@ export class XmlToScenegraph {
                 this.createMoveCameraNode(children[i]);
             } else if(children[i].nodeName === "RotateCameraNode"){
                 this.createRotateCameraNode(children[i]);
+            } else if(children[i].nodeName === "ObjNode"){
+                this.createObjNode(children[i]);
             }
-
-
         }
     }
 
@@ -140,7 +140,7 @@ export class XmlToScenegraph {
             if(this._head === null){
                 this._head = node;
                 this.currentGroupNode = this._head;
-            }else {
+            } else {
                 this.currentGroupNode.add(node);
                 this.oldGroupNodes.push(this.currentGroupNode);
                 this.currentGroupNode = node;
@@ -235,6 +235,19 @@ export class XmlToScenegraph {
     }
 
     /**
+     *
+     * @param childNode
+     */
+    // @ts-ignore
+    createObjNode(childNode){
+        let objSource = childNode.attributes.src.value;
+        let lines = objSource.split(",");
+        let node = new ObjNode(lines);
+        this.currentGroupNode.add(node);
+    }
+
+
+    /**
      * Creates a jumper node with the values retrieved from the xml attributes
      * @param childNode The xml node to use
      */
@@ -278,6 +291,7 @@ export class XmlToScenegraph {
             this.animationNodes.push(new DriverNode(gn));
         }
     }
+
 
     /**
      * Creates a node to move the camera along all axis'

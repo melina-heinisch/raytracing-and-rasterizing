@@ -13,7 +13,7 @@ import {
   TextureBoxNode,
   PyramidNode,
   LightNode,
-  CameraNode
+  CameraNode, ObjNode
 } from '../nodes/nodes';
 
 const UNIT_SPHERE = new Sphere(new Vector(0, 0, 0, 1), 1, new Vector(0, 0, 0, 1));
@@ -180,5 +180,5 @@ export default class RayVisitor implements Visitor {
    * @param node The node to visit
    */
   visitCameraNode(node: CameraNode) {}
-
+  visitObjNode(node: CameraNode) {}
 }

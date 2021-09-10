@@ -7,7 +7,7 @@ import {
     TextureBoxNode,
     LightNode,
     CameraNode,
-    Node
+    Node, ObjNode
 } from "../nodes/nodes";
 import {Rotation, Scaling, Translation} from "../math_library/transformation";
 import Vector from "../math_library/vector";
@@ -71,6 +71,7 @@ export class ScenegraphToXmlVisitor implements Visitor {
         if(node.transform instanceof Translation){
             let pos : Vector = new Vector(node.transform.getMatrix().getVal(0,3), node.transform.getMatrix().getVal(1,3), node.transform.getMatrix().getVal(2,3),node.transform.getMatrix().getVal(3,3));
             let gn : string = "<GroupNode translation=\"" +pos.x+ "," + pos.y + "," + pos.z + "," + pos.w + "\"";
+
             if(this.animatedGroupNodes.get(node)){
                 gn +=" id=\"" + this.animatedGroupNodes.get(node) + "\"";
             }
@@ -189,6 +190,11 @@ export class ScenegraphToXmlVisitor implements Visitor {
      */
     visitCameraNode(node: CameraNode): void {
         this._xmlString += "<CameraNode></CameraNode>\n";
+    }
+
+    visitObjNode(node: ObjNode): void {
+        let objNode = "<ObjNode src=\""+ node.objLines + "\"></ObjNode>\n";
+        this._xmlString += objNode;
     }
 
     /**
