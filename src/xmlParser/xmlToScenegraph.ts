@@ -62,34 +62,37 @@ export class XmlToScenegraph {
      * corresponding method to create the node
      * @param children The child nodes to visit
      */
-    createAndVisitChildren(children : NodeListOf<ChildNode>){
+    createAndVisitChildren(children : NodeListOf<ChildNode>) {
         for (let i = 0; i < children.length; i++) {
-            if(children[i].nodeName === "#text")
+            if (children[i].nodeName === "#text") {
                 continue;
+            }
+
             if (children[i].nodeName === "GroupNode") {
                 this.createGroupNode(children[i]);
-            } else if(children[i].nodeName === "SphereNode"){
+            } else if (children[i].nodeName === "SphereNode") {
                 this.createSphereNode(children[i]);
-            } else if(children[i].nodeName === "PyramidNode"){
+            } else if (children[i].nodeName === "PyramidNode") {
                 this.createPyramidNode(children[i]);
-            } else if(children[i].nodeName === "AABoxNode"){
+            } else if (children[i].nodeName === "AABoxNode") {
                 this.createAABoxNode(children[i]);
-            } else if(children[i].nodeName === "TextureBoxNode"){
+            } else if (children[i].nodeName === "TextureBoxNode") {
                 this.createTextureBoxNode(children[i]);
-            } else if(children[i].nodeName === "LightNode"){
+            } else if (children[i].nodeName === "LightNode") {
                 this.currentGroupNode.add(new LightNode());
-            } else if(children[i].nodeName === "CameraNode"){
+            } else if (children[i].nodeName === "CameraNode") {
                 this.createCameraNode(children[i]);
-            } else if(children[i].nodeName === "JumperNode"){
+            } else if (children[i].nodeName === "JumperNode") {
                 this.createJumperNode(children[i]);
-            } else if(children[i].nodeName === "RotationNode"){
+            } else if (children[i].nodeName === "RotationNode") {
                 this.createRotationNode(children[i]);
-            } else if(children[i].nodeName === "DriverNode"){
+            } else if (children[i].nodeName === "DriverNode") {
                 this.createDriverNode(children[i]);
-            } else if(children[i].nodeName === "FreeFlightNode"){
+            } else if (children[i].nodeName === "FreeFlightNode") {
                 this.createFreeFlightNode(children[i]);
-            } else if(children[i].nodeName === "ObjNode"){
+            } else if (children[i].nodeName === "ObjNode") {
                 this.createObjNode(children[i]);
+            }
         }
     }
 
