@@ -12,10 +12,11 @@ import {
   TextureBoxNode,
   PyramidNode,
   LightNode,
-  CameraNode
+  CameraNode, ObjNode
 } from '../nodes/nodes';
 import Shader from '../shading/shader';
 import RasterPyramid from "../raster_geometry/raster-pyramid";
+import {RasterObj} from "../raster_geometry/raster-obj";
 
 interface Camera {
   eye: Vector,
@@ -253,8 +254,6 @@ export class RasterVisitor implements Visitor {
   }
 
   visitCameraNode(node: CameraNode) {
- //   let shin = this.shader.getUniformFloat("shininess");
-   // node.shininess = shin;
   }
 
   /**
@@ -263,6 +262,36 @@ export class RasterVisitor implements Visitor {
    */
   visitTextureBoxNode(node: TextureBoxNode) {
     const shader = this.textureshader;
+    shader.use();
+    let toWorld = this.matrixStack[this.matrixStack.length-1];
+    let fromWorld = this.inverseMatrixStack[this.inverseMatrixStack.length-1];
+
+    // Set the transformation Matrix of the vertex shader to be used for every vertex of the sphere
+    shader.getUniformMatrix("M").set(toWorld);
+
+    let normalMatrix : Matrix = fromWorld.transpose();
+    normalMatrix.setVal(0,3,0);
+    normalMatrix.setVal(1,3,0);
+    normalMatrix.setVal(2,3,0);
+    normalMatrix.setVal(3,3,0);
+    normalMatrix.setVal(3,0,0);
+    normalMatrix.setVal(3,1,0);
+    normalMatrix.setVal(3,2,0);
+    normalMatrix.setVal(3,3,1);
+    shader.getUniformMatrix("N").set(normalMatrix);
+
+    let P = shader.getUniformMatrix("P");
+    if (P && this.perspective) {
+      P.set(this.perspective);
+    }
+
+    shader.getUniformMatrix("V").set(this.lookat);
+
+    this.renderables.get(node).render(shader);
+  }
+
+  visitObjNode(node: CameraNode) {
+    const shader = this.shader;
     shader.use();
     let toWorld = this.matrixStack[this.matrixStack.length-1];
     let fromWorld = this.inverseMatrixStack[this.inverseMatrixStack.length-1];
@@ -404,5 +433,9 @@ export class RasterSetupVisitor {
    * @param node the node to visit
    */
   visitCameraNode(node: CameraNode){
+  }
+
+  visitObjNode(node: ObjNode){
+    this.objects.set(node, new RasterObj(this.gl, node.objLines));
   }
 }

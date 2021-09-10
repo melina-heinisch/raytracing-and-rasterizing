@@ -1,7 +1,7 @@
 import 'bootstrap';
 import 'bootstrap/scss/bootstrap.scss';
 import Vector from './math_library/vector';
-import {CameraNode, GroupNode,} from './nodes/nodes';
+import {AABoxNode, CameraNode, GroupNode, LightNode, ObjNode} from './nodes/nodes';
 import {
     RasterVisitor,
     RasterSetupVisitor
@@ -102,8 +102,6 @@ window.addEventListener('load', () => {
             render()
         };
         reader.readAsText(files[0]);
-        //@ts-ignore
-        this.files = [];
     })
 
     //https://www.w3schools.com/xml/met_element_getattribute.asp
@@ -135,6 +133,30 @@ window.addEventListener('load', () => {
         xhttp.open("GET", 'scenegraph.xml', true);
         xhttp.send();
     }
+
+    document.getElementById('uploadObj').addEventListener('click',function (){
+        let event = new MouseEvent('click', {bubbles: false});
+        document.getElementById('uploadObjInput').dispatchEvent(event);
+    });
+
+    // Loads an object from an .obj File into a simple, pre-constructed scene
+    document.getElementById('uploadObjInput').addEventListener('change',function (){
+        //@ts-ignore
+        let files = this.files;
+        if (files.length === 0) {
+            alert('Es wurde keine Datei ausgewählt.');
+        }
+
+        let reader = new FileReader();
+        reader.onload = function(event) {
+            let result = event.target.result.toString();
+            let lines = result.split('\n');
+            let obj = new ObjNode(lines);
+            scenegraph.add(obj);
+            render()
+        };
+        reader.readAsText(files[0]);
+    })
 
     //Sets the values of the siders to the current value of the phong parameters in the scene
     shininessElement.value = ""+cameraNode.shininess;
@@ -196,8 +218,8 @@ window.addEventListener('load', () => {
         return (((num - oldMin) * range) / oldRange) + newMin;
     }
 
-    function render() {
-        if (isRasterizer) {
+    function render(){
+        if(isRasterizer){
             renderRasterizer(scenegraph);
         } else {
             renderRaytracer(scenegraph);

@@ -7,7 +7,7 @@ import {
     TextureBoxNode,
     LightNode,
     CameraNode,
-    Node
+    Node, ObjNode
 } from "../nodes/nodes";
 import {Rotation, Scaling, Translation} from "../math_library/transformation";
 import Vector from "../math_library/vector";
@@ -192,13 +192,11 @@ export class ScenegraphToXmlVisitor implements Visitor {
         let cameraNode = "<CameraNode id=\"cam\" shininess=\"" + node.shininess + "\" specular=\""+ node.specular + "\" diffuse=\"" + node.diffuse + "\" ambient=\"" + node.ambient + "\"></CameraNode>\n"
         this._xmlString += cameraNode;
     }
-/*
+
     visitObjNode(node: ObjNode): void {
         let objNode = "<ObjNode src=\""+ node.objLines + "\"></ObjNode>\n";
         this._xmlString += objNode;
     }
-
- */
 
     /**
      * Returns the whole scenegraph as xml string

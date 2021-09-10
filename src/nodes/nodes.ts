@@ -191,3 +191,20 @@ export class CameraNode extends Node {
     visitor.visitCameraNode(this);
   }
 }
+
+export class ObjNode extends Node{
+  /**
+   * Creates an obj
+   */
+  constructor(public objLines: string[]) {
+    super();
+  }
+
+  /**
+   * Accepts a visitor according to the visitor pattern
+   * @param visitor The visitor
+   */
+  accept(visitor: Visitor) {
+    visitor.visitObjNode(this);
+  }
+}
