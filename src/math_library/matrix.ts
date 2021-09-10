@@ -286,4 +286,24 @@ export default class Matrix {
       );
     }
   }
+
+  toString(){
+      let result : Array<number> = [];
+
+      for (let row = 0; row < 4; row++) {
+          for (let col = 0; col < 4; col++) {
+              result[row * 4 + col] = this.data[col * 4 + row];
+          }
+
+      }
+      let resultString = "";
+      for (let i = 0; i < result.length; i++) {
+          if(i === result.length-1){
+              resultString += result[i];
+          } else {
+              resultString += result[i] + ",";
+          }
+      }
+      return resultString;
+  }
 }

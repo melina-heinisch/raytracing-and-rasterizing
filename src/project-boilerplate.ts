@@ -8,7 +8,7 @@ import {
 } from './visitors/rastervisitor';
 import Shader from './shading/shader';
 import {
-    DriverNode,
+    DriverNode, FreeFlightNode,
     JumperNode, MoveCameraNode, RotateCameraNode,
     RotationNode
 } from './nodes/animation-nodes';
@@ -44,7 +44,7 @@ window.addEventListener('load', () => {
     let animationHandle: number;
     let parser: XmlToScenegraph = new XmlToScenegraph();
     let scenegraphString = "";
-    let animationNodes: (DriverNode | JumperNode | RotationNode | MoveCameraNode | RotateCameraNode)[] = [];
+    let animationNodes: (DriverNode | JumperNode | RotationNode | FreeFlightNode)[] = [];
 
     //Phong sliders
     const shininessElement = document.getElementById("shininess") as HTMLInputElement;
@@ -424,14 +424,14 @@ window.addEventListener('load', () => {
                 break;
             case "w":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.zNegActive = true;
                     }
                 })
                 break;
             case "s":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.zPosActive = true;
                     }
                 })
@@ -439,35 +439,35 @@ window.addEventListener('load', () => {
 
             case "d":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.xPosActive = true;
                     }
                 })
                 break;
             case "a":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.xNegActive = true;
                     }
                 })
                 break;
             case "e":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.yPosActive = true;
                     }
                 })
                 break;
             case "q":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.yNegActive = true;
                     }
                 })
                 break;
             case "y": {
                 animationNodes.forEach(node => {
-                    if (node instanceof RotateCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.yActive = true;
                         node.directionY = -1;
                     }
@@ -476,7 +476,7 @@ window.addEventListener('load', () => {
             }
             case "x": {
                 animationNodes.forEach(node => {
-                    if (node instanceof RotateCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.yActive = true;
                         node.directionY = 1;
                     }
@@ -485,7 +485,7 @@ window.addEventListener('load', () => {
             }
             case "c": {
                 animationNodes.forEach(node => {
-                    if (node instanceof RotateCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.xActive = true;
                         node.directionX = 1;
                     }
@@ -494,7 +494,7 @@ window.addEventListener('load', () => {
             }
             case "f": {
                 animationNodes.forEach(node => {
-                    if (node instanceof RotateCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.xActive = true;
                         node.directionX = -1;
                     }
@@ -536,14 +536,14 @@ window.addEventListener('load', () => {
                 break;
             case "w":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.zNegActive = false;
                     }
                 })
                 break;
             case "s":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.zPosActive = false;
                     }
                 })
@@ -551,35 +551,35 @@ window.addEventListener('load', () => {
 
             case "d":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.xPosActive = false;
                     }
                 })
                 break;
             case "a":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.xNegActive = false;
                     }
                 })
                 break;
             case "e":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.yPosActive = false;
                     }
                 })
                 break;
             case "q":
                 animationNodes.forEach(node => {
-                    if (node instanceof MoveCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.yNegActive = false;
                     }
                 })
                 break;
             case "y": {
                 animationNodes.forEach(node => {
-                    if (node instanceof RotateCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.yActive = false;
                     }
                 })
@@ -587,7 +587,7 @@ window.addEventListener('load', () => {
             }
             case "x": {
                 animationNodes.forEach(node => {
-                    if (node instanceof RotateCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.yActive = false;
                     }
                 })
@@ -595,7 +595,7 @@ window.addEventListener('load', () => {
             }
             case "c": {
                 animationNodes.forEach(node => {
-                    if (node instanceof RotateCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.xActive = false;
                     }
                 })
@@ -603,7 +603,7 @@ window.addEventListener('load', () => {
             }
             case "f": {
                 animationNodes.forEach(node => {
-                    if (node instanceof RotateCameraNode) {
+                    if (node instanceof FreeFlightNode) {
                         node.xActive = false;
                     }
                 })

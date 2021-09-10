@@ -162,11 +162,6 @@ Auf der Seite befinden sich vier beschriftete Slider, mit denen man die entsprec
 | O6  |8 |mehrere Lichtquellen |<ul><li> [X] </li></ul> |Melina Heinisch |
 | O7  |6 |Free Flight Modus | <ul><li> [X] </li></ul> |Melina Heinisch |
 
-<!--  -->
-
-
-
-
 ## Kompatibilität
 Das Projekt wurde mit folgenden Konfigurationen getestet:
 <!-- Nur die Konfigurationen angeben die ihr wirklich getestet habt. Eine gängige Kombination ist hier schon ausreichend-->

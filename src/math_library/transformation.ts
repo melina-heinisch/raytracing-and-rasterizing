@@ -90,6 +90,39 @@ export class Scaling extends MatrixTransformation {
     }
 }
 
+export class FreeFlight extends MatrixTransformation {
+    private _freeFlightMatrix : Matrix;
+    private _inverseFreeFlightMatrix : Matrix;
+
+    constructor(freeFlightMatrix : Matrix, inverseFreeFlightMatrix : Matrix){
+        super(freeFlightMatrix,inverseFreeFlightMatrix);
+
+        this._freeFlightMatrix = freeFlightMatrix;
+        this._inverseFreeFlightMatrix = inverseFreeFlightMatrix;
+    }
+
+    get freeFlightMatrix(): Matrix {
+        return this._freeFlightMatrix;
+    }
+
+    set freeFlightMatrix(value: Matrix) {
+        this._freeFlightMatrix = value;
+    }
+
+    get inverseFreeFlightMatrix(): Matrix {
+        return this._inverseFreeFlightMatrix;
+    }
+
+    set inverseFreeFlightMatrix(value: Matrix) {
+        this._inverseFreeFlightMatrix = value;
+    }
+
+    private  recalculate() {
+        this.matrix =  this._freeFlightMatrix;
+        this.inverse = this._inverseFreeFlightMatrix;
+    }
+}
+
 export class SQT extends MatrixTransformation {
     scale: Vector;
     quaternion: Quaternion;
