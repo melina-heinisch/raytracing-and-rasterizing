@@ -73,7 +73,8 @@ export class XmlToScenegraph {
             } else if(children[i].nodeName === "LightNode"){
                 this.currentGroupNode.add(new LightNode());
             } else if(children[i].nodeName === "CameraNode"){
-                this.currentGroupNode.add(new CameraNode());
+                //this.currentGroupNode.add(new CameraNode());
+                this.createCameraNode(children[i]);
             } else if(children[i].nodeName === "JumperNode"){
                 this.createJumperNode(children[i]);
             } else if(children[i].nodeName === "RotationNode"){
@@ -219,6 +220,16 @@ export class XmlToScenegraph {
                 new Vector(extraColors[4][0],extraColors[4][1],extraColors[4][2],extraColors[4][3])]
             node = new AABoxNode(new Vector(baseColor[0],baseColor[1],baseColor[2],baseColor[3]),extraColorsVectors);
         }
+        this.currentGroupNode.add(node);
+    }
+
+    //@ts-ignore
+    createCameraNode(childNode){
+       let shininess = childNode.attributes.shininess.value;
+        let specular = childNode.attributes.specular.value;
+        let diffuse = childNode.attributes.diffuse.value;
+        let ambient = childNode.attributes.ambient.value;
+        let node = new CameraNode(shininess, specular, diffuse, ambient);
         this.currentGroupNode.add(node);
     }
 
