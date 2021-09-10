@@ -58,7 +58,7 @@ export class RasterVisitor implements Visitor {
    * @param camera The camera used
    * @param lightPositions The light light positions
    */
-  render(rootNode: Node, camera: Camera | null, lightPositions: Array<Vector>) {
+  render(rootNode: Node, camera: Camera | null, lightPositions: Array<Vector>, shininess: number, specular: number, ambient: number, diffuse: number) {
     // clear
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 
@@ -76,10 +76,10 @@ export class RasterVisitor implements Visitor {
         shader.getUniformVec3("lightSources[" + i + "]").set(lightPositions[i]);
       }
       //Set Parameters for Phong shading
-      shader.getUniformFloat("kA").set(0.3); // wird in phong-fragment-shader.glsl gesetzt
-      shader.getUniformFloat("kD").set(0.6);
-      shader.getUniformFloat("kS").set(0.7);
-      shader.getUniformFloat("shininess").set(16);
+      shader.getUniformFloat("kA").set(ambient); // wird in phong-fragment-shader.glsl gesetzt
+      shader.getUniformFloat("kD").set(diffuse);
+      shader.getUniformFloat("kS").set(specular);
+      shader.getUniformFloat("shininess").set(shininess);
       shader.getUniformVec3('cameraPosition').set(camera.eye); //wird in phong-vertex-perspective-shader.glsl gesetzt
 
       shader.getUniformInt('numberOfLightSourcesV').set(lightPositions.length);

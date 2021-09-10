@@ -16,7 +16,7 @@ import {DriverNode, JumperNode, MoveCameraNode, RotateCameraNode, RotationNode} 
 /**
  * Converts the Scenegraph into a String that will later be saved to a file
  */
-export class ScenegraphToXMLVisitor implements Visitor {
+export class ScenegraphToXmlVisitor implements Visitor {
 
     /**
      * The String that contains all xml nodes

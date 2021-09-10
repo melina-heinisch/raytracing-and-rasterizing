@@ -6,20 +6,6 @@ let entries = {
     index: './src/index.ts'
 }
 for (let exercise of [
-    "gammacorrection",
-    "cmyk",
-    "quantise",
-    "dda",
-    "bresenham",
-    "raytracing",
-    "phong",
-    "matrix",
-    "scenegraph",
-    "rasterisation",
-    "shading",
-    "perspective",
-    "animation",
-    "quaternion",
     "project"
 ]) {
     if (fs.existsSync(path.resolve(__dirname, `src/${exercise}-boilerplate.ts`))) {
