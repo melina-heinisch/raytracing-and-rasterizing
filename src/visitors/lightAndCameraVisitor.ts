@@ -46,6 +46,7 @@ export class LightAndCameraVisitor implements Visitor{
      */
     constructor() {
         this.matrixStack.push(Matrix.identity());
+        this.cameraNode = new CameraNode(10,0.5,0.5,0.8)
     }
 
     /**
@@ -57,6 +58,7 @@ export class LightAndCameraVisitor implements Visitor{
         this.rayCamera = null;
         this.rasterCamera = null;
         this.matrixStack.push(Matrix.identity());
+        this.cameraNode = new CameraNode(10,0.5,0.5,0.8)
     }
 
     /**
