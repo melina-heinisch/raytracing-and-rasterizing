@@ -39,7 +39,8 @@ export class clickObjectVisitor implements Visitor{
      * @param rayCamera
      */
     constructor(public x : number, public y : number, public rayCamera :  {origin: Vector; width: number; height: number; alpha: number; toWorld: Matrix }) {
-    this.ray = Ray.makeRay(this.x,this.y,this.rayCamera);;
+    this.ray = Ray.makeRay(this.x,this.y,this.rayCamera);
+    this.scaling = 1;
     }
 
     /**
@@ -105,7 +106,7 @@ export class clickObjectVisitor implements Visitor{
 
     visitSphereNode(node: SphereNode): void {
         let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),1 * this.scaling,new Vector(0,0,0,1));
+        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)), 1* this.scaling,new Vector(0,0,0,1));
 
         let intersection = sphere.intersect(this.ray);
 
