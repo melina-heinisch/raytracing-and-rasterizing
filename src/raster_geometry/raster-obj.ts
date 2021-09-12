@@ -137,7 +137,7 @@ export class RasterObj {
 
     updateColor(color: Vector){
         let colorArray = [];
-        for (let i = 0; i < this.elements; i+=2) {
+        for (let i = 0; i < this.elements; i++) {
             colorArray.push(color.x, color.y, color.z);
         }
 

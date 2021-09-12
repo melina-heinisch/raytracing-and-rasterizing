@@ -118,6 +118,15 @@ export default class RayVisitor implements Visitor {
     const ray = new Ray(fromWorld.mulVec(this.ray.origin), fromWorld.mulVec(this.ray.direction).normalize());
     let intersection = UNIT_SPHERE.intersect(ray);
 
+      if(node.selected){
+        UNIT_SPHERE.color = new Vector(0,0.5,0.7,1);
+      } else {
+        if(node.selected === undefined){
+          UNIT_SPHERE.color = node.color;
+          node.selected = false;
+        }
+      }
+
     if (intersection) {
       const intersectionPointWorld = toWorld.mulVec(intersection.point);
       const intersectionNormalWorld = toWorld.mulVec(intersection.normal).normalize();
@@ -128,7 +137,7 @@ export default class RayVisitor implements Visitor {
       );
       if (this.intersection === null || intersection.closerThan(this.intersection)) {
         this.intersection = intersection;
-        this.intersectionColor = node.color;
+        this.intersectionColor = UNIT_SPHERE.color;
       }
     }
   }

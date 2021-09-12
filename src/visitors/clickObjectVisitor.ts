@@ -21,7 +21,13 @@ export class clickObjectVisitor implements Visitor{
      */
     matrixStack : Array<Matrix> = [];
 
+    /**
+     * The outgoing ray of the click
+     */
+    ray : Ray;
+
     constructor(public x : number, public y : number, public rayCamera :  {origin: Vector; width: number; height: number; alpha: number; toWorld: Matrix }) {
+    this.ray = Ray.makeRay(this.x,this.y,this.rayCamera);;
     }
 
     /**
@@ -47,14 +53,27 @@ export class clickObjectVisitor implements Visitor{
     }
 
     visitObjNode(node: ObjNode): void {
+        let matrix = this.matrixStack[this.matrixStack.length - 1];
+        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),1,new Vector(0,0,0,1));
+
+        let intersection = sphere.intersect(this.ray);
+
+        if(intersection != null){
+            node.selected = true;
+        }else{
+            if(node.selected === true){
+                node.selected = undefined;
+            }else {
+                node.selected = false;
+            }
+        }
     }
 
     visitPyramidNode(node: PyramidNode): void {
         let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let ray = Ray.makeRay(this.x,this.y,this.rayCamera);
-        let sphere = new Sphere(matrix.mulVec(new Vector(0,-0.5,0,1)),0.51,new Vector(0,0,0,1));
+        let sphere = new Sphere(matrix.mulVec(new Vector(0,-0.5,0,1)),0.5,new Vector(0,0,0,1));
 
-        let intersection = sphere.intersect(ray);
+        let intersection = sphere.intersect(this.ray);
 
         if(intersection != null){
             node.selected = true;
@@ -69,10 +88,9 @@ export class clickObjectVisitor implements Visitor{
 
     visitSphereNode(node: SphereNode): void {
         let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let ray = Ray.makeRay(this.x,this.y,this.rayCamera);
         let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),1,new Vector(0,0,0,1));
 
-        let intersection = sphere.intersect(ray);
+        let intersection = sphere.intersect(this.ray);
 
         if(intersection != null){
             node.selected = true;
@@ -83,15 +101,13 @@ export class clickObjectVisitor implements Visitor{
                 node.selected = false;
             }
         }
-
     }
 
     visitAABoxNode(node: AABoxNode): void {
         let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let ray = Ray.makeRay(this.x,this.y,this.rayCamera);
         let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),0.5,new Vector(0,0,0,1));
 
-        let intersection = sphere.intersect(ray);
+        let intersection = sphere.intersect(this.ray);
 
         if(intersection != null){
             node.selected = true;
@@ -106,10 +122,9 @@ export class clickObjectVisitor implements Visitor{
 
     visitTextureBoxNode(node: TextureBoxNode): void {
         let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let ray = Ray.makeRay(this.x,this.y,this.rayCamera);
         let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),0.5,new Vector(0,0,0,1));
 
-        let intersection = sphere.intersect(ray);
+        let intersection = sphere.intersect(this.ray);
 
         if(intersection != null){
             node.selected = true;
