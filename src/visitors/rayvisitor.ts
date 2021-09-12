@@ -32,7 +32,7 @@ export default class RayVisitor implements Visitor {
   matrixStack : Array<Matrix> = [];
   inverseMatrixStack : Array<Matrix> = [];
   intersection: Intersection | null;
-  intersectionColor1: Vector;
+  intersectionColor: Vector;
   intersectionColor2: Vector;
   ray: Ray;
 
@@ -52,7 +52,7 @@ export default class RayVisitor implements Visitor {
    * @param camera The camera used
    * @param lightPositions The light positions
    */
-  render(rootNode: Node, camera: { origin: Vector, width: number, height: number, alpha: number }, lightPositions: Array<Vector>, shininess: number, specular: number, ambient: number, diffuse: number) {
+  render(rootNode: Node, camera: {origin: Vector, width: number, height: number, alpha: number, toWorld: Matrix }, lightPositions: Array<Vector>, shininess: number, specular: number, ambient: number, diffuse: number) {
     // clear
     let data = this.imageData.data;
     data.fill(0);
@@ -71,27 +71,11 @@ export default class RayVisitor implements Visitor {
         rootNode.accept(this);
 
         if (this.intersection) {
-          if(this.intersectionColor2){
-            if(y % 20 >= 10){ //kugeln zweifarbig (gestreift) darstellen
-              let color = phong(this.intersectionColor1, this.intersection, lightPositions, shininess, ambient, diffuse, specular, camera.origin);
-              data[4 * (width * y + x)] = color.r * 255;
-              data[4 * (width * y + x) + 1] = color.g * 255;
-              data[4 * (width * y + x) + 2] = color.b * 255;
-              data[4 * (width * y + x) + 3] = 255;
-            } else {
-              let color = phong(this.intersectionColor2, this.intersection, lightPositions, shininess, ambient, diffuse, specular, camera.origin);
-              data[4 * (width * y + x)] = color.r * 255;
-              data[4 * (width * y + x) + 1] = color.g * 255;
-              data[4 * (width * y + x) + 2] = color.b * 255;
-              data[4 * (width * y + x) + 3] = 255;
-            }
-          }else {
-            let color = phong(this.intersectionColor1, this.intersection, lightPositions, shininess, ambient, diffuse, specular, camera.origin);
-            data[4 * (width * y + x)] = color.r * 255;
-            data[4 * (width * y + x) + 1] = color.g * 255;
-            data[4 * (width * y + x) + 2] = color.b * 255;
-            data[4 * (width * y + x) + 3] = 255;
-          }
+          let color = phong(this.intersectionColor, this.intersection, lightPositions, shininess, ambient, diffuse, specular, camera.origin);
+          data[4 * (width * y + x)] = color.r * 255;
+          data[4 * (width * y + x) + 1] = color.g * 255;
+          data[4 * (width * y + x) + 2] = color.b * 255;
+          data[4 * (width * y + x) + 3] = 255;
 
         } else {
           data[4 * (width * y + x)] = 255;
@@ -144,8 +128,7 @@ export default class RayVisitor implements Visitor {
       );
       if (this.intersection === null || intersection.closerThan(this.intersection)) {
         this.intersection = intersection;
-        this.intersectionColor1 = node.color1;
-        this.intersectionColor2 = node.color2 || undefined;
+        this.intersectionColor = node.color;
       }
     }
   }

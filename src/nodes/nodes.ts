@@ -60,10 +60,9 @@ export class SphereNode extends Node {
    * Creates a new Sphere.
    * The sphere is defined around the origin 
    * with radius 1.
-   * @param color1 The colour of the Sphere
-   * @param color2 second colour of sphere
+   * @param color The colour of the Sphere
    */
-  constructor(public color1: Vector, public color2 : Vector) {
+  constructor(public color: Vector) {
     super();
   }
 

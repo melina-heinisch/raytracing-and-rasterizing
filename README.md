@@ -96,6 +96,10 @@ eingeben und rufen die Website des Servers über to `0.0.0.0:8080` bzw. `localho
 
 Im folgenden wird erklärt wie die Anwendung zu bedienen ist:
 
+## Größe der Canvas ändern
+Sollte zu Testzwecken die Canvas Größe verändert werden, muss diese zum einen im HTML File `dist/index.html` geändert werden.
+Außerdem muss in der `visitors/lightAndCameraVisitor.ts` in der Methode `visitCameraNode jeweils für beide Kameras die Größe der Canvas angegeben werden.
+
 ## Wechseln der Renderer
 Mit Drücken von `r` auf der Tastatur wird der Rasterisierer verwendet.
 

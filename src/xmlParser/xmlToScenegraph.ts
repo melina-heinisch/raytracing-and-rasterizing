@@ -192,14 +192,7 @@ export class XmlToScenegraph {
     // @ts-ignore
     createSphereNode(childNode){
         let baseColor = this.getOneValue(childNode.attributes.baseColor.value) || [Math.random(),Math.random(),Math.random(),1];
-        let extraColor = this.getOneValue(childNode.attributes.extraColors.value);
-
-        let node;
-        if(extraColor === undefined){
-            node = new SphereNode(new Vector(baseColor[0],baseColor[1],baseColor[2],baseColor[3]),undefined);
-        } else{
-            node = new SphereNode(new Vector(baseColor[0],baseColor[1],baseColor[2],baseColor[3]),new Vector(extraColor[0],extraColor[1],extraColor[2],extraColor[3]));
-        }
+        let node = new SphereNode(new Vector(baseColor[0],baseColor[1],baseColor[2],baseColor[3]));
         this.currentGroupNode.add(node);
     }
 

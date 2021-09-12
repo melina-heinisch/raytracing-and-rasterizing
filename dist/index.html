@@ -15,49 +15,37 @@
         .hidden{
             opacity: 0;
         }
+
     </style>
     <link rel="icon" type="image/png" href="hci-logo.png">
 </head>
 
 <body style="background-color: rgb(217,222,248)">
-    <div class="container">
+    <nav class="navbar navbar-light" style="background-color: rgb(190,200,250)">
+        <div class="container">
+            <a class="navbar-brand" href="/index.html">
+                <img src="textures/hci-logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
+                ICG Projekt Gruppe 01
+            </a>
+        </div>
+    </nav>
+    <div class="container" style="margin: auto">
         <div class="row">
             <div class="col-sm-3">
-                <div id="caption">
-                    <h3>Renderer</h3>
-                    <p id="rasterCaption" style="color: limegreen">Rasterizer = <b>r</b> </p>
-                    <p id="rayCaption" style="color: black">Raytracer = <b>t</b></p>
-                    <h3>Animationen</h3>
-                    <p id="toggleJumper" style="color: limegreen">Jumper ausschalten = <b>4</b></p>
-                    <p id="toggleDriver" style="color: limegreen">Driver ausschalten = <b>5</b></p>
-                    <p id="toggleRotor" style="color: limegreen">Rotor ausschalten = <b>6</b></p>
-                    <h5>Jumper</h5>
-                    <p id="xDirection">Jumper an x-Achse: <b>1</b></p>
-                    <p id="yDirection">Jumper an y-Achse: <b>2</b></p>
-                    <p id="zDirection">Jumper an z-Achse: <b>3</b></p>
-                    <h5>Driver</h5>
-                    <p>Hoch: <b>Pfeil hoch</b>, Runter: <b>Pfeil runter</b></p>
-                    <p>Rechts: <b>Pfeil rechts</b>, Links: <b>Pfeil links</b></p>
+                <h3>Renderer</h3>
+                <p><p id="rasterCaption" style="color: limegreen; display: inline">Rasterizer <kbd>r</kbd> </p>
+                <p id="rayCaption" style="color: black; display: inline ">Raytracer <kbd>t</kbd></p></p>
 
-                </div>
-            </div>
-            <div class="col-sm-3">
                 <h3>Kamera</h3>
                 <h5>Kamerabewegung</h5>
-                <p>Vor: <b>w</b>, Zurück: <b>s</b> </p>
-                <p>Rechts: <b>d</b>, Links: <b>a</b> </p>
-                <p>Hoch: <b>e</b>, Runter: <b>q</b> </p>
+                <p>Vor: <kbd>w</kbd> Zurück: <kbd>s</kbd> </p>
+                <p>Links: <kbd>a</kbd> Rechts: <kbd>d</kbd></p>
+                <p>Hoch: <kbd>e</kbd> Runter: <kbd>q</kbd> </p>
                 <h5>Kamerarotation</h5>
-                <p>Links: <b>y</b>, Rechts: <b>x</b></p>
-                <p>Hoch: <b>f</b>, Runter: <b>c</b></p>
-                <h5>Scenengraph</h5>
-                <button id="upload">Scenengraph als XML hochladen</button>
-                <input id="uploadInput" type="file" style="display:none" accept="text/xml" />
-                <button id="download">Scenengraph als XML herunterladen</button>
+                <p>Links: <kbd>y</kbd> Rechts: <kbd>x</kbd> </p>
+                <p>Hoch: <kbd>f</kbd> Runter: <kbd>c</kbd></p>
 
-                <button id="uploadObj">3D-Modell als .obj hochladen</button>
-                <input id="uploadObjInput" type="file" style="display:none" accept="text/obj" />
-
+                <h3>Phong Parameter</h3>
                 <label for="shininess">Shininess</label>
                 <input class="form-control-range" id="shininess" type="range" min="1" max="50">
                 <label for="specular">Specular</label>
@@ -66,13 +54,39 @@
                 <input class="form-control-range" id="diffuse" type="range" min="1" max="50">
                 <label for="ambient">Ambient</label>
                 <input class="form-control-range" id="ambient" type="range" min="1" max="50">
+
             </div>
 
             <div class="col-sm-6">
-                <div id="canvasFrame" style="float: right">
-                    <canvas class="figure-img mx-auto d-block rounded" width=600 height=600 id="rasterCanvas"></canvas>
-                    <canvas class="figure-img mx-auto d-block rounded hidden" width=600 height=600 id="rayCanvas"></canvas>
+                <div id="canvasFrame">
+                    <canvas class="figure-img mx-auto d-block" width=500 height=500 id="rasterCanvas" style="margin-top: 40px;"></canvas>
+                    <canvas class="figure-img mx-auto d-block hidden" width=500 height=500 id="rayCanvas" style="margin-top: 40px;"></canvas>
                 </div>
+            </div>
+
+            <div class="col-sm-3">
+
+                <h3>Animationen</h3>
+                <p><p id="toggleJumper" style="color: limegreen; display: inline">Jumper ausschalten </p><kbd>1</kbd></p>
+                <p><p id="toggleDriver" style="color: limegreen; display: inline">Driver ausschalten </p><kbd>2</kbd></p>
+                <p><p id="toggleRotor" style="color: limegreen; display: inline">Rotor ausschalten </p><kbd>3</kbd></p>
+                <h5>Jumper</h5>
+                <p id="xDirection">Jumper an x-Achse <kbd>4</kbd></p>
+                <p id="yDirection">Jumper an y-Achse <kbd>5</kbd></p>
+                <p id="zDirection">Jumper an z-Achse <kbd>6</kbd></p>
+                <h5>Driver</h5>
+                <p> Links <kbd>←</kbd> Rechts <kbd>→</kbd></p>
+                <p>Hoch <kbd>↑</kbd> Runter <kbd>↓</kbd></p>
+
+
+                <h3>Scenengraph</h3>
+                <button id="upload" class="btn btn-info" style="margin: 5px">Szene als .xml hochladen</button>
+                <input id="uploadInput" type="file" style="display:none" accept="text/xml" />
+
+                <button id="download" class="btn btn-info" style="margin: 5px">Szene als .xml herunterladen</button>
+
+                <button id="uploadObj" class="btn btn-info" style="margin: 5px">3D-Modell .obj hochladen</button>
+                <input id="uploadObjInput" type="file" style="display:none" accept="text/obj" />
             </div>
 
         </div>

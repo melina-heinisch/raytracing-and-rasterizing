@@ -128,15 +128,10 @@ export class ScenegraphToXmlVisitor implements Visitor {
      * @param node The node to parse
      */
     visitSphereNode(node: SphereNode): void {
-        let baseColor = node.color1;
-        let extraColor = node.color2;
-        if(extraColor){
-            let sphereNode = "<SphereNode baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\" extraColors=\"" + extraColor.x+ "," + extraColor.y + "," + extraColor.z + "," + extraColor.w + "\"></SphereNode>\n"
-            this._xmlString += sphereNode;
-        }else{
-            let sphereNode = "<SphereNode baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\" extraColors=\"\"></SphereNode>\n"
-            this._xmlString += sphereNode;
-        }
+        let baseColor = node.color;
+        let sphereNode = "<SphereNode baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\"></SphereNode>\n"
+        this._xmlString += sphereNode;
+
     }
 
     /**

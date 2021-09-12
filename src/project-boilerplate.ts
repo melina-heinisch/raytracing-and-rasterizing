@@ -296,45 +296,45 @@ window.addEventListener('load', () => {
     //Following are all the key event listeners for various functionalities
     window.addEventListener('keydown', function (event) {
         switch (event.key) {
-            case "4":
+            case "1":
                 animationNodes.forEach(node => {
                     if (node instanceof JumperNode) {
                         node.toggleActive();
                         if (node.active) {
                             document.getElementById("toggleJumper").style.color = "limegreen";
-                            document.getElementById("toggleJumper").innerText = "Jumper ausschalten = 4";
+                            document.getElementById("toggleJumper").innerText = "Jumper ausschalten ";
                         } else {
                             document.getElementById("toggleJumper").style.color = "black";
-                            document.getElementById("toggleJumper").innerText = "Jumper einschalten = 4";
+                            document.getElementById("toggleJumper").innerText = "Jumper einschalten ";
                         }
                     }
                 })
                 break;
-            case "5":
+            case "2":
                 animationNodes.forEach(node => {
                     if (node instanceof DriverNode) {
                         node.toggleActive();
                         if (node.active) {
                             document.getElementById("toggleDriver").style.color = "limegreen";
-                            document.getElementById("toggleDriver").innerText = "Driver ausschalten = 5";
+                            document.getElementById("toggleDriver").innerText = "Driver ausschalten ";
                         } else {
                             document.getElementById("toggleDriver").style.color = "black";
-                            document.getElementById("toggleDriver").innerText = "Driver einschalten = 5";
+                            document.getElementById("toggleDriver").innerText = "Driver einschalten ";
                         }
                     }
 
                 })
                 break;
-            case "6":
+            case "3":
                 animationNodes.forEach(node => {
                     if (node instanceof RotationNode) {
                         node.toggleActive();
                         if (node.active) {
                             document.getElementById("toggleRotor").style.color = "limegreen";
-                            document.getElementById("toggleRotor").innerText = "Rotor ausschalten = 6";
+                            document.getElementById("toggleRotor").innerText = "Rotor ausschalten ";
                         } else {
                             document.getElementById("toggleRotor").style.color = "black";
-                            document.getElementById("toggleRotor").innerText = "Rotor einschalten = 6";
+                            document.getElementById("toggleRotor").innerText = "Rotor einschalten ";
                         }
                     }
                 })
@@ -355,7 +355,7 @@ window.addEventListener('load', () => {
                 document.getElementById("rasterCaption").style.color = "black";
                 break;
 
-            case "1":
+            case "4":
                 for (let i = 0; i < animationNodes.length; i++) {
                     let node = animationNodes[i];
                     if (node instanceof JumperNode) {
@@ -367,7 +367,7 @@ window.addEventListener('load', () => {
                 document.getElementById("zDirection").style.color = "black";
                 break;
 
-            case "2":
+            case "5":
                 for (let i = 0; i < animationNodes.length; i++) {
                     let node = animationNodes[i];
                     if (node instanceof JumperNode) {
@@ -379,7 +379,7 @@ window.addEventListener('load', () => {
                 document.getElementById("zDirection").style.color = "black";
                 break;
 
-            case "3":
+            case "6":
                 for (let i = 0; i < animationNodes.length; i++) {
                     let node = animationNodes[i];
                     if (node instanceof JumperNode) {

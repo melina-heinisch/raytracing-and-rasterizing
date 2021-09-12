@@ -34,7 +34,7 @@ export class LightAndCameraVisitor implements Visitor{
     /**
      * Camera for Raytracer
      */
-    rayCamera :  {origin: Vector; width: number; height: number; alpha: number; };
+    rayCamera :  {origin: Vector; width: number; height: number; alpha: number; toWorld: Matrix };
     /**
      * Camera for Rasterizer
      */
@@ -127,21 +127,25 @@ export class LightAndCameraVisitor implements Visitor{
      * @param node The node to visit
      */
     visitCameraNode(node: CameraNode) {
+
         this.cameraNode = node;
+        let matrix = this.matrixStack[this.matrixStack.length - 1];
+
         this.rayCamera = {
-            origin: this.matrixStack[this.matrixStack.length - 1].mulVec( new Vector(0, 0, 1, 1)),
-            width: 600,
-            height: 600,
-            alpha: Math.PI / 3
+            origin: matrix.mulVec( new Vector(0, 0, 1, 1)),
+            width: 500,
+            height: 500,
+            alpha: Math.PI / 3,
+            toWorld: matrix
         }
 
         this.rasterCamera = {
-            eye: this.matrixStack[this.matrixStack.length - 1].mulVec(new Vector(0, 0, 1, 1)),
-            center: this.matrixStack[this.matrixStack.length - 1].mulVec(new Vector(0, 0, 0, 1)),
-            up: this.matrixStack[this.matrixStack.length - 1].mulVec(new Vector(0, 1, 0, 0)),
+            eye: matrix.mulVec(new Vector(0, 0, 1, 1)),
+            center: matrix.mulVec(new Vector(0, 0, 0, 1)),
+            up: matrix.mulVec(new Vector(0, 1, 0, 0)),
             fovy: 60,
-            //aspect = rasterCanvasWidth/rasterCanvasHeight
-            aspect: 600 / 600,
+            //aspect = canvasWidth/canvasHeight
+            aspect: 500 / 500,
             near: 0.1,
             far: 100
         };

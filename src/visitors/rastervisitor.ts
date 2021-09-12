@@ -375,7 +375,7 @@ export class RasterSetupVisitor {
   visitSphereNode(node: SphereNode) {
     this.objects.set(
         node,
-        new RasterSphere(this.gl, new Vector(0, 0, 0, 1), 1, node.color1, node.color2)
+        new RasterSphere(this.gl, new Vector(0, 0, 0, 1), 1, node.color)
     );
   }
 

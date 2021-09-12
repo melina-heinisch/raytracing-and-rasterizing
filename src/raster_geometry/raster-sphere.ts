@@ -31,10 +31,10 @@ export default class RasterSphere {
      * @param gl The canvas' context
      * @param center The center of the sphere
      * @param radius The radius of the sphere
-     * @param color1 The base color of the sphere
+     * @param color The base color of the sphere
      * @param color2 If given, second color of the sphere
      */
-    constructor(private gl: WebGL2RenderingContext, center: Vector, radius: number, color1: Vector, color2 : Vector = undefined) {
+    constructor(private gl: WebGL2RenderingContext, center: Vector, radius: number, color: Vector) {
 
         let vertices = [];
         let indices = [];
@@ -86,18 +86,14 @@ export default class RasterSphere {
         let length = (vertices.length/3)
         let colorArray = []
         for (let i = 0; i < length; i+=2) {
-            colorArray.push(color1.x);
-            colorArray.push(color1.y);
-            colorArray.push(color1.z);
-           if(color2){
-               colorArray.push(color2.x);
-               colorArray.push(color2.y);
-               colorArray.push(color2.z);
-           }else{
-               colorArray.push(color1.x);
-               colorArray.push(color1.y);
-               colorArray.push(color1.z);
-           }
+            colorArray.push(color.x);
+            colorArray.push(color.y);
+            colorArray.push(color.z);
+
+            colorArray.push(color.x);
+            colorArray.push(color.y);
+            colorArray.push(color.z);
+
         }
 
         const vertexBuffer = this.gl.createBuffer();
