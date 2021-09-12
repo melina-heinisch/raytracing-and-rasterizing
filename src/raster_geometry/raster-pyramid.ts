@@ -243,4 +243,13 @@ export default class RasterPyramid {
         this.gl.disableVertexAttribArray(colorAttribute);
         this.gl.disableVertexAttribArray(normalAttribute);
     }
+
+    updateColor(color: Vector, extraColors:Array<Vector> = undefined ){
+        let colorArray = this.setColors(color || undefined, extraColors[0] ||undefined, extraColors[1] || undefined, extraColors[2] || undefined, extraColors[3] || undefined);
+
+        const colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,colorBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(colorArray),this.gl.STATIC_DRAW);
+        this.colorBuffer = colorBuffer;
+    }
 }

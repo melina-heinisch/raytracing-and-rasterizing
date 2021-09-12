@@ -42,7 +42,7 @@ export default class RasterBox {
      * @param baseColor The base color of the cube
      * @param extraColors If given, colors for the other 5 sides of the cube
      */
-    constructor(private gl: WebGL2RenderingContext, minPoint: Vector, maxPoint: Vector, baseColor : Vector, extraColors : Array<Vector>, ) {
+    constructor(private gl: WebGL2RenderingContext, minPoint: Vector, maxPoint: Vector, baseColor : Vector, extraColors : Array<Vector>) {
         this.gl = gl;
         const mi = minPoint;
         const ma = maxPoint;
@@ -298,5 +298,14 @@ export default class RasterBox {
         this.gl.disableVertexAttribArray(positionLocation);
         this.gl.disableVertexAttribArray(colorAttribute);
         this.gl.disableVertexAttribArray(normalAttribute);
+    }
+
+    updateColor(color: Vector, extraColors:Array<Vector> = undefined ){
+        let colors = this.setColors(color, extraColors[0] ||undefined, extraColors[1] || undefined, extraColors[2] || undefined, extraColors[3] || undefined, extraColors[4] || undefined);
+
+        const colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,colorBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(colors),this.gl.STATIC_DRAW);
+        this.colorBuffer = colorBuffer;
     }
 }

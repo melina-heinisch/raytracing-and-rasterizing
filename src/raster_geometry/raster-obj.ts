@@ -1,4 +1,5 @@
 import Shader from "../shading/shader";
+import Vector from "../math_library/vector";
 
 export class RasterObj {
     /**
@@ -133,4 +134,18 @@ export class RasterObj {
         this.gl.disableVertexAttribArray(colorAttribute);
         this.gl.disableVertexAttribArray(normalAttribute);
     }
+
+    updateColor(color: Vector){
+        let colorArray = [];
+        for (let i = 0; i < this.elements; i+=2) {
+            colorArray.push(color.x, color.y, color.z);
+        }
+
+        const colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,colorBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(colorArray),this.gl.STATIC_DRAW);
+        this.colorBuffer = colorBuffer;
+    }
+
+
 }
