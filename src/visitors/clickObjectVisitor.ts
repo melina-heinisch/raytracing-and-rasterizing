@@ -13,6 +13,7 @@ import Ray from "../math_library/ray";
 import Vector from "../math_library/vector";
 import Matrix from "../math_library/matrix";
 import Sphere from "../ray_geometry/sphere";
+import {Scaling} from "../math_library/transformation";
 
 export class clickObjectVisitor implements Visitor{
 
@@ -26,6 +27,17 @@ export class clickObjectVisitor implements Visitor{
      */
     ray : Ray;
 
+    /**
+     * If there is scaling, it is applied to the radius
+     */
+    scaling: number;
+
+    /**
+     * Creates an click object visitor
+     * @param x x coordinate of the click
+     * @param y y coordinate of the click
+     * @param rayCamera
+     */
     constructor(public x : number, public y : number, public rayCamera :  {origin: Vector; width: number; height: number; alpha: number; toWorld: Matrix }) {
     this.ray = Ray.makeRay(this.x,this.y,this.rayCamera);;
     }
@@ -44,17 +56,22 @@ export class clickObjectVisitor implements Visitor{
     visitGroupNode(node: GroupNode): void {
         let newMatrix: Matrix = this.matrixStack[this.matrixStack.length - 1].mul(node.transform.getMatrix());
         this.matrixStack.push(newMatrix);
+        let transformation = node.transform
+        if(transformation instanceof Scaling){
+            this.scaling = transformation.scale.x;
+        }
 
         node.childNodes.forEach(childNode => {
             childNode.accept(this);
         });
 
         this.matrixStack.pop();
+        this.scaling = 1;
     }
 
     visitObjNode(node: ObjNode): void {
         let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),1,new Vector(0,0,0,1));
+        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),1*this.scaling,new Vector(0,0,0,1));
 
         let intersection = sphere.intersect(this.ray);
 
@@ -71,7 +88,7 @@ export class clickObjectVisitor implements Visitor{
 
     visitPyramidNode(node: PyramidNode): void {
         let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let sphere = new Sphere(matrix.mulVec(new Vector(0,-0.5,0,1)),0.5,new Vector(0,0,0,1));
+        let sphere = new Sphere(matrix.mulVec(new Vector(0,-0.5,0,1)),0.5 * this.scaling,new Vector(0,0,0,1));
 
         let intersection = sphere.intersect(this.ray);
 
@@ -88,7 +105,7 @@ export class clickObjectVisitor implements Visitor{
 
     visitSphereNode(node: SphereNode): void {
         let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),1,new Vector(0,0,0,1));
+        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),1 * this.scaling,new Vector(0,0,0,1));
 
         let intersection = sphere.intersect(this.ray);
 
@@ -105,7 +122,7 @@ export class clickObjectVisitor implements Visitor{
 
     visitAABoxNode(node: AABoxNode): void {
         let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),0.5,new Vector(0,0,0,1));
+        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),0.5 * this.scaling,new Vector(0,0,0,1));
 
         let intersection = sphere.intersect(this.ray);
 
@@ -122,7 +139,7 @@ export class clickObjectVisitor implements Visitor{
 
     visitTextureBoxNode(node: TextureBoxNode): void {
         let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),0.5,new Vector(0,0,0,1));
+        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),0.5* this.scaling,new Vector(0,0,0,1));
 
         let intersection = sphere.intersect(this.ray);
 

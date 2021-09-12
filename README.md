@@ -159,7 +159,7 @@ Auf der Seite befinden sich vier beschriftete Slider, mit denen man die entsprec
 | M6  |7  |mathematische Bibliothek |<ul><li> [X] </li></ul> |Melina Heinisch, Bao Han Dam|
 | M7  |7  |Phong Shader | <ul><li> [X] </li></ul> |Melina Heinisch, Bao Han Dam |
 | O1  |6  |mehrere Texturen | <ul><li> [X] </li></ul> |Melina Heinisch |
-| O2  |10 |Auswahl und Manipulation von Objekten |  | /|
+| O2  |10 |Auswahl und Manipulation von Objekten | <ul><li> [X] </li></ul> |Melina Heinisch|
 | O3  |6 |Laden und Speichern | <ul><li> [X] </li></ul> |Melina Heinisch |
 | O4  |6 |Model Loader | <ul><li> [X] </li></ul> |Bao Han Dam |
 | O5  |8 |Kamera Knoten | <ul><li> [X] </li></ul> |Melina Heinisch |

@@ -5,7 +5,7 @@
         </GroupNode>
         <GroupNode translation="-0.8,0.6,0,0">
             <GroupNode translation="0,0,0,1" id="j1">
-                <GroupNode scaling="1,1,1,0">
+                <GroupNode scaling="3,3,3,0">
                     <PyramidNode baseColor="1,0,0,1" extraColors="0,1,0,1;0,1,0,1;0,1,0,1;0,1,0,1;"/>
                 </GroupNode>
             </GroupNode>

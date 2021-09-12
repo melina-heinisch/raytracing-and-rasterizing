@@ -85,7 +85,7 @@ export class Rotation extends MatrixTransformation {
 }
 
 export class Scaling extends MatrixTransformation {
-    constructor(scale: Vector) {
+    constructor(public scale: Vector) {
         super(Matrix.scaling(scale), Matrix.scaling(new Vector(1 / scale.x, 1 / scale.y, 1 / scale.z, 0)));
     }
 }
@@ -145,4 +145,6 @@ export class SQT extends MatrixTransformation {
         this.matrix = Matrix.translation(this.translation).mul(this.quaternion.toMatrix()).mul(Matrix.scaling(this.scale));
         this.inverse = Matrix.scaling(new Vector(1 / this.scale.x, 1 / this.scale.y, 1 / this.scale.z, 0)).mul(this.quaternion.inverse.toMatrix()).mul(Matrix.translation(this.translation.mul(-1)));
     }
+
+
 }
