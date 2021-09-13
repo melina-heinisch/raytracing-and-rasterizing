@@ -9,7 +9,7 @@ import {
 import Shader from './shading/shader';
 import {
     DriverNode, FreeFlightNode,
-    JumperNode, MoveCameraNode, RotateCameraNode,
+    JumperNode,
     RotationNode
 } from './nodes/animation-nodes';
 import phongVertexShader from './shading/phong-vertex-perspective-shader.glsl';
