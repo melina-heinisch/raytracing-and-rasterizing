@@ -27,6 +27,16 @@ export class RasterObj {
      */
     elements: number;
 
+    /**
+     * The center of the bounding sphere
+     */
+    center: Vector;
+
+    /**
+     * The radius of the bounding sphere
+     */
+    radius: number;
+
     //https://www.toptal.com/javascript/3d-graphics-a-webgl-tutorial
     constructor(private gl: WebGL2RenderingContext, objLines: string[]) {
         this.gl = gl;
@@ -100,6 +110,121 @@ export class RasterObj {
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, normalBuffer);
         this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(normals), this.gl.STATIC_DRAW);
         this.normalBuffer = normalBuffer;
+
+        this.createBoundingSphere(vertices);
+    }
+
+    createBoundingSphere(vertices : Array<number>){
+        let xmin = new Vector(1000,1000,1000,1);
+        let xmax = new Vector(-1000,-1000,-1000,1);
+        let ymin = new Vector(1000,1000,1000,1);
+        let ymax = new Vector(-1000,-1000,-1000,1);
+        let zmin = new Vector(1000,1000,1000,1);
+        let zmax = new Vector(-1000,-1000,-1000,1);
+
+        for (let i = 0; i < vertices.length; i+=3) {
+            let x = vertices[i];
+            let y = vertices[i+1];
+            let z = vertices[i+2];
+
+            if(x < xmin.x){
+                xmin = new Vector(x,y,z,1);
+            }
+            if (x > xmax.x){
+                xmax = new Vector(x,y,z,1);
+            }
+            if(y < ymin.y){
+                ymin = new Vector(x,y,z,1);
+            }
+            if (y > ymax.y){
+                ymax = new Vector(x,y,z,1);
+            }
+            if(z < zmin.z){
+                zmin = new Vector(x,y,z,1);
+            }
+            if (z > zmax.z){
+                zmax = new Vector(x,y,z,1);
+            }
+
+        }
+
+        let dx;
+        let dy;
+        let dz;
+
+        /* Set xspan = distance between the 2 points xmin & xmax (squared) */
+        dx = xmax.x - xmin.x;
+        dy = xmax.y - xmin.y;
+        dz = xmax.z - xmin.z;
+        let xspan = dx*dx + dy*dy + dz*dz;
+
+        /* Same for y & z spans */
+        dx = ymax.x - ymin.x;
+        dy = ymax.y - ymin.y;
+        dz = ymax.z - ymin.z;
+        let yspan = dx*dx + dy*dy + dz*dz;
+
+        dx = zmax.x - zmin.x;
+        dy = zmax.y - zmin.y;
+        dz = zmax.z - zmin.z;
+        let zspan = dx*dx + dy*dy + dz*dz;
+
+        /* Set points diameter1 & diameter2 to the maximally separated pair */
+        let diameter1 = xmin;
+        let diameter2 = xmax; /* assume xspan biggest */
+        let maxspan = xspan;
+        if (yspan>maxspan){
+            maxspan = yspan;
+            diameter1 = ymin;
+            diameter2 = ymax;
+        }
+        if (zspan>maxspan) {
+            diameter1 = zmin;
+            diameter2 = zmax;
+        }
+
+        let center = new Vector(0,0,0,1);
+        /* diameter1,diameter2 is a diameter of initial sphere */
+        /* calc initial center */
+        center.x = (diameter1.x+diameter2.x)/2.0;
+        center.y = (diameter1.y+diameter2.y)/2.0;
+        center.z = (diameter1.z+diameter2.z)/2.0;
+
+        /* calculate initial radius**2 and radius */
+        dx = diameter2.x-center.x; /* x component of radius vector */
+        dy = diameter2.y-center.y; /* y component of radius vector */
+        dz = diameter2.z-center.z; /* z component of radius vector */
+        let radius_sq = dx*dx + dy*dy + dz*dz;
+        let radius = Math.sqrt(radius_sq);
+
+        this.center = center;
+        this.radius = radius;
+
+        for (let i=0; i<vertices.length;i+=3) {
+            let x = vertices[i];
+            let y = vertices[i+1];
+            let z = vertices[i+2];
+            dx = x-center.x;
+            dy = y-center.y;
+            dz = z-center.z;
+            let old_to_p_sq = dx*dx + dy*dy + dz*dz;
+            if (old_to_p_sq > radius_sq){ /* do r**2 test first */
+                /* this point is outside of current sphere */
+                let old_to_p = Math.sqrt(old_to_p_sq);
+                /* calc radius of new sphere */
+                radius = (radius + old_to_p) / 2.0;
+                radius_sq = radius*radius; 	/* for next r**2 compare */
+                let old_to_new = old_to_p - radius;
+                /* calc center of new sphere */
+                center.x = (radius*center.x + old_to_new*x) / old_to_p;
+                center.y = (radius*center.y + old_to_new*y) / old_to_p;
+                center.z = (radius*center.z + old_to_new*z) / old_to_p;
+
+                this.center = center;
+                this.radius = radius;
+            }
+        }
+
     }
 
     render(shader: Shader) {

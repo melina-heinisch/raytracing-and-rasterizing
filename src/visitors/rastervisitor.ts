@@ -47,7 +47,7 @@ export class RasterVisitor implements Visitor {
    * @param textureshader The texture shader to use
    * @param renderables The objects to render
    */
-  constructor(private gl: WebGL2RenderingContext, private shader: Shader, private textureshader: Shader, private renderables: WeakMap<Node, Renderable>) {
+  constructor(private gl: WebGL2RenderingContext, private shader: Shader, private textureshader: Shader, public renderables: WeakMap<Node, Renderable>) {
     this.matrixStack.push(Matrix.identity());
     this.inverseMatrixStack.push(Matrix.identity());
   }
@@ -508,4 +508,6 @@ export class RasterSetupVisitor {
   visitObjNode(node: ObjNode){
     this.objects.set(node, new RasterObj(this.gl, node.objLines));
   }
+
+
 }

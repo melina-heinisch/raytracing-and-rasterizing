@@ -14,6 +14,15 @@ import Vector from "../math_library/vector";
 import Matrix from "../math_library/matrix";
 import Sphere from "../ray_geometry/sphere";
 import {Scaling} from "../math_library/transformation";
+import RasterPyramid from "../raster_geometry/raster-pyramid";
+import {RasterObj} from "../raster_geometry/raster-obj";
+import RasterBox from "../raster_geometry/raster-box";
+import RasterTextureBox from "../raster_geometry/raster-texture-box";
+import Shader from "../shading/shader";
+
+interface Renderable {
+    render(shader: Shader): void;
+}
 
 export class clickObjectVisitor implements Visitor{
 
@@ -38,7 +47,7 @@ export class clickObjectVisitor implements Visitor{
      * @param y y coordinate of the click
      * @param rayCamera
      */
-    constructor(public x : number, public y : number, public rayCamera :  {origin: Vector; width: number; height: number; alpha: number; toWorld: Matrix }) {
+    constructor(public x : number, public y : number, public rayCamera :  {origin: Vector; width: number; height: number; alpha: number; toWorld: Matrix }, public renderables: WeakMap<Node, Renderable>) {
     this.ray = Ray.makeRay(this.x,this.y,this.rayCamera);
     this.scaling = 1;
     }
@@ -71,35 +80,41 @@ export class clickObjectVisitor implements Visitor{
     }
 
     visitObjNode(node: ObjNode): void {
-        let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),1*this.scaling,new Vector(0,0,0,1));
+        let currentObject= this.renderables.get(node);
+        if(currentObject instanceof RasterObj) {
+            let matrix = this.matrixStack[this.matrixStack.length - 1];
+            let sphere = new Sphere(matrix.mulVec(currentObject.center), currentObject.radius * this.scaling, new Vector(0, 0, 0, 1));
 
-        let intersection = sphere.intersect(this.ray);
+            let intersection = sphere.intersect(this.ray);
 
-        if(intersection != null){
-            node.selected = true;
-        }else{
-            if(node.selected === true){
-                node.selected = undefined;
-            }else {
-                node.selected = false;
+            if (intersection != null) {
+                node.selected = true;
+            } else {
+                if (node.selected === true) {
+                    node.selected = undefined;
+                } else {
+                    node.selected = false;
+                }
             }
         }
     }
 
     visitPyramidNode(node: PyramidNode): void {
-        let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let sphere = new Sphere(matrix.mulVec(new Vector(0,-0.5,0,1)),0.5 * this.scaling,new Vector(0,0,0,1));
+        let currentObject= this.renderables.get(node);
+        if(currentObject instanceof RasterPyramid) {
+            let matrix = this.matrixStack[this.matrixStack.length - 1];
+            let sphere = new Sphere(matrix.mulVec(currentObject.center), currentObject.radius * this.scaling, new Vector(0, 0, 0, 1));
 
-        let intersection = sphere.intersect(this.ray);
+            let intersection = sphere.intersect(this.ray);
 
-        if(intersection != null){
-            node.selected = true;
-        }else{
-            if(node.selected === true){
-                node.selected = undefined;
-            }else {
-                node.selected = false;
+            if (intersection != null) {
+                node.selected = true;
+            } else {
+                if (node.selected === true) {
+                    node.selected = undefined;
+                } else {
+                    node.selected = false;
+                }
             }
         }
     }
@@ -122,38 +137,43 @@ export class clickObjectVisitor implements Visitor{
     }
 
     visitAABoxNode(node: AABoxNode): void {
-        let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),0.5 * this.scaling,new Vector(0,0,0,1));
+        let currentObject= this.renderables.get(node);
+        if(currentObject instanceof RasterBox) {
+            let matrix = this.matrixStack[this.matrixStack.length - 1];
+            let sphere = new Sphere(matrix.mulVec(currentObject.center), currentObject.radius * this.scaling, new Vector(0, 0, 0, 1));
 
-        let intersection = sphere.intersect(this.ray);
+            let intersection = sphere.intersect(this.ray);
 
-        if(intersection != null){
-            node.selected = true;
-        }else{
-            if(node.selected === true){
-                node.selected = undefined;
-            }else {
-                node.selected = false;
+            if (intersection != null) {
+                node.selected = true;
+            } else {
+                if (node.selected === true) {
+                    node.selected = undefined;
+                } else {
+                    node.selected = false;
+                }
             }
         }
     }
 
     visitTextureBoxNode(node: TextureBoxNode): void {
-        let matrix = this.matrixStack[this.matrixStack.length - 1];
-        let sphere = new Sphere(matrix.mulVec(new Vector(0,0,0,1)),0.5* this.scaling,new Vector(0,0,0,1));
+        let currentObject= this.renderables.get(node);
+        if(currentObject instanceof RasterTextureBox) {
+            let matrix = this.matrixStack[this.matrixStack.length - 1];
+            let sphere = new Sphere(matrix.mulVec(currentObject.center), currentObject.radius * this.scaling, new Vector(0, 0, 0, 1));
 
-        let intersection = sphere.intersect(this.ray);
+            let intersection = sphere.intersect(this.ray);
 
-        if(intersection != null){
-            node.selected = true;
-        }else{
-            if(node.selected === true){
-                node.selected = undefined;
-            }else {
-                node.selected = false;
+            if (intersection != null) {
+                node.selected = true;
+            } else {
+                if (node.selected === true) {
+                    node.selected = undefined;
+                } else {
+                    node.selected = false;
+                }
             }
         }
-
     }
 
     visitLightNode(node: LightNode): void {

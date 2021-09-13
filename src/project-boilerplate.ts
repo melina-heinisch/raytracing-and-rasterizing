@@ -299,7 +299,7 @@ window.addEventListener('load', () => {
         const x = event.clientX - rect.left
         const y = event.clientY - rect.top
         console.log("x: " + x + " y: " + y);
-        let clickVisitor = new clickObjectVisitor(x,y,lightAndCameraVisitor.rayCamera);
+        let clickVisitor = new clickObjectVisitor(x,y,lightAndCameraVisitor.rayCamera,rasterVisitor.renderables);
         clickVisitor.setup(scenegraph);
     });
 
