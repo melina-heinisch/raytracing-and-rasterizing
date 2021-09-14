@@ -15,8 +15,6 @@ import {
     DriverNode,
     FreeFlightNode,
     JumperNode,
-    MoveCameraNode,
-    RotateCameraNode,
     RotationNode
 } from "../nodes/animation-nodes";
 

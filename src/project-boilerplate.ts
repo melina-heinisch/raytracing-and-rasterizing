@@ -9,7 +9,7 @@ import {
 import Shader from './shading/shader';
 import {
     DriverNode, FreeFlightNode,
-    JumperNode, MoveCameraNode, RotateCameraNode,
+    JumperNode,
     RotationNode
 } from './nodes/animation-nodes';
 import phongVertexShader from './shading/phong-vertex-perspective-shader.glsl';
@@ -20,6 +20,7 @@ import RayVisitor from "./visitors/rayvisitor";
 import {XmlToScenegraph} from "./xmlParser/xmlToScenegraph";
 import {LightAndCameraVisitor} from "./visitors/lightAndCameraVisitor";
 import {ScenegraphToXmlVisitor} from "./xmlParser/scenegraphToXmlVisitor";
+import {Translation} from "./math_library/transformation";
 import {clickObjectVisitor} from "./visitors/clickObjectVisitor";
 
 window.addEventListener('load', () => {
@@ -131,7 +132,7 @@ window.addEventListener('load', () => {
                 render()
             }
         };
-        xhttp.open("GET", 'scenegraph.xml', true);
+        xhttp.open("GET", 'abgabe.xml', true);
         xhttp.send();
     }
 
@@ -153,7 +154,9 @@ window.addEventListener('load', () => {
             let result = event.target.result.toString();
             let lines = result.split('\n');
             let obj = new ObjNode(lines);
-            scenegraph.add(obj);
+            let gn = new GroupNode(new Translation(new Vector(6,0,0,1)));
+            gn.add(obj);
+            scenegraph.add(gn);
             render()
         };
         reader.readAsText(files[0]);
