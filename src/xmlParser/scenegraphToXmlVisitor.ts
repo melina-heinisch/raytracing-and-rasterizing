@@ -127,7 +127,8 @@ export class ScenegraphToXmlVisitor implements Visitor {
      */
     visitSphereNode(node: SphereNode): void {
         let baseColor = node.color;
-        let sphereNode = "<SphereNode baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\"></SphereNode>\n"
+        let selected = node.selected;
+        let sphereNode = "<SphereNode selected=\""+selected + "\" baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\"></SphereNode>\n"
         this._xmlString += sphereNode;
 
     }
@@ -140,8 +141,9 @@ export class ScenegraphToXmlVisitor implements Visitor {
     visitPyramidNode(node: PyramidNode): void {
         let baseColor = node.baseColor;
         let extraColors = node.extraColors;
+        let selected = node.selected;
         if(extraColors){
-            let pyramidNode = "<PyramidNode baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\" extraColors=\"";
+            let pyramidNode = "<PyramidNode selected=\""+selected + "\" baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\" extraColors=\"";
             extraColors.forEach(color =>{
                 let colorString = color.x + "," + color.y + "," + color.z + "," + color.w + ";";
                 pyramidNode += colorString;
@@ -149,7 +151,7 @@ export class ScenegraphToXmlVisitor implements Visitor {
             pyramidNode += "\"></PyramidNode>\n"
             this._xmlString += pyramidNode;
         }else{
-            let pyramidNode = "<PyramidNode baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\" extraColors=\"\"></PyramidNode>\n"
+            let pyramidNode = "<PyramidNode selected=\""+selected + "\" baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\" extraColors=\"\"></PyramidNode>\n"
             this._xmlString += pyramidNode;
         }
     }
@@ -162,8 +164,9 @@ export class ScenegraphToXmlVisitor implements Visitor {
     visitAABoxNode(node: AABoxNode): void {
         let baseColor = node.baseColor;
         let extraColors = node.extraColors;
+        let selected = node.selected;
         if(extraColors){
-            let aaboxNode = "<AABoxNode baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\" extraColors=\"";
+            let aaboxNode = "<AABoxNode selected=\""+selected + "\" baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\" extraColors=\"";
             extraColors.forEach(color =>{
                 let colorString = color.x + "," + color.y + "," + color.z + "," + color.w + ";";
                 aaboxNode += colorString;
@@ -171,7 +174,7 @@ export class ScenegraphToXmlVisitor implements Visitor {
             aaboxNode += "\"></AABoxNode>\n"
             this._xmlString += aaboxNode;
         }else{
-            let aaboxNode = "<AABoxNode baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\" extraColors=\"\"></AABoxNode>\n"
+            let aaboxNode = "<AABoxNode selected=\""+selected + "\" baseColor=\"" + baseColor.x+ "," + baseColor.y + "," + baseColor.z + "," + baseColor.w + "\" extraColors=\"\"></AABoxNode>\n"
             this._xmlString += aaboxNode;
         }
     }
@@ -181,7 +184,7 @@ export class ScenegraphToXmlVisitor implements Visitor {
      * @param node The node to parse
      */
     visitTextureBoxNode(node: TextureBoxNode): void {
-        let textureBoxNode = "<TextureBoxNode texPath=\"" + node.texture + "\" normalPath=\""+ node.normal + "\"></TextureBoxNode>\n"
+        let textureBoxNode = "<TextureBoxNode selected=\""+ node.selected + "\" texPath=\"" + node.texture + "\" normalPath=\""+ node.normal + "\"></TextureBoxNode>\n"
         this._xmlString += textureBoxNode;
     }
 
@@ -203,7 +206,7 @@ export class ScenegraphToXmlVisitor implements Visitor {
     }
 
     visitObjNode(node: ObjNode): void {
-        let objNode = "<ObjNode src=\""+ node.objLines + "\"></ObjNode>\n";
+        let objNode = "<ObjNode selected=\""+ node.selected + "\" src=\""+ node.objLines + "\"></ObjNode>\n";
         this._xmlString += objNode;
     }
 

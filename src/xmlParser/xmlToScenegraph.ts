@@ -193,6 +193,8 @@ export class XmlToScenegraph {
     createSphereNode(childNode){
         let baseColor = this.getOneValue(childNode.attributes.baseColor.value) || [Math.random(),Math.random(),Math.random(),1];
         let node = new SphereNode(new Vector(baseColor[0],baseColor[1],baseColor[2],baseColor[3]));
+        let selected = childNode.attributes.selected.value === "true";
+        node.selected = selected;
         this.currentGroupNode.add(node);
     }
 
@@ -214,6 +216,8 @@ export class XmlToScenegraph {
                 new Vector(extraColors[3][0],extraColors[3][1],extraColors[3][2],extraColors[3][3])]
             node = new PyramidNode(new Vector(baseColor[0],baseColor[1],baseColor[2],baseColor[3]),extraColorsVectors);
         }
+        let selected = childNode.attributes.selected.value === "true";
+        node.selected = selected;
         this.currentGroupNode.add(node);
     }
 
@@ -236,6 +240,8 @@ export class XmlToScenegraph {
                 new Vector(extraColors[4][0],extraColors[4][1],extraColors[4][2],extraColors[4][3])]
             node = new AABoxNode(new Vector(baseColor[0],baseColor[1],baseColor[2],baseColor[3]),extraColorsVectors);
         }
+        let selected = childNode.attributes.selected.value === "true";
+        node.selected = selected;
         this.currentGroupNode.add(node);
     }
 
@@ -258,6 +264,8 @@ export class XmlToScenegraph {
         let texturePath = childNode.attributes.texPath.value || 'brickwall.jpg';
         let normalPath = childNode.attributes.normalPath.value || 'brickwall_normal.jpg'
         let node = new TextureBoxNode(texturePath, normalPath);
+        let selected = childNode.attributes.selected.value === "true";
+        node.selected = selected;
         this.currentGroupNode.add(node);
     }
 
@@ -270,6 +278,8 @@ export class XmlToScenegraph {
         let objSource = childNode.attributes.src.value;
         let lines = objSource.split(",");
         let node = new ObjNode(lines);
+        let selected = childNode.attributes.selected.value === "true";
+        node.selected = selected;
         this.currentGroupNode.add(node);
     }
 

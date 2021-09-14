@@ -1,7 +1,7 @@
 # ICG Projekt von Gruppe 01
 <!-- Ein Bild der Anwendung muss im Ordner ./img relativ zu dieser Datei liegen -->
 
-<img src="img/screenshot.jpg" width="75%">
+<img src="dist/screenshot.png" alt="Projekt Screenshot" width="75%">
 
 Dieses Repository beinhaltet das Projekt des Kurses  "Interaktive Computergraphik" von Melina Heinisch, Bao Han Dam und Martin Böhm
 
