@@ -47,7 +47,7 @@ export class RasterVisitor implements Visitor {
    * @param textureshader The texture shader to use
    * @param renderables The objects to render
    */
-  constructor(private gl: WebGL2RenderingContext, private shader: Shader, private textureshader: Shader, private renderables: WeakMap<Node, Renderable>) {
+  constructor(private gl: WebGL2RenderingContext, private shader: Shader, private textureshader: Shader, public renderables: WeakMap<Node, Renderable>) {
     this.matrixStack.push(Matrix.identity());
     this.inverseMatrixStack.push(Matrix.identity());
   }
@@ -173,6 +173,19 @@ export class RasterVisitor implements Visitor {
     if (P && this.perspective) {
       P.set(this.perspective);
     }
+    let currentSphere = this.renderables.get(node);
+
+    if(currentSphere instanceof RasterSphere){
+      if(node.selected){
+        currentSphere.updateColor(new Vector(0,0.5,0.7,1));
+      } else {
+        if(node.selected === undefined){
+          currentSphere.updateColor(node.color);
+          node.selected = false;
+        }
+      }
+    }
+
     this.renderables.get(node).render(shader);
   }
 
@@ -210,6 +223,19 @@ export class RasterVisitor implements Visitor {
       P.set(this.perspective);
     }
 
+    let currentPyramid = this.renderables.get(node);
+
+    if(currentPyramid instanceof RasterPyramid){
+      if(node.selected){
+        currentPyramid.updateColor(new Vector(0,0.5,0.7,1),[]);
+      } else {
+        if(node.selected === undefined){
+          currentPyramid.updateColor(node.baseColor,node.extraColors);
+          node.selected = false;
+        }
+      }
+    }
+
     this.renderables.get(node).render(shader);
   }
 
@@ -245,6 +271,19 @@ export class RasterVisitor implements Visitor {
     let P = shader.getUniformMatrix("P");
     if (P && this.perspective) {
       P.set(this.perspective);
+    }
+
+    let currentBox = this.renderables.get(node);
+
+    if(currentBox instanceof RasterBox){
+      if(node.selected){
+        currentBox.updateColor(new Vector(0,0.5,0.7,1),[]);
+      } else {
+        if(node.selected === undefined){
+          currentBox.updateColor(node.baseColor,node.extraColors);
+          node.selected = false;
+        }
+      }
     }
 
     this.renderables.get(node).render(shader);
@@ -287,6 +326,24 @@ export class RasterVisitor implements Visitor {
 
     shader.getUniformMatrix("V").set(this.lookat);
 
+    let currentBox = this.renderables.get(node);
+
+    if(currentBox instanceof RasterTextureBox){
+      if(node.selected){
+        if(!node.updated){
+          currentBox.updateColor('textures/blue.jpg');
+          node.updated = true;
+        }
+
+      } else {
+        if(node.selected === undefined){
+          currentBox.updateColor(node.texture);
+          node.selected = false;
+          node.updated = false;
+        }
+      }
+    }
+
     this.renderables.get(node).render(shader);
   }
 
@@ -316,6 +373,19 @@ export class RasterVisitor implements Visitor {
     }
 
     shader.getUniformMatrix("V").set(this.lookat);
+
+    let currentObj = this.renderables.get(node);
+
+    if(currentObj instanceof RasterObj){
+      if(node.selected){
+        currentObj.updateColor(new Vector(0,0.5,0.7,1));
+      } else {
+        if(node.selected === undefined){
+          currentObj.updateColor(new Vector(0.5,0.5,0.5,1));
+          node.selected = false;
+        }
+      }
+    }
 
     this.renderables.get(node).render(shader);
   }
@@ -438,4 +508,6 @@ export class RasterSetupVisitor {
   visitObjNode(node: ObjNode){
     this.objects.set(node, new RasterObj(this.gl, node.objLines));
   }
+
+
 }

@@ -61,8 +61,9 @@ export class SphereNode extends Node {
    * The sphere is defined around the origin 
    * with radius 1.
    * @param color The colour of the Sphere
+   * @param selected If the sphere is selected
    */
-  constructor(public color: Vector) {
+  constructor(public color: Vector, public selected: boolean = false) {
     super();
   }
 
@@ -84,8 +85,9 @@ export class PyramidNode extends Node {
   /**
    * @param baseColor Base color of the pyramid
    * @param extraColors Extra colors, if wanted
+   * @param selected If the pyramid is selected
    */
-  constructor(public baseColor : Vector, public extraColors : Array<Vector>) {
+  constructor(public baseColor : Vector, public extraColors : Array<Vector>, public selected: boolean = false) {
     super();
   }
 
@@ -110,8 +112,9 @@ export class AABoxNode extends Node {
    * with all edges of length 1
    * @param baseColor The color of the cube
    * @param extraColors If wanted, additional colors
+   * @param selected If the box is selected
    */
-  constructor(public baseColor : Vector, public extraColors: Array<Vector>) {
+  constructor(public baseColor : Vector, public extraColors: Array<Vector>, public selected: boolean = false) {
     super();
   }
 
@@ -135,8 +138,10 @@ export class TextureBoxNode extends Node {
    * with all edges of length 1
    * @param texture The image filename for the texture
    * @param normal The image filename for the normal map
+   * @param selected If the box is selected
+   * @param updated If the box has been marked as selected yet
    */
-  constructor(public texture: string, public normal: string) {
+  constructor(public texture: string, public normal: string, public selected: boolean = false, public updated: boolean = false) {
     super();
   }
 
@@ -194,8 +199,10 @@ export class CameraNode extends Node {
 export class ObjNode extends Node{
   /**
    * Creates an obj
+   * @param objLines The .obj file with each line as one array entry
+   * @param selected If the sphere is selected
    */
-  constructor(public objLines: string[]) {
+  constructor(public objLines: string[], public selected: boolean = false) {
     super();
   }
 

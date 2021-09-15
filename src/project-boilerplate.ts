@@ -21,6 +21,7 @@ import {XmlToScenegraph} from "./xmlParser/xmlToScenegraph";
 import {LightAndCameraVisitor} from "./visitors/lightAndCameraVisitor";
 import {ScenegraphToXmlVisitor} from "./xmlParser/scenegraphToXmlVisitor";
 import {Translation} from "./math_library/transformation";
+import {clickObjectVisitor} from "./visitors/clickObjectVisitor";
 
 window.addEventListener('load', () => {
 
@@ -295,6 +296,23 @@ window.addEventListener('load', () => {
 
         animate(0);
     }
+
+    rayCanvas.addEventListener('mousedown', function (event){
+        const rect = rayCanvas.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+        console.log("x: " + x + " y: " + y);
+        let clickVisitor = new clickObjectVisitor(x,y,lightAndCameraVisitor.rasterCamera,lightAndCameraVisitor.rayCamera,rasterVisitor.renderables);
+        clickVisitor.setup(scenegraph);
+    });
+    rasterCanvas.addEventListener('mousedown', function (event){
+        const rect = rayCanvas.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+        console.log("x: " + x + " y: " + y);
+        let clickVisitor = new clickObjectVisitor(x,y,lightAndCameraVisitor.rasterCamera,lightAndCameraVisitor.rayCamera,rasterVisitor.renderables);
+        clickVisitor.setup(scenegraph);
+    });
 
     //Following are all the key event listeners for various functionalities
     window.addEventListener('keydown', function (event) {

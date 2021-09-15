@@ -26,13 +26,13 @@ export default class RasterSphere {
      */
     elements: number;
 
+
     /**
      * Creates all WebGL buffers for the sphere
      * @param gl The canvas' context
      * @param center The center of the sphere
      * @param radius The radius of the sphere
      * @param color The base color of the sphere
-     * @param color2 If given, second color of the sphere
      */
     constructor(private gl: WebGL2RenderingContext, center: Vector, radius: number, color: Vector) {
 
@@ -155,5 +155,24 @@ export default class RasterSphere {
         this.gl.disableVertexAttribArray(positionLocation);
         this.gl.disableVertexAttribArray(colorAttribute);
         this.gl.disableVertexAttribArray(normalAttribute);
+    }
+
+    updateColor(color: Vector){
+        let colorArray = []
+        for (let i = 0; i < 900; i+=2) {
+            colorArray.push(color.x);
+            colorArray.push(color.y);
+            colorArray.push(color.z);
+
+            colorArray.push(color.x);
+            colorArray.push(color.y);
+            colorArray.push(color.z);
+
+        }
+
+        const colorBuffer = this.gl.createBuffer();
+        this.gl.bindBuffer(this.gl.ARRAY_BUFFER,colorBuffer);
+        this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(colorArray),this.gl.STATIC_DRAW);
+        this.colorBuffer = colorBuffer;
     }
 }

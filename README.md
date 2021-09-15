@@ -1,7 +1,7 @@
 # ICG Projekt von Gruppe 01
 <!-- Ein Bild der Anwendung muss im Ordner ./img relativ zu dieser Datei liegen -->
 
-<img src="img/screenshot.jpg" width="75%">
+<img src="dist/screenshot.png" alt="Projekt Screenshot" width="75%">
 
 Dieses Repository beinhaltet das Projekt des Kurses  "Interaktive Computergraphik" von Melina Heinisch, Bao Han Dam und Martin Böhm
 
@@ -14,14 +14,12 @@ Dieses Repository beinhaltet das Projekt des Kurses  "Interaktive Computergraphi
 │   ├── objs <-- .obj Files
 │   ├── textures <-- Texturen
 │   ├── index.html
-│   └── scenegraph.xml <-- Initialer Scenengraph
-├── node_modules
-│   └── ...
+│   ├── abgabe.xml <-- Initialer Scenengraph
+│   └── scenegraph.xml <-- Zweiter Scenengraph zum Testen
 ├── src
 │   ├── math_library
 │   │   ├── intersection.ts
 │   │   ├── matrix.ts
-│   │   ├── quaternion.ts
 │   │   ├── ray.ts
 │   │   ├── transformation.ts
 │   │   └── vector.ts
@@ -44,6 +42,7 @@ Dieses Repository beinhaltet das Projekt des Kurses  "Interaktive Computergraphi
 │   │   ├── texture-phong-fragment-shader.glsl
 │   │   └── texture-vertext-perspective-shader.glsl
 │   ├── visitors
+│   │   ├── clickObjectVisitor.ts
 │   │   ├── lightAndCameraVisitor.ts
 │   │   ├── rastervisitor.ts
 │   │   ├── rayvisitor.ts
@@ -55,9 +54,9 @@ Dieses Repository beinhaltet das Projekt des Kurses  "Interaktive Computergraphi
 │   ├── index.ts
 │   └── project-boilerplate.ts <- Projekt
 ├── .gitignore
-├── package.json
-├── package-lock.json
 ├── README.md
+├── package-lock.json
+├── package.json
 ├── tsconfig.json
 └── webpack.config.json
 
@@ -104,6 +103,9 @@ Außerdem muss in der `visitors/lightAndCameraVisitor.ts` in der Methode `visitC
 Mit Drücken von `r` auf der Tastatur wird der Rasterisierer verwendet.
 
 Mit Drücken von `t` auf der Tastatur wird der Raytracer verwendet.
+
+## Objekt per Maus auswählen
+Hierfür einfach das Objekt der Wahl anklicken. Zum Abwählen muss einmal auf eine freie Stelle der Canvas geklickt werden.
 
 ## Animationen
 ### Animationen stoppen
@@ -159,7 +161,7 @@ Auf der Seite befinden sich vier beschriftete Slider, mit denen man die entsprec
 | M6  |7  |mathematische Bibliothek |<ul><li> [X] </li></ul> |Melina Heinisch, Bao Han Dam|
 | M7  |7  |Phong Shader | <ul><li> [X] </li></ul> |Melina Heinisch, Bao Han Dam |
 | O1  |6  |mehrere Texturen | <ul><li> [X] </li></ul> |Melina Heinisch |
-| O2  |10 |Auswahl und Manipulation von Objekten |  | /|
+| O2  |10 |Auswahl und Manipulation von Objekten | <ul><li> [X] </li></ul> |Melina Heinisch|
 | O3  |6 |Laden und Speichern | <ul><li> [X] </li></ul> |Melina Heinisch |
 | O4  |6 |Model Loader | <ul><li> [X] </li></ul> |Bao Han Dam |
 | O5  |8 |Kamera Knoten | <ul><li> [X] </li></ul> |Melina Heinisch |
