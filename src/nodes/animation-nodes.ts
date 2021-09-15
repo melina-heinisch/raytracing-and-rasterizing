@@ -1,7 +1,7 @@
 import Vector from '../math_library/vector';
 import { GroupNode } from './nodes';
-import {FreeFlight, Rotation, SQT, Translation} from '../math_library/transformation';
-import Quaternion from '../math_library/quaternion';
+import {FreeFlight, Rotation, Translation} from '../math_library/transformation';
+
 
 /**
  * Class representing an Animation
