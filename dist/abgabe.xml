@@ -1,4 +1,4 @@
-<GroupNode translation="0,0,-5,0">
+<GroupNode translation="0,0,0,0">
     <GroupNode translation="0,0,-1,1">
         <GroupNode rotation="0,1,0,1" angleX="0" angleY="0.5" angleZ="0" id="r2" >
             <GroupNode scaling="8,8,8,1">

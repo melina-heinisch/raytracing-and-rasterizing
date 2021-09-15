@@ -1,5 +1,8 @@
 import Vector from '../math_library/vector';
 import Shader from '../shading/shader';
+import Ray from "../math_library/ray";
+import Matrix from "../math_library/matrix";
+import Intersection from "../math_library/intersection";
 
 /**
  * A class creating buffers for a textured box to render it with WebGL
@@ -46,6 +49,11 @@ export default class RasterTextureBox {
      * The radius of the bounding sphere
      */
     radius: number;
+    /**
+     * The vertices of the box
+     */
+    vertices: number[];
+
 
     /**
      * Creates all WebGL buffers for the textured box
@@ -87,6 +95,7 @@ export default class RasterTextureBox {
             ma.x, mi.y, ma.z, mi.x, mi.y, ma.z, mi.x, mi.y, mi.z
         ];
 
+        this.vertices  = vertices;
         const vertexBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
@@ -273,6 +282,11 @@ export default class RasterTextureBox {
         return [tangentIndices,bitangentIndices, normalIndices];
     }
 
+    /**
+     * Calculates center and radius of the bounding sphere of the object
+     * @param vertices The vertices of the object
+     */
+    // With Ritter Algorithm: https://www.researchgate.net/publication/242453691_An_Efficient_Bounding_Sphere
     createBoundingSphere(vertices : Array<number>){
         let xmin = new Vector(1000,1000,1000,1);
         let xmax = new Vector(-1000,-1000,-1000,1);
@@ -384,6 +398,88 @@ export default class RasterTextureBox {
             }
         }
 
+    }
+
+    /**
+     * Puts all Triangles in a separate array and multiplies each vertex with the model matrix to transfer it into word coordinate system
+     * @param ray The mouseray
+     * @param matrix The model Matrix
+     */
+    prepareHitTest(ray: Ray, matrix : Matrix) : Intersection{
+        let triangles : Array<Array<Vector>> = [];
+        for (let i = 0; i < this.vertices.length; i+=9) {
+            let triangle : Array<Vector> = [];
+            let v1 = matrix.mulVec(new Vector(this.vertices[i],this.vertices[i+1],this.vertices[i+2],1));
+            let v2 = matrix.mulVec(new Vector(this.vertices[i+3],this.vertices[i+4],this.vertices[i+5],1));
+            let v3 = matrix.mulVec(new Vector(this.vertices[i+6],this.vertices[i+7],this.vertices[i+8],1));
+            triangle.push(v1, v2, v3);
+            triangles.push(triangle);
+        }
+
+        let hit : Intersection = null;
+        for (let i = 0; i < triangles.length; i++) {
+            let closestHit : Intersection = null;
+            let result : Intersection = this.isTriangleHit(ray, triangles[i]);
+            if(result != null){
+                if(!closestHit){
+                    hit = result;
+                }else {
+                    if(result.closerThan(closestHit)){
+                        closestHit = result;
+                    }
+                }
+            }
+        }
+        return hit;
+    }
+
+    /**
+     * Calculates, if the given triangle is being hit by the mouseray
+     * @param ray The mouseray of the click
+     * @param triangle The triangle to intersect
+     */
+    // With the Möller-Trumbore Algorithm: https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/moller-trumbore-ray-triangle-intersection
+    isTriangleHit(ray: Ray, triangle: Array<Vector>) : Intersection{
+        let v0 : Vector = triangle[0];
+        let v1 : Vector = triangle[1];
+        let v2 : Vector = triangle[2];
+
+        let edge1 : Vector = v1.sub(v0);
+        let edge2 : Vector = v2.sub(v0);
+
+        let pvec : Vector= ray.direction.cross(edge2);
+        let determinant : number = edge1.dot(pvec);
+
+        // Checks if the ray is behind the triangle
+        if(determinant < 0.001) {
+            return null;
+        }
+
+        // Checks if the ray is parallel to the triangle
+        if(Math.abs(determinant) < 0.001) {
+            return null;
+        }
+
+        let inverseDeterminant : number = 1/determinant;
+
+        let tvec : Vector = ray.origin.sub(v0);
+        let u : number = tvec.dot(pvec) * inverseDeterminant;
+
+        if(u < 0 || u > 1) {
+            return null;
+        }
+
+        let qvec : Vector = tvec.cross(edge1);
+        let v : number = ray.direction.dot(qvec) * inverseDeterminant;
+
+        if(v < 0 || u + v > 1) {
+            return null;
+        }
+
+        let t : number = edge2.dot(qvec) * inverseDeterminant;
+        let point : Vector = ray.origin.add(ray.direction.mul(t));
+
+        return new Intersection(t,point,undefined);
     }
 
     /**
