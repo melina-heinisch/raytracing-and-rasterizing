@@ -124,6 +124,8 @@ export default class RayVisitor implements Visitor {
         if(node.selected === undefined){
           UNIT_SPHERE.color = node.color;
           node.selected = false;
+        }else{
+          UNIT_SPHERE.color = node.color;
         }
       }
 

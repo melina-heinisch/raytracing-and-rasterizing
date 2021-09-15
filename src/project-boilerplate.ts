@@ -305,6 +305,14 @@ window.addEventListener('load', () => {
         let clickVisitor = new clickObjectVisitor(x,y,lightAndCameraVisitor.rasterCamera,lightAndCameraVisitor.rayCamera,rasterVisitor.renderables);
         clickVisitor.setup(scenegraph);
     });
+    rasterCanvas.addEventListener('mousedown', function (event){
+        const rect = rayCanvas.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+        console.log("x: " + x + " y: " + y);
+        let clickVisitor = new clickObjectVisitor(x,y,lightAndCameraVisitor.rasterCamera,lightAndCameraVisitor.rayCamera,rasterVisitor.renderables);
+        clickVisitor.setup(scenegraph);
+    });
 
     //Following are all the key event listeners for various functionalities
     window.addEventListener('keydown', function (event) {
