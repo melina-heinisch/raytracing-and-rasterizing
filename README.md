@@ -1,9 +1,5 @@
-# ICG Projekt von Gruppe 01
-<!-- Ein Bild der Anwendung muss im Ordner ./img relativ zu dieser Datei liegen -->
-
-<img src="dist/screenshot.png" alt="Projekt Screenshot" width="75%">
-
-Dieses Repository beinhaltet das Projekt des Kurses  "Interaktive Computergraphik" von Melina Heinisch, Bao Han Dam und Martin Böhm
+# Interactive Computer Graphics self implemented
+Dieses Repository beinhaltet das Projekt des Kurses  "Interaktive Computergraphik" von Melina Heinisch und zwei weiteren Mitgliedern
 
 # Projekt Struktur
 <!-- Ihr könnt die Projektstruktur beliebig beschreiben. Hier einfach mit dem Unix Programm `tree`  -->
@@ -148,25 +144,6 @@ Mit Drücken von `f` rotiert die Kamera nach oben, mit `c` nach unten.
 ## Beleuchtungsparameter
 
 Auf der Seite befinden sich vier beschriftete Slider, mit denen man die entsprechenden Phong Parameter 'Shininess', 'Ambient', 'Diffuse' und 'Specular' verändern kann. Die Änderungen werden direkt in der Szene sichtbar.
-
-## Funktionen
-
-| Nummer  | Punkte | Beschreibung  | bearbeitet | Verantwortliche/r |
-| ------------- | ------------- | ------------- | ------------- | ------------- |
-| M1  |6  |Szenengraph | <ul><li>[X] </li></ul> |Melina Heinisch, Bao Han Dam |
-| M2  |14 |Rasteriser & Ray Tracer | <ul><li>[X] </li></ul> |Melina Heinisch, Bao Han Dam|
-| M3  |5  |min. drei eingebundene Objekte | <ul><li>[X] </li></ul> |Melina Heinisch, Bao Han Dam |
-| M4  |7  |min. drei verschiedene Animationsknoten| <ul><li>[X] </li></ul> |Melina Heinisch |
-| M5  |4  |mehrfarbige Objekte | <ul><li> [X] </li></ul> |Melina Heinisch |
-| M6  |7  |mathematische Bibliothek |<ul><li> [X] </li></ul> |Melina Heinisch, Bao Han Dam|
-| M7  |7  |Phong Shader | <ul><li> [X] </li></ul> |Melina Heinisch, Bao Han Dam |
-| O1  |6  |mehrere Texturen | <ul><li> [X] </li></ul> |Melina Heinisch |
-| O2  |10 |Auswahl und Manipulation von Objekten | <ul><li> [X] </li></ul> |Melina Heinisch|
-| O3  |6 |Laden und Speichern | <ul><li> [X] </li></ul> |Melina Heinisch |
-| O4  |6 |Model Loader | <ul><li> [X] </li></ul> |Bao Han Dam |
-| O5  |8 |Kamera Knoten | <ul><li> [X] </li></ul> |Melina Heinisch |
-| O6  |8 |mehrere Lichtquellen |<ul><li> [X] </li></ul> |Melina Heinisch |
-| O7  |6 |Free Flight Modus | <ul><li> [X] </li></ul> |Melina Heinisch |
 
 ## Kompatibilität
 Das Projekt wurde mit folgenden Konfigurationen getestet:
